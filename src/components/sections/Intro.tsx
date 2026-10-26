@@ -44,9 +44,9 @@ const FILM_END = 0.65;
 
 // Where each chapter starts on the film (0–1), matching the camera path of the video.
 const chapters = [
-  { n: 'I', label: 'A chegada', at: 0 },
-  { n: 'II', label: 'A cadeira', at: 0.36 },
-  { n: 'III', label: 'A bancada', at: 0.72 },
+  { n: '01', label: 'A chegada', at: 0 },
+  { n: '02', label: 'A cadeira', at: 0.36 },
+  { n: '03', label: 'A bancada', at: 0.72 },
 ];
 
 /**
@@ -102,16 +102,16 @@ export function Intro() {
             <span className="text-ivory/70">· {label.detail}</span>
           </motion.p>
 
-          <h1 id="hero-title" className="display text-[clamp(3.3rem,15.5vw,9.5rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.55)] short:text-[clamp(2.8rem,13vw,5.5rem)] tiny:text-[clamp(2.4rem,11.5vw,4rem)]">
-            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.15)}>Tradição</motion.span></span>
-            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.25)}>na ponta da</motion.span></span>
+          <h1 id="hero-title" className="display text-[clamp(2.7rem,12.4vw,8.4rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.55)] short:text-[clamp(2.3rem,10.5vw,4.8rem)] tiny:text-[clamp(2rem,9.5vw,3.4rem)]">
+            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.15)}>Imagem</motion.span></span>
+            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.25)}>masculina em</motion.span></span>
             <span className="block overflow-hidden pb-[0.1em]">
-              <motion.span className="brass-text block italic" {...line(0.35)}>navalha.</motion.span>
+              <motion.span className="accent-text block italic" {...line(0.35)}>outro nível.</motion.span>
             </span>
           </h1>
 
           <motion.p {...fade(0.55)} className="mt-5 max-w-md text-[15.5px] leading-relaxed text-ivory short:mt-3 short:text-[14.5px] sm:text-base tiny:hidden">
-            Corte na tesoura, barba na navalha e toalha quente, como se fazia antigamente. Hora marcada, sem fila, sem pressa.
+            Corte, barba e cuidado completo para quem leva a própria imagem a sério. Hora marcada, ambiente exclusivo, atendimento sem pressa.
           </motion.p>
 
           <motion.div {...fade(0.65)} className="mt-7 flex gap-2.5 short:mt-5 sm:gap-3">
@@ -132,15 +132,15 @@ export function Intro() {
                 className="group mt-4 inline-flex min-h-11 flex-wrap items-center gap-x-2.5 text-[13.5px] text-ivory/85 short:mt-2"
               >
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brass opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-brass" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
                 </span>
                 <span className="tiny:hidden">Próximo horário livre:</span>
                 <span className="hidden tiny:inline">Livre</span>
-                <span className="font-semibold text-brass-light underline decoration-brass/40 underline-offset-4 group-hover:decoration-brass">
+                <span className="font-semibold text-accent-light underline decoration-accent/40 underline-offset-4 group-hover:decoration-accent">
                   {relativeDayName(next.day).toLowerCase()} às {next.time}
                 </span>
-                <Icon name="arrowRight" className="h-4 w-4 text-brass transition-transform group-hover:translate-x-0.5" />
+                <Icon name="arrowRight" className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5" />
               </Link>
             </motion.div>
           )}
@@ -148,8 +148,8 @@ export function Intro() {
 
         {!reduced && (
           <>
-            <Caption progress={p} range={[0.17, 0.23, 0.33, 0.39]} chapter="II" label="A cadeira" text="Toda noite começa com uma cadeira vazia." />
-            <Caption progress={p} range={[0.43, 0.49, 0.57, 0.63]} chapter="III" label="A bancada" text="Ferramentas afiadas, tempo de sobra." />
+            <Caption progress={p} range={[0.17, 0.23, 0.33, 0.39]} chapter="02" label="A cadeira" text="Cada detalhe da sua imagem, no seu tempo." />
+            <Caption progress={p} range={[0.43, 0.49, 0.57, 0.63]} chapter="03" label="A bancada" text="Técnica, ferramentas e produtos de verdade." />
             <ChapterRail progress={film} />
             <motion.button
               onClick={skip}
@@ -172,11 +172,11 @@ function Caption({ progress, range, chapter, label, text }: { progress: MotionVa
     <motion.div style={{ opacity, y }} className="pointer-events-none absolute inset-x-0 bottom-32 md:bottom-24">
       <div className="container-x">
         <p className="eyebrow flex items-center gap-3">
-          <span className="font-display text-[13px] normal-case italic tracking-normal text-brass-light">{chapter}</span>
-          <span className="h-px w-10 bg-brass/50" />
+          <span className="font-display text-[13px] normal-case italic tracking-normal text-accent-light">{chapter}</span>
+          <span className="h-px w-10 bg-accent/50" />
           {label}
         </p>
-        <p className="display mt-4 max-w-3xl text-[clamp(2.2rem,8.5vw,5.4rem)] italic [text-shadow:0_4px_40px_rgb(0_0_0/0.8)]">{text}</p>
+        <p className="display mt-4 max-w-3xl text-[clamp(1.9rem,7vw,4.6rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.8)]">{text}</p>
       </div>
     </motion.div>
   );
@@ -186,7 +186,7 @@ function ChapterRail({ progress }: { progress: MotionValue<number> }) {
   return (
     <div aria-hidden="true" className="absolute right-6 top-1/2 hidden -translate-y-1/2 md:block lg:right-12">
       <div className="relative h-56 w-px bg-ivory/15">
-        <motion.div style={{ scaleY: progress }} className="absolute inset-0 origin-top bg-brass" />
+        <motion.div style={{ scaleY: progress }} className="absolute inset-0 origin-top bg-accent" />
         {chapters.map((c) => (
           <ChapterMark key={c.n} progress={progress} chapter={c} />
         ))}
@@ -200,10 +200,10 @@ function ChapterMark({ progress, chapter }: { progress: MotionValue<number>; cha
   return (
     <motion.div style={{ opacity, top: `${chapter.at * 100}%` }} className="absolute right-0 flex -translate-y-1/2 translate-x-[3px] items-center gap-3 whitespace-nowrap">
       <span className="text-right text-[11px] uppercase tracking-[0.25em] text-ivory/80">
-        <span className="mr-2 font-display text-[13px] normal-case italic tracking-normal text-brass-light">{chapter.n}</span>
+        <span className="mr-2 font-display text-[13px] normal-case italic tracking-normal text-accent-light">{chapter.n}</span>
         {chapter.label}
       </span>
-      <span className="h-[7px] w-[7px] rounded-full bg-brass shadow-[0_0_12px_rgb(var(--brass))]" />
+      <span className="h-[7px] w-[7px] rounded-full bg-accent shadow-[0_0_12px_rgb(var(--accent))]" />
     </motion.div>
   );
 }

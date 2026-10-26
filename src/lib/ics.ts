@@ -9,7 +9,7 @@ export function buildIcs(e: CalendarEvent) {
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//Velha Guarda Barbearia//Agendamento//PT-BR',
+    'PRODID:-//Business Barbearia//Agendamento//PT-BR',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',

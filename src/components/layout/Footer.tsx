@@ -20,13 +20,13 @@ export function Footer() {
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{fullAddress}</p>
           <div className="mt-6 flex gap-2">
-            <a href={site.contact.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-brass/60">
+            <a href={site.contact.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-accent/60">
               <Icon name="instagram" />
             </a>
-            <a href={`mailto:${site.contact.email}`} aria-label="E-mail" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-brass/60">
+            <a href={`mailto:${site.contact.email}`} aria-label="E-mail" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-accent/60">
               <Icon name="mail" />
             </a>
-            <a href={`tel:${site.contact.phoneHref}`} aria-label="Telefone" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-brass/60">
+            <a href={`tel:${site.contact.phoneHref}`} aria-label="Telefone" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-accent/60">
               <Icon name="phone" />
             </a>
           </div>
@@ -47,12 +47,12 @@ export function Footer() {
         <div>
           <p className="eyebrow">Atalhos</p>
           <ul className="mt-4 space-y-3 text-sm">
-            <li><Link className="hover:text-brass-light" to="/agendar">Agendar horário</Link></li>
-            <li><Link className="hover:text-brass-light" to="/meu-agendamento">Meu agendamento</Link></li>
-            <li><Link className="hover:text-brass-light" to="/privacidade">Privacidade</Link></li>
-            <li><Link className="hover:text-brass-light" to="/admin">Área da barbearia</Link></li>
+            <li><Link className="hover:text-accent-light" to="/agendar">Agendar horário</Link></li>
+            <li><Link className="hover:text-accent-light" to="/meu-agendamento">Meu agendamento</Link></li>
+            <li><Link className="hover:text-accent-light" to="/privacidade">Privacidade</Link></li>
+            <li><Link className="hover:text-accent-light" to="/admin">Área da barbearia</Link></li>
             <li>
-              <button className="text-left hover:text-brass-light" onClick={() => setPref(reduced ? 'full' : 'reduced')} aria-pressed={reduced}>
+              <button className="text-left hover:text-accent-light" onClick={() => setPref(reduced ? 'full' : 'reduced')} aria-pressed={reduced}>
                 {reduced ? 'Ativar animações' : 'Reduzir animações'}
               </button>
             </li>
@@ -61,7 +61,7 @@ export function Footer() {
       </div>
       <div className="container-x mt-14 flex flex-col gap-2 border-t hairline pt-6 text-[12px] text-muted sm:flex-row sm:justify-between">
         <p>© {new Date().getFullYear()} {site.name}. Todos os direitos reservados.</p>
-        {site.demo && <p className="text-brass/80">Versão de demonstração: dados comerciais fictícios.</p>}
+        {site.demo && <p className="text-accent/80">Versão de demonstração: dados comerciais fictícios.</p>}
       </div>
     </footer>
   );

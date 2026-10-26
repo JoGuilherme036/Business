@@ -33,7 +33,7 @@ export function Club() {
     <section aria-labelledby="clube-title" className="relative z-10 overflow-hidden py-24 md:py-32">
       <div className="container-x grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div ref={stage} className="relative mx-auto aspect-square w-full max-w-[30rem]">
-          <div className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgb(var(--brass)/0.28),transparent_65%)] blur-2xl" />
+          <div className="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgb(var(--accent)/0.28),transparent_65%)] blur-2xl" />
           {mounted.current && webgl.current ? (
             <Suspense fallback={<MedallionFallback />}>
               <Medallion reduced={reduced} active={near} />
@@ -44,23 +44,23 @@ export function Club() {
         </div>
 
         <div id="clube-title">
-          <SectionHeading chapter="VIII" label="Clube Velha Guarda" lines={['Sua cadeira,', <em key="e" className="brass-text">todo mês.</em>]} intro="Assinatura para quem não abre mão do corte em dia. Prioridade na agenda e benefícios da casa." />
+          <SectionHeading chapter="VI" label="Business Club" lines={['Sua imagem,', <em key="e" className="accent-text">todo mês.</em>]} intro="Assinatura para quem não abre mão do corte em dia. Prioridade na agenda e benefícios da casa." />
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {clubPlans.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.08}>
-                <article className={`relative flex h-full flex-col rounded-3xl border p-6 ${'highlight' in p && p.highlight ? 'border-brass/60 bg-gradient-to-b from-brass/15 to-transparent' : 'hairline bg-ink/60'}`}>
-                  {'highlight' in p && p.highlight && <span className="absolute -top-3 left-6 rounded-full bg-brass px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">Mais escolhido</span>}
+                <article className={`relative flex h-full flex-col rounded-xl border p-6 ${'highlight' in p && p.highlight ? 'border-accent/60 bg-gradient-to-b from-accent/15 to-transparent' : 'hairline bg-ink/60'}`}>
+                  {'highlight' in p && p.highlight && <span className="absolute -top-3 left-6 rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">Mais escolhido</span>}
                   <h3 className="font-display text-3xl italic">{p.name}</h3>
-                  <p className="mt-1 font-display text-xl text-brass-light">{p.price}</p>
+                  <p className="mt-1 font-display text-xl text-accent-light">{p.price}</p>
                   <ul className="mt-5 flex-1 space-y-2.5 text-sm text-ivory/85">
                     {p.perks.map((perk) => (
                       <li key={perk} className="flex gap-2.5">
-                        <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-brass" />
+                        <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                         {perk}
                       </li>
                     ))}
                   </ul>
-                  <a href={whatsappLink(waMessages.plan(p.name))} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brass/50 text-[14px] font-semibold text-brass-light transition-colors hover:bg-brass hover:text-ink">
+                  <a href={whatsappLink(waMessages.plan(p.name))} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-accent/50 text-[14px] font-semibold text-accent-light transition-colors hover:bg-accent hover:text-ink">
                     <Icon name="whatsapp" className="h-[18px] w-[18px]" /> Quero assinar
                   </a>
                 </article>

@@ -23,49 +23,59 @@ export const categories: { id: ServiceCategory; label: string }[] = [
 export const services: Service[] = [
   {
     id: 'corte-assinatura',
-    name: 'Corte da casa',
+    name: 'Corte Business',
     category: 'cortes',
-    description: 'Consulta de estilo, corte na tesoura e máquina, lavagem e finalização com pomada.',
+    description: 'Consulta de imagem, corte na tesoura e máquina, lavagem e finalização com os produtos da casa.',
     durationMin: 45,
-    priceCents: 7000,
-    image: 'estilo-ondulado',
+    priceCents: 6500,
+    image: 'corte',
   },
   {
     id: 'fade',
-    name: 'Fade de precisão',
+    name: 'Degradê de precisão',
     category: 'cortes',
-    description: 'Degradê do zero ao topo, transição invisível e contorno à navalha.',
+    description: 'Transição limpa do zero ao topo, desenho milimétrico e acabamento na navalha.',
     durationMin: 50,
-    priceCents: 7500,
-    image: 'servico-corte',
+    priceCents: 7000,
+    image: 'salao-barbeiro',
   },
   {
     id: 'classico',
-    name: 'Social na tesoura',
+    name: 'Corte social',
     category: 'cortes',
-    description: 'Corte social com volume controlado, risca marcada e acabamento natural.',
-    durationMin: 45,
-    priceCents: 7000,
-    image: 'estilo-classico',
+    description: 'Corte alinhado e natural, com volume controlado e risca marcada.',
+    durationMin: 40,
+    priceCents: 5500,
+    image: 'corte',
   },
   {
     id: 'barba-ritual',
-    name: 'Barba na navalha',
+    name: 'Barba completa',
     category: 'barba',
-    description: 'Toalha quente, espuma de pincel, navalha de aço, toalha fria e loção pós-barba.',
+    description: 'Toalha quente, óleo pré-barba, navalha, toalha fria e finalização hidratante.',
     durationMin: 35,
-    priceCents: 5500,
-    image: 'servico-barba',
+    priceCents: 5000,
+    image: 'barba',
   },
   {
     id: 'corte-barba',
-    name: 'Corte + barba na navalha',
+    name: 'Corte + barba',
     category: 'combos',
-    description: 'O atendimento completo da casa: corte da casa seguido da barba na navalha.',
+    description: 'O atendimento completo da casa: Corte Business seguido da barba completa.',
     durationMin: 80,
-    priceCents: 11500,
-    image: 'estilo-barba',
+    priceCents: 10500,
+    image: 'barba',
     includes: ['corte-assinatura', 'barba-ritual'],
+  },
+  {
+    id: 'experience',
+    name: 'Business Experience',
+    category: 'combos',
+    description: 'Corte, barba, lavagem com massagem e sobrancelha. Imagem completa, sem pressa.',
+    durationMin: 110,
+    priceCents: 15500,
+    image: 'lavagem',
+    includes: ['corte-assinatura', 'barba-ritual', 'hidratacao', 'sobrancelha'],
   },
   {
     id: 'sobrancelha',
@@ -77,11 +87,12 @@ export const services: Service[] = [
   },
   {
     id: 'hidratacao',
-    name: 'Hidratação capilar',
+    name: 'Lavagem + massagem capilar',
     category: 'adicionais',
-    description: 'Máscara nutritiva com massagem no couro cabeludo.',
+    description: 'Lavatório com massagem no couro cabeludo e máscara nutritiva.',
     durationMin: 15,
     priceCents: 3000,
+    image: 'lavagem',
   },
 ];
 
@@ -97,35 +108,34 @@ export type Professional = {
 };
 
 const allServices = services.map((s) => s.id);
-const fullDay = [
-  { start: '09:00', end: '12:00' },
-  { start: '13:00', end: '20:00' },
-];
+const weekday = [{ start: '09:00', end: '20:00' }];
+const saturday = [{ start: '09:00', end: '18:00' }];
 
+// DEMO: replace names, roles and schedules with the real team. Schedules must fall within site.hours.
 export const team: Professional[] = [
   {
-    id: 'rafael',
-    name: 'Rafael', // DEMO
-    role: 'Barbeiro fundador',
-    specialties: ['Fade', 'Navalha', 'Desenho'],
+    id: 'lucas',
+    name: 'Lucas', // DEMO
+    role: 'Barbeiro sênior',
+    specialties: ['Degradê', 'Visagismo', 'Navalha'],
     serviceIds: allServices,
-    schedule: { 1: [{ start: '13:00', end: '20:00' }], 2: fullDay, 3: fullDay, 4: fullDay, 5: fullDay, 6: [{ start: '09:00', end: '18:00' }] },
+    schedule: { 1: weekday, 2: weekday, 3: weekday, 4: weekday, 5: weekday, 6: saturday },
   },
   {
-    id: 'bruno',
-    name: 'Bruno', // DEMO
+    id: 'mateus',
+    name: 'Mateus', // DEMO
     role: 'Barbeiro',
-    specialties: ['Tesoura', 'Clássicos', 'Cabelo crespo'],
-    serviceIds: ['corte-assinatura', 'classico', 'fade', 'corte-barba', 'barba-ritual', 'hidratacao'],
-    schedule: { 2: fullDay, 3: fullDay, 4: [{ start: '09:00', end: '12:00' }, { start: '13:00', end: '21:00' }], 5: [{ start: '09:00', end: '12:00' }, { start: '13:00', end: '21:00' }], 6: [{ start: '09:00', end: '18:00' }] },
+    specialties: ['Tesoura', 'Corte social', 'Cabelo cacheado'],
+    serviceIds: ['corte-assinatura', 'classico', 'fade', 'corte-barba', 'barba-ritual', 'hidratacao', 'experience'],
+    schedule: { 2: weekday, 3: weekday, 4: weekday, 5: weekday, 6: saturday },
   },
   {
-    id: 'diego',
-    name: 'Diego', // DEMO
+    id: 'gabriel',
+    name: 'Gabriel', // DEMO
     role: 'Barbeiro',
     specialties: ['Barba', 'Toalha quente', 'Sobrancelha'],
-    serviceIds: ['barba-ritual', 'corte-barba', 'corte-assinatura', 'sobrancelha', 'hidratacao'],
-    schedule: { 1: [{ start: '13:00', end: '20:00' }], 3: fullDay, 4: fullDay, 5: fullDay, 6: [{ start: '09:00', end: '18:00' }] },
+    serviceIds: ['barba-ritual', 'corte-barba', 'corte-assinatura', 'sobrancelha', 'hidratacao', 'experience'],
+    schedule: { 1: weekday, 3: weekday, 4: weekday, 5: weekday, 6: saturday },
   },
 ];
 

@@ -25,11 +25,11 @@ const clockSec = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-
 const statusLabel: Record<BookingStatus, string> = { confirmed: 'Confirmado', completed: 'Concluído', no_show: 'Faltou', cancelled: 'Cancelado' };
 const statusStyle: Record<BookingStatus, string> = {
   confirmed: 'bg-emerald-400/15 text-emerald-300',
-  completed: 'bg-brass/20 text-brass-light',
+  completed: 'bg-accent/20 text-accent-light',
   no_show: 'bg-danger/15 text-danger',
   cancelled: 'bg-ivory/10 text-muted line-through',
 };
-const field = 'mt-1.5 block w-full rounded-xl border hairline bg-ink px-3.5 py-3 text-ivory focus:border-brass focus:outline-none';
+const field = 'mt-1.5 block w-full rounded-xl border hairline bg-ink px-3.5 py-3 text-ivory focus:border-accent focus:outline-none';
 
 export default function Admin() {
   useDocumentTitle('Painel da barbearia');
@@ -74,10 +74,10 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
   };
   return (
     <main id="conteudo" className="grid min-h-[100svh] place-items-center px-5">
-      <form onSubmit={submit} className="w-full max-w-sm rounded-3xl border hairline bg-ink-2 p-7">
+      <form onSubmit={submit} className="w-full max-w-sm rounded-xl border hairline bg-ink-2 p-7">
         <Monogram className="h-12 w-12" />
         <h1 className="display mt-6 text-4xl">
-          Painel da <em className="brass-text">barbearia</em>
+          Painel da <em className="accent-text">barbearia</em>
         </h1>
         <p className="mt-2 text-sm text-muted">Agenda do dia, bloqueios de horário, dia ou barbeiro.</p>
         <label className="mt-6 block">
@@ -88,11 +88,11 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
           {state === 'wrong' && 'Senha incorreta.'}
           {state === 'error' && 'Não foi possível conectar. Tente de novo.'}
         </div>
-        <button type="submit" disabled={state === 'loading'} className="mt-3 min-h-12 w-full rounded-full bg-brass text-[15px] font-semibold text-ink disabled:opacity-50">
+        <button type="submit" disabled={state === 'loading'} className="mt-3 min-h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-ink disabled:opacity-50">
           {state === 'loading' ? 'Entrando…' : 'Entrar'}
         </button>
         {bookingApi.mode === 'demo' && (
-          <p className="mt-4 rounded-xl border border-brass/30 bg-brass/10 px-3 py-2 text-[12px] text-brass-light">
+          <p className="mt-4 rounded-xl border border-accent/30 bg-accent/10 px-3 py-2 text-[12px] text-accent-light">
             Modo demonstração: senha <b>{DEMO_ADMIN_PASSWORD}</b>. Os dados ficam só neste navegador.
           </p>
         )}
@@ -159,10 +159,10 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <button onClick={() => setSheet('book')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-brass/60 px-3.5 text-[13px] font-semibold text-brass-light sm:px-4">
+            <button onClick={() => setSheet('book')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-accent/60 px-3.5 text-[13px] font-semibold text-accent-light sm:px-4">
               <Icon name="calendar" className="h-4 w-4" /> Agendar
             </button>
-            <button onClick={() => setSheet('block')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-brass px-3.5 text-[13px] font-semibold text-ink sm:px-4">
+            <button onClick={() => setSheet('block')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-accent px-3.5 text-[13px] font-semibold text-ink sm:px-4">
               <Icon name="close" className="h-4 w-4 rotate-45" /> Bloquear
             </button>
             <button onClick={onLogout} className="grid h-11 w-11 place-items-center rounded-full border hairline" aria-label="Sair do painel">
@@ -180,7 +180,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 role="option"
                 aria-selected={on}
                 onClick={() => setDay(d)}
-                className={`flex w-14 shrink-0 flex-col items-center rounded-xl border py-1.5 ${on ? 'border-brass bg-brass text-ink' : 'hairline'} ${closed && !on ? 'opacity-40' : ''}`}
+                className={`flex w-14 shrink-0 flex-col items-center rounded-xl border py-1.5 ${on ? 'border-accent bg-accent text-ink' : 'hairline'} ${closed && !on ? 'opacity-40' : ''}`}
               >
                 <span className="text-[10px] font-semibold uppercase">{d === today ? 'Hoje' : formatDayShort(d)}</span>
                 <span className="font-display text-xl leading-tight">{dayOfMonth(d)}</span>
@@ -192,7 +192,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
       <main id="conteudo" className="mx-auto max-w-6xl px-4 pt-6">
         {bookingApi.mode === 'demo' && (
-          <p className="mb-4 rounded-xl border border-brass/30 bg-brass/10 px-4 py-2 text-[13px] text-brass-light">
+          <p className="mb-4 rounded-xl border border-accent/30 bg-accent/10 px-4 py-2 text-[13px] text-accent-light">
             Modo demonstração: abra o site em outra aba para ver os bloqueios aparecerem lá na hora.
           </p>
         )}
@@ -205,7 +205,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </div>
           <div role="group" aria-label="Barbeiro" className="no-scrollbar flex gap-1.5 overflow-x-auto">
             {[{ id: 'all', name: 'Todos' }, ...team].map((p) => (
-              <button key={p.id} onClick={() => setFilter(p.id)} aria-pressed={filter === p.id} className={`min-h-10 shrink-0 rounded-full border px-4 text-[13px] font-semibold ${filter === p.id ? 'border-brass bg-brass text-ink' : 'hairline'}`}>
+              <button key={p.id} onClick={() => setFilter(p.id)} aria-pressed={filter === p.id} className={`min-h-10 shrink-0 rounded-full border px-4 text-[13px] font-semibold ${filter === p.id ? 'border-accent bg-accent text-ink' : 'hairline'}`}>
                 {p.name}
               </button>
             ))}
@@ -231,7 +231,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             ].sort((x, y) => (x.kind === 'block' ? x.at : clock.format(new Date(x.at))).localeCompare(y.kind === 'block' ? y.at : clock.format(new Date(y.at))));
             const off = data?.blocks.some((b) => !b.startTime && (b.proId === p.id || b.proId === null));
             return (
-              <section key={p.id} aria-label={p.name} className="rounded-3xl border hairline bg-ink-2 p-4">
+              <section key={p.id} aria-label={p.name} className="rounded-xl border hairline bg-ink-2 p-4">
                 <header className="mb-3 flex items-baseline justify-between">
                   <h2 className="font-display text-2xl italic">{p.name}</h2>
                   <span className="text-[12px] text-muted">{off ? 'Bloqueado o dia todo' : schedule.length ? formatRanges(schedule) : 'Folga'}</span>
@@ -287,7 +287,7 @@ function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: (
   return (
     <article className={`rounded-2xl border hairline bg-ink p-4 ${b.status === 'cancelled' ? 'opacity-60' : ''}`}>
       <div className="flex items-start justify-between gap-3">
-        <p className="font-display text-2xl tabular-nums leading-none text-brass-light">
+        <p className="font-display text-2xl tabular-nums leading-none text-accent-light">
           {clock.format(new Date(b.start))}
           <span className="text-base text-muted">–{clock.format(new Date(b.end))}</span>
         </p>
@@ -300,7 +300,7 @@ function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: (
       {b.customer.notes && <p className="mt-1 text-[13px] italic text-ivory/70">“{b.customer.notes}”</p>}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <a href={`https://wa.me/55${phone}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1.5 rounded-full border hairline px-3 text-[12px]">
-          <Icon name="whatsapp" className="h-4 w-4 text-brass" /> {pretty}
+          <Icon name="whatsapp" className="h-4 w-4 text-accent" /> {pretty}
         </a>
         <span className="font-mono text-[11px] text-muted">{b.code}</span>
       </div>
@@ -317,7 +317,7 @@ function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: (
             </>
           ) : (
             <>
-              <button disabled={busy} onClick={() => set('completed')} className="min-h-10 rounded-full border border-brass/50 px-4 text-[12px] font-semibold text-brass-light">
+              <button disabled={busy} onClick={() => set('completed')} className="min-h-10 rounded-full border border-accent/50 px-4 text-[12px] font-semibold text-accent-light">
                 Concluir
               </button>
               <button disabled={busy} onClick={() => set('no_show')} className="min-h-10 rounded-full border hairline px-4 text-[12px]">
@@ -349,7 +349,7 @@ function BlockRow({ block: b, onRemoved, compact }: { block: Block; onRemoved: (
   };
   return (
     <div
-      className={`flex items-center justify-between gap-3 rounded-2xl border border-dashed border-brass/40 px-4 ${compact ? 'py-3' : 'py-3.5'} bg-[repeating-linear-gradient(135deg,rgb(var(--brass)/0.07)_0_8px,transparent_8px_16px)]`}
+      className={`flex items-center justify-between gap-3 rounded-2xl border border-dashed border-accent/40 px-4 ${compact ? 'py-3' : 'py-3.5'} bg-[repeating-linear-gradient(135deg,rgb(var(--accent)/0.07)_0_8px,transparent_8px_16px)]`}
     >
       <div className="min-w-0">
         <p className="text-[14px] font-semibold">
@@ -358,7 +358,7 @@ function BlockRow({ block: b, onRemoved, compact }: { block: Block; onRemoved: (
         </p>
         {b.reason && <p className="truncate text-[12px] text-muted">{b.reason}</p>}
       </div>
-      <button disabled={busy} onClick={remove} className="min-h-10 shrink-0 rounded-full border hairline px-3 text-[12px] hover:border-brass/60">
+      <button disabled={busy} onClick={remove} className="min-h-10 shrink-0 rounded-full border hairline px-3 text-[12px] hover:border-accent/60">
         {busy ? 'Removendo…' : 'Desbloquear'}
       </button>
     </div>
@@ -382,7 +382,7 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 40, opacity: 0 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-t-3xl border hairline bg-ink-2 p-6 pb-[max(env(safe-area-inset-bottom),24px)] md:rounded-3xl"
+        className="max-h-[92svh] w-full max-w-lg overflow-y-auto rounded-t-3xl border hairline bg-ink-2 p-6 pb-[max(env(safe-area-inset-bottom),24px)] md:rounded-xl"
       >
         <div className="flex items-center justify-between">
           <h2 className="display text-3xl">{title}</h2>
@@ -467,12 +467,12 @@ function BookSheet({ day, onClose, onCreated }: { day: string; onClose: () => vo
               href={whatsappLink(waMessages.booking({ code: done.code, date: formatDayLong(done.day), time: done.time, pro, services: servicesText })).replace(/wa\.me\/\d+/, `wa.me/55${done.customer.phone}`)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-12 items-center justify-center gap-2 rounded-full border border-brass/60 text-[14px] font-semibold text-brass-light"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-full border border-accent/60 text-[14px] font-semibold text-accent-light"
             >
               <Icon name="whatsapp" className="h-4 w-4" /> Enviar confirmação ao cliente
             </a>
           )}
-          <button onClick={onClose} className="min-h-12 w-full rounded-full bg-brass text-[15px] font-semibold text-ink">
+          <button onClick={onClose} className="min-h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-ink">
             Pronto
           </button>
         </div>
@@ -489,7 +489,7 @@ function BookSheet({ day, onClose, onCreated }: { day: string; onClose: () => vo
             {services.map((s) => {
               const on = serviceIds.includes(s.id);
               return (
-                <button type="button" key={s.id} onClick={() => setServiceIds(toggleService(serviceIds, s.id))} aria-pressed={on} className={`min-h-10 rounded-full border px-3.5 text-[12px] font-semibold ${on ? 'border-brass bg-brass text-ink' : 'hairline'}`}>
+                <button type="button" key={s.id} onClick={() => setServiceIds(toggleService(serviceIds, s.id))} aria-pressed={on} className={`min-h-10 rounded-full border px-3.5 text-[12px] font-semibold ${on ? 'border-accent bg-accent text-ink' : 'hairline'}`}>
                   {s.name}
                 </button>
               );
@@ -502,7 +502,7 @@ function BookSheet({ day, onClose, onCreated }: { day: string; onClose: () => vo
           <legend className="text-sm font-medium">Barbeiro</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {[{ id: 'any', name: 'Primeiro livre' }, ...eligible].map((p) => (
-              <button type="button" key={p.id} onClick={() => setProId(p.id)} aria-pressed={proId === p.id} className={`min-h-10 rounded-full border px-3.5 text-[12px] font-semibold ${proId === p.id ? 'border-brass bg-brass text-ink' : 'hairline'}`}>
+              <button type="button" key={p.id} onClick={() => setProId(p.id)} aria-pressed={proId === p.id} className={`min-h-10 rounded-full border px-3.5 text-[12px] font-semibold ${proId === p.id ? 'border-accent bg-accent text-ink' : 'hairline'}`}>
                 {p.name}
               </button>
             ))}
@@ -523,7 +523,7 @@ function BookSheet({ day, onClose, onCreated }: { day: string; onClose: () => vo
           ) : (
             <div className="mt-2 grid max-h-48 grid-cols-4 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-5">
               {slots.map((s) => (
-                <button type="button" key={s.time} onClick={() => setTime(s.time)} aria-pressed={time === s.time} className={`min-h-10 rounded-lg border text-[13px] font-semibold tabular-nums ${time === s.time ? 'border-brass bg-brass text-ink' : 'hairline'}`}>
+                <button type="button" key={s.time} onClick={() => setTime(s.time)} aria-pressed={time === s.time} className={`min-h-10 rounded-lg border text-[13px] font-semibold tabular-nums ${time === s.time ? 'border-accent bg-accent text-ink' : 'hairline'}`}>
                   {s.time}
                 </button>
               ))}
@@ -549,7 +549,7 @@ function BookSheet({ day, onClose, onCreated }: { day: string; onClose: () => vo
           {state === 'invalid' && 'Confira o nome e o telefone (com DDD).'}
           {state === 'error' && 'Não foi possível salvar. Verifique a conexão.'}
         </div>
-        <button type="submit" disabled={!time || !serviceIds.length || name.trim().length < 2 || state === 'saving'} className="min-h-12 w-full rounded-full bg-brass text-[15px] font-semibold text-ink disabled:opacity-40">
+        <button type="submit" disabled={!time || !serviceIds.length || name.trim().length < 2 || state === 'saving'} className="min-h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-ink disabled:opacity-40">
           {state === 'saving' ? 'Salvando…' : time ? `Agendar às ${time}` : 'Escolha um horário'}
         </button>
       </form>
@@ -610,7 +610,7 @@ function BlockSheet({ day, onClose, onCreated }: { day: string; onClose: () => v
                         href={`https://wa.me/55${c.customer.phone}?text=${encodeURIComponent(`Olá, ${c.customer.name}! Precisamos remarcar seu horário de ${formatDayLong(c.day)} às ${c.time} (código ${c.code}). Qual outro horário fica bom para você?`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full bg-brass px-3 text-[12px] font-semibold text-ink"
+                        className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full bg-accent px-3 text-[12px] font-semibold text-ink"
                       >
                         <Icon name="whatsapp" className="h-4 w-4" /> Avisar
                       </a>
@@ -619,7 +619,7 @@ function BlockSheet({ day, onClose, onCreated }: { day: string; onClose: () => v
                 </ul>
               </div>
             )}
-            <button onClick={onClose} className="min-h-12 w-full rounded-full bg-brass text-[15px] font-semibold text-ink">
+            <button onClick={onClose} className="min-h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-ink">
               Pronto
             </button>
           </div>
@@ -629,7 +629,7 @@ function BlockSheet({ day, onClose, onCreated }: { day: string; onClose: () => v
               <legend className="text-sm font-medium">Quem</legend>
               <div className="mt-2 flex flex-wrap gap-2">
                 {[{ id: 'all', name: 'Toda a barbearia' }, ...team].map((p) => (
-                  <button type="button" key={p.id} onClick={() => setProId(p.id)} aria-pressed={proId === p.id} className={`min-h-11 rounded-full border px-4 text-[13px] font-semibold ${proId === p.id ? 'border-brass bg-brass text-ink' : 'hairline'}`}>
+                  <button type="button" key={p.id} onClick={() => setProId(p.id)} aria-pressed={proId === p.id} className={`min-h-11 rounded-full border px-4 text-[13px] font-semibold ${proId === p.id ? 'border-accent bg-accent text-ink' : 'hairline'}`}>
                     {p.name}
                   </button>
                 ))}
@@ -645,7 +645,7 @@ function BlockSheet({ day, onClose, onCreated }: { day: string; onClose: () => v
                     ['day', 'Dia inteiro'],
                   ] as const
                 ).map(([id, label]) => (
-                  <button type="button" key={id} onClick={() => setMode(id)} aria-pressed={mode === id} className={`min-h-11 rounded-xl border text-[13px] font-semibold ${mode === id ? 'border-brass bg-brass/15 text-brass-light' : 'hairline'}`}>
+                  <button type="button" key={id} onClick={() => setMode(id)} aria-pressed={mode === id} className={`min-h-11 rounded-xl border text-[13px] font-semibold ${mode === id ? 'border-accent bg-accent/15 text-accent-light' : 'hairline'}`}>
                     {label}
                   </button>
                 ))}
@@ -685,7 +685,7 @@ function BlockSheet({ day, onClose, onCreated }: { day: string; onClose: () => v
 
             {invalid && <p className="text-[13px] text-danger">Confira as datas e os horários: o fim precisa ser depois do início.</p>}
             {state === 'error' && <p className="text-[13px] text-danger">Não foi possível salvar. Verifique a conexão e tente de novo.</p>}
-            <button type="submit" disabled={invalid || state === 'saving'} className="min-h-12 w-full rounded-full bg-brass text-[15px] font-semibold text-ink disabled:opacity-40">
+            <button type="submit" disabled={invalid || state === 'saving'} className="min-h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-ink disabled:opacity-40">
               {state === 'saving' ? 'Salvando…' : 'Salvar bloqueio'}
             </button>
           </form>

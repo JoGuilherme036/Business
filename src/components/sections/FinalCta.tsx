@@ -17,12 +17,12 @@ export function FinalCta() {
       <div className="container-x relative">
         <Reveal>
           <p className="eyebrow flex items-center gap-3">
-            <span className="font-display text-[13px] normal-case italic tracking-normal text-brass-light">XI</span>
-            <span className="h-px w-10 bg-brass/50" />
+            <span className="font-display text-[13px] normal-case italic tracking-normal text-accent-light">IX</span>
+            <span className="h-px w-10 bg-accent/50" />
             Epílogo
           </p>
         </Reveal>
-        <MaskLines as="h2" lines={['Sua cadeira', <em key="e" className="brass-text">está pronta.</em>]} className="display mt-5 text-[clamp(3.2rem,14vw,9rem)] [text-shadow:0_6px_40px_rgb(0_0_0/0.7)]" />
+        <MaskLines as="h2" lines={['Sua próxima', <em key="e" className="accent-text">versão.</em>]} className="display mt-5 text-[clamp(2.6rem,11.5vw,7.5rem)] [text-shadow:0_6px_40px_rgb(0_0_0/0.7)]" />
         <Reveal delay={0.15} className="mt-10 flex flex-col gap-3 sm:flex-row">
           <LinkButton to="/agendar" size="lg" iconRight="arrowRight" onClick={() => track('cta_book_click', { from: 'final' })}>
             Agendar agora

@@ -6,7 +6,7 @@ import { Manifesto } from '@/components/sections/Manifesto';
 import { Services } from '@/components/sections/Services';
 import { Ritual } from '@/components/sections/Ritual';
 import { Team } from '@/components/sections/Team';
-import { Styles } from '@/components/sections/Styles';
+import { ProductsShowcase } from '@/components/sections/Products';
 import { Space } from '@/components/sections/Space';
 import { Club } from '@/components/sections/Club';
 import { Reviews } from '@/components/sections/Reviews';
@@ -35,8 +35,8 @@ export default function Home() {
       <Manifesto />
       <Services />
       <Ritual />
+      <ProductsShowcase />
       <Team />
-      <Styles />
       <Space />
       <Club />
       <Location />

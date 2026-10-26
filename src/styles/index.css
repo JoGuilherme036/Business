@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --ink: 9 15 28;
-  --ink-2: 15 24 42;
-  --ink-3: 24 36 60;
-  --ivory: 244 238 226;
-  --muted: 160 170 188;
-  --brass: 226 78 70;
-  --brass-light: 244 128 116;
-  --brass-deep: 168 40 42;
-  --moss: 44 78 120;
-  --danger: 255 150 120;
+  --ink: 0 0 0;
+  --ink-2: 11 11 11;
+  --ink-3: 22 22 22;
+  --ivory: 246 245 242;
+  --muted: 152 152 150;
+  --accent: 214 184 138;
+  --accent-light: 238 218 178;
+  --accent-deep: 150 118 74;
+  --steel: 96 96 100;
+  --danger: 255 140 120;
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-quart: cubic-bezier(0.76, 0, 0.24, 1);
@@ -34,11 +34,11 @@
     overflow-x: clip;
   }
   ::selection {
-    background: rgb(var(--brass) / 0.85);
+    background: rgb(var(--accent) / 0.85);
     color: rgb(var(--ink));
   }
   :focus-visible {
-    outline: 2px solid rgb(var(--brass-light));
+    outline: 2px solid rgb(var(--accent-light));
     outline-offset: 3px;
     border-radius: 6px;
   }
@@ -57,22 +57,39 @@
   .container-x {
     @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-12;
   }
-  .eyebrow {
-    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.28em] text-brass;
-  }
   .display {
-    @apply font-display font-normal leading-[0.95] tracking-[-0.02em];
+    @apply font-display font-semibold leading-[1] tracking-[-0.035em];
+  }
+  /* Accent words: Syne has no italic, so emphasis switches to Instrument Serif italic. */
+  .display.italic,
+  .font-display.italic,
+  .font-display em {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .display em,
+  .display .italic {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: 1.12em; /* the serif sets smaller than Syne at the same size */
+  }
+  .eyebrow {
+    @apply font-sans text-[10.5px] font-semibold uppercase tracking-[0.34em] text-accent;
   }
   .hairline {
-    border-color: rgb(var(--brass) / 0.22);
+    border-color: rgb(255 255 255 / 0.12);
   }
   .slab {
     /* Readable surface over the scroll film. Solid enough to avoid backdrop-filter costs on mobile. */
     background: linear-gradient(180deg, rgb(var(--ink) / 0.9), rgb(var(--ink-2) / 0.94));
-    border: 1px solid rgb(var(--brass) / 0.16);
+    border: 1px solid rgb(var(--accent) / 0.16);
   }
-  .brass-text {
-    background: linear-gradient(100deg, rgb(var(--brass-light)), rgb(var(--brass)) 45%, rgb(var(--brass-deep)) 100%);
+  .accent-text {
+    background: linear-gradient(100deg, rgb(var(--accent-light)), rgb(var(--accent)) 45%, rgb(var(--accent-deep)) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -83,16 +100,21 @@
     inset: 0;
     pointer-events: none;
     z-index: 60;
-    opacity: 0.06;
+    opacity: 0.035;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  /* Barber-pole stripe: signature divider of the "Velha Guarda" theme. */
+  /* Signature divider: a hairline of light, like the LED strips in the salon. */
   .pole {
-    height: 6px;
-    background: repeating-linear-gradient(-45deg, rgb(var(--brass)) 0 10px, rgb(var(--ivory)) 10px 20px, rgb(var(--moss)) 20px 30px, rgb(var(--ivory)) 30px 40px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgb(var(--accent) / 0.7) 20%, rgb(var(--accent-light)) 50%, rgb(var(--accent) / 0.7) 80%, transparent);
   }
   .pole-thin {
-    height: 3px;
+    height: 1px;
+  }
+  /* Brushed-metal surface for premium cards. */
+  .glass {
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.012) 55%);
+    border: 1px solid rgb(255 255 255 / 0.09);
   }
   .no-scrollbar {
     scrollbar-width: none;

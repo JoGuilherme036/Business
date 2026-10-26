@@ -8,12 +8,13 @@ export default {
         ink: { DEFAULT: 'rgb(var(--ink) / <alpha-value>)', 2: 'rgb(var(--ink-2) / <alpha-value>)', 3: 'rgb(var(--ink-3) / <alpha-value>)' },
         ivory: 'rgb(var(--ivory) / <alpha-value>)',
         muted: 'rgb(var(--muted) / <alpha-value>)',
-        brass: { DEFAULT: 'rgb(var(--brass) / <alpha-value>)', light: 'rgb(var(--brass-light) / <alpha-value>)', deep: 'rgb(var(--brass-deep) / <alpha-value>)' },
-        moss: 'rgb(var(--moss) / <alpha-value>)',
+        accent: { DEFAULT: 'rgb(var(--accent) / <alpha-value>)', light: 'rgb(var(--accent-light) / <alpha-value>)', deep: 'rgb(var(--accent-deep) / <alpha-value>)' },
+        steel: 'rgb(var(--steel) / <alpha-value>)',
         danger: 'rgb(var(--danger) / <alpha-value>)',
       },
       fontFamily: {
-        display: ['"Fraunces Variable"', 'Georgia', 'serif'],
+        display: ['"Syne Variable"', 'system-ui', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
         sans: ['"Manrope Variable"', 'system-ui', 'sans-serif'],
       },
       transitionTimingFunction: {

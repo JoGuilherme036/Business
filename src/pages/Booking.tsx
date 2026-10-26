@@ -183,7 +183,7 @@ export default function Booking() {
           </button>
         </div>
         <div className="h-[2px] bg-ivory/10">
-          <motion.div className="h-full origin-left bg-brass" animate={{ scaleX: progress }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} />
+          <motion.div className="h-full origin-left bg-accent" animate={{ scaleX: progress }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} />
         </div>
       </header>
 
@@ -194,7 +194,7 @@ export default function Booking() {
           </div>
         )}
         {bookingApi.mode === 'demo' && !booking && step === 0 && (
-          <p className="mb-6 rounded-2xl border border-brass/30 bg-brass/10 px-4 py-3 text-[13px] text-brass-light">
+          <p className="mb-6 rounded-2xl border border-accent/30 bg-accent/10 px-4 py-3 text-[13px] text-accent-light">
             Modo demonstração: as reservas ficam salvas apenas neste aparelho até a agenda online ser conectada.
           </p>
         )}
@@ -214,12 +214,12 @@ export default function Booking() {
       </main>
 
       {!booking && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t hairline bg-ink/92 backdrop-blur-md">
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t hairline bg-ink/90 backdrop-blur-md">
           <div className="mx-auto flex max-w-2xl items-center gap-4 px-5 pb-[max(env(safe-area-inset-bottom),14px)] pt-3.5">
             <div className="min-w-0 flex-1" aria-live="polite">
               {sum.services.length ? (
                 <>
-                  <p className="font-display text-xl leading-none text-brass-light">{formatPrice(sum.priceCents)}</p>
+                  <p className="font-display text-xl leading-none text-accent-light">{formatPrice(sum.priceCents)}</p>
                   <p className="mt-1 truncate text-[12px] text-muted">
                     {sum.services.length} {sum.services.length === 1 ? 'serviço' : 'serviços'} · {formatDuration(sum.durationMin)}
                     {draft.time && step >= 2 ? ` · ${draft.time}` : ''}
@@ -232,7 +232,7 @@ export default function Booking() {
             <button
               onClick={next}
               disabled={!canContinue || submitting}
-              className="inline-flex min-h-14 items-center gap-2 rounded-full bg-brass px-6 text-[15px] font-semibold text-ink shadow-[0_10px_30px_-12px_rgb(var(--brass)/0.7)] transition-[transform,opacity] active:scale-[0.97] disabled:opacity-40"
+              className="inline-flex min-h-14 items-center gap-2 rounded-full bg-accent px-6 text-[15px] font-semibold text-ink shadow-[0_10px_30px_-12px_rgb(var(--accent)/0.7)] transition-[transform,opacity] active:scale-[0.97] disabled:opacity-40"
             >
               {submitting ? (
                 <>

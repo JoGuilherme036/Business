@@ -61,7 +61,7 @@ export function Menu({ open, onClose, onNavigate }: { open: boolean; onClose: ()
               {navLinks.map((l, i) => (
                 <motion.li key={l.id} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.06, duration: 0.6, ease }}>
                   <button onClick={() => onNavigate(l.id)} className="group flex w-full items-baseline gap-5 border-b hairline py-4 text-left">
-                    <span className="w-8 font-display text-sm italic text-brass">{l.numeral}</span>
+                    <span className="w-8 font-display text-sm italic text-accent">{l.numeral}</span>
                     <span className="display text-[2.6rem] transition-transform duration-500 ease-expo group-hover:translate-x-2">{l.label}</span>
                   </button>
                 </motion.li>

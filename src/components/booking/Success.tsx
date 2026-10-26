@@ -44,20 +44,20 @@ export function Success({ booking }: { booking: Booking }) {
   return (
     <div className="text-center">
       <svg viewBox="0 0 120 120" className="mx-auto h-28 w-28" aria-hidden="true">
-        <motion.circle cx="60" cy="60" r="54" fill="none" stroke="rgb(var(--brass))" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }} />
-        <motion.path d="M38 62l15 15 30-32" fill="none" stroke="rgb(var(--brass-light))" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.6, ease: 'easeOut' }} />
+        <motion.circle cx="60" cy="60" r="54" fill="none" stroke="rgb(var(--accent))" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }} />
+        <motion.path d="M38 62l15 15 30-32" fill="none" stroke="rgb(var(--accent-light))" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.5, delay: 0.6, ease: 'easeOut' }} />
       </svg>
 
       <h1 id="step-title" tabIndex={-1} className="display mt-6 text-[clamp(2.4rem,10vw,3.6rem)] outline-none" aria-live="assertive">
-        Agendamento <em className="brass-text">confirmado.</em>
+        Agendamento <em className="accent-text">confirmado.</em>
       </h1>
       {bookingApi.mode === 'demo' && (
-        <p className="mx-auto mt-3 max-w-sm rounded-xl border border-brass/30 bg-brass/10 px-4 py-2 text-[13px] text-brass-light">
+        <p className="mx-auto mt-3 max-w-sm rounded-xl border border-accent/30 bg-accent/10 px-4 py-2 text-[13px] text-accent-light">
           Modo demonstração: este agendamento ficou salvo só neste aparelho e não chegou à barbearia.
         </p>
       )}
 
-      <div className="mx-auto mt-8 max-w-md rounded-3xl border hairline bg-ink-2/70 p-6 text-left">
+      <div className="mx-auto mt-8 max-w-md rounded-xl border hairline bg-ink-2/70 p-6 text-left">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="eyebrow">Código</p>
@@ -72,7 +72,7 @@ export function Success({ booking }: { booking: Booking }) {
           <div className="flex justify-between gap-4"><dt className="text-muted">Barbeiro</dt><dd>{pro}</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-muted">Serviços</dt><dd className="text-right">{serviceNames}</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-muted">Duração</dt><dd>{formatDuration(booking.durationMin)}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-muted">Total</dt><dd className="font-display text-xl text-brass-light">{formatPrice(booking.totalCents)}</dd></div>
+          <div className="flex justify-between gap-4"><dt className="text-muted">Total</dt><dd className="font-display text-xl text-accent-light">{formatPrice(booking.totalCents)}</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-muted">Onde</dt><dd className="text-right text-[13px]">{fullAddress}</dd></div>
         </dl>
       </div>
@@ -93,10 +93,10 @@ export function Success({ booking }: { booking: Booking }) {
 }
 
 function Action({ href, to, onClick, icon, label }: { href?: string; to?: string; onClick?: () => void; icon: IconName; label: string }) {
-  const cls = 'flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border hairline bg-ink-2/60 px-2 text-[13px] transition-colors hover:border-brass/60';
+  const cls = 'flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-2xl border hairline bg-ink-2/60 px-2 text-[13px] transition-colors hover:border-accent/60';
   const inner = (
     <>
-      <Icon name={icon} className="h-5 w-5 text-brass" /> {label}
+      <Icon name={icon} className="h-5 w-5 text-accent" /> {label}
     </>
   );
   if (to) return <Link to={to} className={cls}>{inner}</Link>;

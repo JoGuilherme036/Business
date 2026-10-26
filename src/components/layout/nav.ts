@@ -1,10 +1,10 @@
-export const navLinks = [
+export const navLinks: readonly { id: string; label: string; numeral: string; to?: string }[] = [
   { id: 'servicos', label: 'Serviços', numeral: 'I' },
-  { id: 'ritual', label: 'O ritual', numeral: 'II' },
-  { id: 'equipe', label: 'Barbeiros', numeral: 'III' },
-  { id: 'estilos', label: 'Estilos', numeral: 'IV' },
+  { id: 'experiencia', label: 'Experiência', numeral: 'II' },
+  { id: 'produtos', label: 'Produtos', numeral: 'III', to: '/produtos' },
+  { id: 'equipe', label: 'Barbeiros', numeral: 'IV' },
   { id: 'local', label: 'Localização', numeral: 'V' },
-] as const;
+];
 
 /** Scrolls to a home section, respecting reduced motion. */
 export function scrollToSection(id: string, reduced: boolean) {

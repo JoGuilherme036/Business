@@ -18,7 +18,7 @@ export function Services() {
   const { draft, update } = useDraft();
   const list = services.filter((s) => filter === 'all' || s.category === filter);
   const previewService = serviceById(preview);
-  const previewImage = previewService?.image ?? 'ritual-bancada';
+  const previewImage = previewService?.image ?? 'bancada';
 
   const toggle = (id: string) => {
     update({ serviceIds: toggleService(draft.serviceIds, id), time: null });
@@ -27,13 +27,13 @@ export function Services() {
   };
 
   return (
-    <section id="servicos" aria-labelledby="servicos-title" className="relative z-10 scroll-mt-20 rounded-[2rem] slab py-20 md:rounded-[3rem] md:py-28">
+    <section id="servicos" aria-labelledby="servicos-title" className="relative z-10 scroll-mt-20 rounded-xl slab py-20 md:rounded-2xl md:py-28">
       <div className="container-x">
         <div id="servicos-title">
           <SectionHeading
-            chapter="III"
+            chapter="I"
             label="Serviços"
-            lines={['O menu', <em key="e" className="brass-text">da casa.</em>]}
+            lines={['O menu', <em key="e" className="accent-text">da casa.</em>]}
             intro="Monte sua comanda: toque em + nos serviços que quiser. Tempo e valor somam na hora, e você agenda tudo de uma vez."
           />
         </div>
@@ -44,7 +44,7 @@ export function Services() {
               key={c.id}
               onClick={() => setFilter(c.id)}
               aria-pressed={filter === c.id}
-              className={`min-h-11 shrink-0 rounded-full border px-5 text-[13px] font-semibold transition-colors ${filter === c.id ? 'border-brass bg-brass text-ink' : 'hairline text-ivory/80 hover:border-brass/50'}`}
+              className={`min-h-11 shrink-0 rounded-full border px-5 text-[13px] font-semibold transition-colors ${filter === c.id ? 'border-accent bg-accent text-ink' : 'hairline text-ivory/80 hover:border-accent/50'}`}
             >
               {c.label}
             </button>
@@ -67,9 +67,9 @@ export function Services() {
                       className="group grid w-full grid-cols-[3.5rem_1fr_auto] items-center gap-4 py-4 text-left sm:grid-cols-[4rem_1fr_auto] md:py-5"
                     >
                       {s.image ? (
-                        <SmartImage id={s.image} alt="" sizes="64px" ratio="4 / 5" focal="50% 30%" className={`rounded-xl transition-[box-shadow] duration-300 ${on ? 'shadow-[0_0_0_2px_rgb(var(--brass))]' : ''}`} />
+                        <SmartImage id={s.image} alt="" sizes="64px" ratio="4 / 5" focal="50% 30%" className={`rounded-xl transition-[box-shadow] duration-300 ${on ? 'shadow-[0_0_0_2px_rgb(var(--accent))]' : ''}`} />
                       ) : (
-                        <span className={`grid aspect-[4/5] place-items-center rounded-xl border font-display text-lg italic text-brass transition-colors ${on ? 'border-brass' : 'hairline'}`}>
+                        <span className={`grid aspect-[4/5] place-items-center rounded-xl border font-display text-lg italic text-accent transition-colors ${on ? 'border-accent' : 'hairline'}`}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
                       )}
@@ -77,20 +77,20 @@ export function Services() {
                       <span className="min-w-0">
                         <span className="block font-display text-[1.4rem] leading-tight transition-transform duration-500 ease-expo group-hover:translate-x-1 md:text-[1.75rem]">{s.name}</span>
                         <span className="mt-1 block text-[13px] text-ivory/75 sm:hidden">
-                          {formatDuration(s.durationMin)} · <span className="text-brass-light">{formatPrice(s.priceCents)}</span>
+                          {formatDuration(s.durationMin)} · <span className="text-accent-light">{formatPrice(s.priceCents)}</span>
                         </span>
                         <span className="mt-1 line-clamp-2 block text-[13px] leading-relaxed text-muted">{s.description}</span>
-                        {s.includes && <span className="mt-1 block text-[12px] text-brass/90">Inclui {s.includes.map((id) => serviceById(id)?.name).join(' + ')}</span>}
+                        {s.includes && <span className="mt-1 block text-[12px] text-accent/90">Inclui {s.includes.map((id) => serviceById(id)?.name).join(' + ')}</span>}
                       </span>
 
                       <span className="flex items-center gap-4">
                         <span className="hidden text-right sm:block">
-                          <span className="block font-display text-2xl tabular-nums text-brass-light">{formatPrice(s.priceCents)}</span>
+                          <span className="block font-display text-2xl tabular-nums text-accent-light">{formatPrice(s.priceCents)}</span>
                           <span className="block text-[12px] text-muted">{formatDuration(s.durationMin)}</span>
                         </span>
                         <span
                           aria-hidden="true"
-                          className={`grid h-11 w-11 place-items-center rounded-full border transition-[background-color,border-color,color,transform] duration-300 ${on ? 'border-brass bg-brass text-ink' : 'hairline text-ivory group-hover:border-brass/60'}`}
+                          className={`grid h-11 w-11 place-items-center rounded-full border transition-[background-color,border-color,color,transform] duration-300 ${on ? 'border-accent bg-accent text-ink' : 'hairline text-ivory group-hover:border-accent/60'}`}
                         >
                           <Icon name={on ? 'check' : 'plus'} className="h-[18px] w-[18px]" strokeWidth={on ? 2.2 : 1.5} />
                         </span>
@@ -104,7 +104,7 @@ export function Services() {
 
           <aside aria-label="Sua comanda" className="relative">
             <div className="flex flex-col gap-6 lg:sticky lg:top-28">
-              <div className="relative hidden overflow-hidden rounded-[1.75rem] border hairline lg:block">
+              <div className="relative hidden overflow-hidden rounded-lg border hairline lg:block">
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.div key={previewImage} initial={{ opacity: 0, scale: 1.06 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8, ease }}>
                     <SmartImage id={previewImage} alt={previewService?.name ?? ''} sizes="36vw" ratio="16 / 11" focal="50% 30%" />

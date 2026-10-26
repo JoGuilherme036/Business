@@ -12,7 +12,7 @@ import { invalidateBusy } from './busyCache';
 
 type Sub = { changed: () => void; status: (live: boolean) => void };
 const subs = new Set<Sub>();
-const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('vg-schedule') : null;
+const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('business-schedule') : null;
 
 let ws: WebSocket | null = null;
 let live = false;

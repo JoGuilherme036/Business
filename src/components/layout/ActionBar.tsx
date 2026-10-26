@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { site } from '@/config/site';
 import { summarize } from '@/booking/availability';
 import { useDraft } from '@/booking/draft';
 import { formatPrice } from '@/lib/format';
@@ -52,19 +51,22 @@ export function ActionBar() {
             <Link
               to={order.services.length ? '/agendar?de=comanda' : '/agendar'}
               onClick={() => track('cta_book_click', { from: 'action_bar' })}
-              className="flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-brass px-4 text-[14px] font-semibold text-ink active:scale-[0.97]"
+              className="flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-ivory px-4 text-[12px] font-semibold uppercase tracking-[0.12em] text-ink active:scale-[0.97]"
             >
               <Icon name="calendar" className="h-[18px] w-[18px] shrink-0" />
               <span>Agendar</span>
               {order.services.length > 0 && (
-                <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold tabular-nums text-brass-light" aria-label={`${order.services.length} serviços, ${formatPrice(order.priceCents)}`}>
+                <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold tabular-nums text-accent-light" aria-label={`${order.services.length} serviços, ${formatPrice(order.priceCents)}`}>
                   {order.services.length}
                 </span>
               )}
             </Link>
             <Action href={whatsappLink(waMessages.general())} icon="whatsapp" label="WhatsApp" onClick={() => track('whatsapp_click', { from: 'action_bar' })} />
             <Action href={routeLink()} icon="route" label="Rota" onClick={() => track('route_click', { from: 'action_bar' })} />
-            <Action href={`tel:${site.contact.phoneHref}`} icon="phone" label="Ligar" onClick={() => track('call_click', { from: 'action_bar' })} />
+            <Link to="/produtos" aria-label="Produtos" className="flex h-12 w-14 flex-col items-center justify-center gap-0.5 rounded-full text-ivory/85 active:scale-95 active:bg-ivory/5">
+              <Icon name="bag" className="h-[19px] w-[19px]" />
+              <span className="text-[9.5px] font-medium tracking-wide">Loja</span>
+            </Link>
           </div>
         </motion.nav>
       )}

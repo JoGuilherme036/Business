@@ -49,16 +49,16 @@ export function ServicesStep({ draft, update }: StepProps) {
                       aria-checked={on}
                       onClick={() => update({ serviceIds: toggleService(draft.serviceIds, s.id), time: null })}
                       className={`flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-[border-color,background-color] duration-200 ${
-                        on ? 'border-brass bg-brass/10' : 'hairline bg-ink-2/60 hover:border-brass/40'
+                        on ? 'border-accent bg-accent/10' : 'hairline bg-ink-2/60 hover:border-accent/40'
                       }`}
                     >
-                      <span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border transition-colors ${on ? 'border-brass bg-brass text-ink' : 'border-ivory/30'}`}>
+                      <span className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border transition-colors ${on ? 'border-accent bg-accent text-ink' : 'border-ivory/30'}`}>
                         {on && <Icon name="check" className="h-3.5 w-3.5" strokeWidth={2.5} />}
                       </span>
                       <span className="flex-1">
                         <span className="flex items-baseline justify-between gap-3">
                           <span className="font-display text-xl">{s.name}</span>
-                          <span className="font-display text-lg tabular-nums text-brass-light">{formatPrice(s.priceCents)}</span>
+                          <span className="font-display text-lg tabular-nums text-accent-light">{formatPrice(s.priceCents)}</span>
                         </span>
                         <span className="mt-1 block text-[13px] leading-relaxed text-muted">{s.description}</span>
                         <span className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-ivory/70">
@@ -88,16 +88,16 @@ export function ProStep({ draft, update }: StepProps) {
         role="radio"
         aria-checked={on}
         onClick={() => update({ proId: id, time: null })}
-        className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-colors ${on ? 'border-brass bg-brass/10' : 'hairline bg-ink-2/60 hover:border-brass/40'}`}
+        className={`flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-colors ${on ? 'border-accent bg-accent/10' : 'hairline bg-ink-2/60 hover:border-accent/40'}`}
       >
-        <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full border font-display text-xl italic ${on ? 'border-brass text-brass-light' : 'hairline text-ivory/80'}`}>
-          {initials ?? <Icon name="sparkle" className="h-6 w-6 text-brass" />}
+        <span className={`grid h-14 w-14 shrink-0 place-items-center rounded-full border font-display text-xl italic ${on ? 'border-accent text-accent-light' : 'hairline text-ivory/80'}`}>
+          {initials ?? <Icon name="sparkle" className="h-6 w-6 text-accent" />}
         </span>
         <span className="flex-1">
           <span className="block font-display text-2xl">{title}</span>
           <span className="block text-[13px] text-muted">{subtitle}</span>
         </span>
-        <span className={`h-5 w-5 rounded-full border-2 ${on ? 'border-brass bg-brass shadow-[inset_0_0_0_3px_rgb(var(--ink))]' : 'border-ivory/30'}`} />
+        <span className={`h-5 w-5 rounded-full border-2 ${on ? 'border-accent bg-accent shadow-[inset_0_0_0_3px_rgb(var(--ink))]' : 'border-ivory/30'}`} />
       </button>
     );
   };
@@ -206,7 +206,7 @@ export function TimeStep({ draft, update, refreshKey, onSlotLost }: StepProps & 
               onClick={() => update({ day: d.day, time: null })}
               aria-label={`${formatDayLong(d.day)}${d.works ? '' : ', fechado'}`}
               className={`flex w-[4.4rem] shrink-0 snap-start flex-col items-center rounded-2xl border py-3 transition-colors disabled:opacity-30 ${
-                on ? 'border-brass bg-brass text-ink' : 'hairline bg-ink-2/60 hover:border-brass/40'
+                on ? 'border-accent bg-accent text-ink' : 'hairline bg-ink-2/60 hover:border-accent/40'
               }`}
             >
               <span className={`text-[11px] font-semibold uppercase tracking-wider ${on ? 'text-ink/70' : 'text-muted'}`}>{formatDayShort(d.day)}</span>
@@ -224,7 +224,7 @@ export function TimeStep({ draft, update, refreshKey, onSlotLost }: StepProps & 
           <div className="rounded-2xl border hairline p-5">
             <p className="text-[15px]">Não conseguimos carregar os horários.</p>
             <p className="mt-1 text-sm text-muted">Verifique sua conexão e tente de novo.</p>
-            <button onClick={() => update({ day })} className="mt-4 min-h-11 rounded-full border border-brass/60 px-5 text-[14px] font-semibold text-brass-light">
+            <button onClick={() => update({ day })} className="mt-4 min-h-11 rounded-full border border-accent/60 px-5 text-[14px] font-semibold text-accent-light">
               Tentar de novo
             </button>
           </div>
@@ -239,7 +239,7 @@ export function TimeStep({ draft, update, refreshKey, onSlotLost }: StepProps & 
             <p className="font-display text-xl">Sem horários livres neste dia.</p>
             <p className="mt-1 text-sm text-muted">Procure o próximo dia com vaga ou peça um encaixe (o encaixe não é uma reserva confirmada).</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button onClick={findNext} disabled={searching} className="min-h-11 rounded-full bg-brass px-5 text-[14px] font-semibold text-ink disabled:opacity-60">
+              <button onClick={findNext} disabled={searching} className="min-h-11 rounded-full bg-accent px-5 text-[14px] font-semibold text-ink disabled:opacity-60">
                 {searching ? 'Procurando…' : 'Próximo dia com vaga'}
               </button>
               <a href={whatsappLink(`Olá! Procuro um encaixe em ${formatDayLong(day!)}. É possível?`)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 rounded-full border hairline px-5 text-[14px]">
@@ -265,7 +265,7 @@ export function TimeStep({ draft, update, refreshKey, onSlotLost }: StepProps & 
                           aria-checked={on}
                           whileTap={{ scale: 0.95 }}
                           onClick={() => update({ time: s.time })}
-                          className={`min-h-12 rounded-xl border text-[15px] font-semibold tabular-nums transition-colors ${on ? 'border-brass bg-brass text-ink' : 'hairline bg-ink-2/60 hover:border-brass/50'}`}
+                          className={`min-h-12 rounded-xl border text-[15px] font-semibold tabular-nums transition-colors ${on ? 'border-accent bg-accent text-ink' : 'hairline bg-ink-2/60 hover:border-accent/50'}`}
                         >
                           {s.time}
                         </motion.button>
@@ -288,7 +288,7 @@ export function TimeStep({ draft, update, refreshKey, onSlotLost }: StepProps & 
 export type FieldErrors = Partial<Record<'name' | 'phone' | 'email', string>>;
 
 export function DetailsStep({ draft, update, errors }: StepProps & { errors: FieldErrors }) {
-  const field = 'mt-2 block w-full rounded-2xl border bg-ink-2/70 px-4 py-3.5 text-ivory placeholder:text-ivory/30 transition-colors focus:border-brass focus:outline-none';
+  const field = 'mt-2 block w-full rounded-2xl border bg-ink-2/70 px-4 py-3.5 text-ivory placeholder:text-ivory/30 transition-colors focus:border-accent focus:outline-none';
   return (
     <div>
       <StepTitle id="step-title" title="Quem vem?" hint="Sem cadastro e sem senha. Usamos seus dados só para este agendamento." />
@@ -377,10 +377,10 @@ export function ReviewStep({ draft, accepted, setAccepted, acceptError }: StepPr
   return (
     <div>
       <StepTitle id="step-title" title="Tudo certo?" hint="Confira antes de confirmar. Você pode voltar e mudar qualquer coisa." />
-      <div className="rounded-3xl border hairline bg-ink-2/70 p-5">
+      <div className="rounded-xl border hairline bg-ink-2/70 p-5">
         <p className="font-display text-3xl italic">{draft.day && formatDayLong(draft.day)}</p>
-        <p className="mt-1 font-display text-5xl text-brass-light tabular-nums">{draft.time}</p>
-        <dl className="mt-4 divide-y divide-brass/10 text-[15px]">
+        <p className="mt-1 font-display text-5xl text-accent-light tabular-nums">{draft.time}</p>
+        <dl className="mt-4 divide-y divide-accent/10 text-[15px]">
           <Row label="Barbeiro" value={pro ?? ''} />
           {list.map((s) => (
             <Row key={s.id} label={s.name} value={formatPrice(s.priceCents)} />
@@ -388,7 +388,7 @@ export function ReviewStep({ draft, accepted, setAccepted, acceptError }: StepPr
           <Row label="Duração" value={formatDuration(durationMin)} />
           <div className="flex justify-between gap-4 py-3 text-lg">
             <dt>Total</dt>
-            <dd className="font-display text-2xl text-brass-light">{formatPrice(priceCents)}</dd>
+            <dd className="font-display text-2xl text-accent-light">{formatPrice(priceCents)}</dd>
           </div>
           <Row label="Nome" value={draft.name} />
           <Row label="WhatsApp" value={draft.phone} />
@@ -397,10 +397,10 @@ export function ReviewStep({ draft, accepted, setAccepted, acceptError }: StepPr
       </div>
 
       <label className={`mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border p-4 ${acceptError ? 'border-danger' : 'hairline'}`}>
-        <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1 h-5 w-5 shrink-0 accent-[rgb(var(--brass))]" aria-describedby="policy" />
+        <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} className="mt-1 h-5 w-5 shrink-0 accent-[rgb(var(--accent))]" aria-describedby="policy" />
         <span id="policy" className="text-[14px] leading-relaxed text-ivory/85">
           {site.booking.policy} Li e aceito a política de atendimento e a{' '}
-          <Link to="/privacidade" className="text-brass-light underline underline-offset-2">
+          <Link to="/privacidade" className="text-accent-light underline underline-offset-2">
             política de privacidade
           </Link>
           .

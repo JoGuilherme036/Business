@@ -1,6 +1,6 @@
 # Cloudflare Worker: static site (dist/) + schedule API + realtime hub, with a D1 database.
 # The admin password is a secret: set ADMIN_TOKEN in the Worker settings (never here).
-name = "velha-guarda-barbearia"
+name = "business-barbearia"
 main = "server/worker.ts"
 compatibility_date = "2025-06-01"
 
@@ -12,8 +12,8 @@ run_worker_first = ["/api/*"]
 
 [[d1_databases]]
 binding = "DB"
-database_name = "velha-guarda"
-database_id = "SUBSTITUA-PELO-ID-DO-SEU-D1" # rode: npx wrangler d1 create velha-guarda
+database_name = "business-barbearia"
+database_id = "SUBSTITUA-PELO-ID-DO-SEU-D1" # rode: npx wrangler d1 create business-barbearia
 migrations_dir = "migrations"
 
 [[durable_objects.bindings]]

@@ -31,14 +31,14 @@ export function Location() {
   };
 
   return (
-    <section id="local" aria-labelledby="local-title" className="relative z-10 scroll-mt-20 rounded-t-[2rem] bg-ink-2 pb-20 pt-20 md:rounded-t-[3rem] md:pb-28 md:pt-28">
+    <section id="local" aria-labelledby="local-title" className="relative z-10 scroll-mt-20 rounded-t-xl bg-ink-2 pb-20 pt-20 md:rounded-t-2xl md:pb-28 md:pt-28">
       <div className="container-x" id="local-title">
-        <SectionHeading chapter="IX" label="Localização" lines={['Venha', <em key="e" className="brass-text">sentar com a gente.</em>]} />
+        <SectionHeading chapter="VII" label="Localização" lines={['Venha nos', <em key="e" className="accent-text">conhecer.</em>]} />
       </div>
 
       <div className="container-x mt-12 grid gap-4 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
         <Reveal className="flex flex-col gap-4">
-          <div className="rounded-3xl border hairline bg-ink p-6 md:p-8">
+          <div className="rounded-xl border hairline bg-ink p-6 md:p-8">
             <p className="flex items-center gap-3" aria-live="polite">
               <span className="relative flex h-3 w-3">
                 {status.open && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
@@ -51,31 +51,31 @@ export function Location() {
             <address className="mt-6 select-text not-italic">
               <span className="block text-lg">{site.address.street}</span>
               <span className="block text-muted">
-                {site.address.district}, {site.address.city}/{site.address.state} · {site.address.zip}
+                {[site.address.district, `${site.address.city}/${site.address.state}`, site.address.zip].filter(Boolean).join(' · ')}
               </span>
             </address>
-            <p className="mt-3 text-sm text-muted">{site.address.reference}</p>
-            <p className="mt-1 text-sm text-muted">{site.address.parking}</p>
+            {site.address.reference && <p className="mt-3 text-sm text-muted">{site.address.reference}</p>}
+            {site.address.parking && <p className="mt-1 text-sm text-muted">{site.address.parking}</p>}
 
             <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
               <RouteBtn href={mapLinks.google} label="Google Maps" icon="route" />
               <RouteBtn href={mapLinks.waze} label="Waze" icon="route" />
               <RouteBtn href={mapLinks.apple} label="Apple Mapas" icon="route" />
-              <button onClick={copy} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl border hairline text-[12px] transition-colors hover:border-brass/60">
+              <button onClick={copy} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl border hairline text-[12px] transition-colors hover:border-accent/60">
                 <Icon name={copied ? 'check' : 'copy'} className={`h-[18px] w-[18px] ${copied ? 'text-emerald-400' : ''}`} />
                 <span aria-live="polite">{copied ? 'Copiado!' : 'Copiar endereço'}</span>
               </button>
             </div>
           </div>
 
-          <div className="rounded-3xl border hairline bg-ink p-6 md:p-8">
+          <div className="rounded-xl border hairline bg-ink p-6 md:p-8">
             <p className="eyebrow">Horários</p>
-            <dl className="mt-4 divide-y divide-brass/10">
+            <dl className="mt-4 divide-y divide-accent/10">
               {order.map((d) => (
                 <div key={d} className={`flex items-center justify-between py-2.5 text-[15px] ${d === today ? 'text-ivory' : 'text-muted'}`}>
                   <dt className="flex items-center gap-2">
                     {weekdayNames[d]}
-                    {d === today && <span className="rounded-full bg-brass/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brass-light">Hoje</span>}
+                    {d === today && <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent-light">Hoje</span>}
                   </dt>
                   <dd className="tabular-nums">{formatRanges(site.hours[d])}</dd>
                 </div>
@@ -85,16 +85,16 @@ export function Location() {
         </Reveal>
 
         <Reveal delay={0.08} className="flex flex-col gap-4">
-          <div className="relative min-h-[22rem] flex-1 overflow-hidden rounded-3xl border hairline">
+          <div className="relative min-h-[22rem] flex-1 overflow-hidden rounded-xl border hairline">
             {showMap ? (
               <iframe title={`Mapa: ${site.name}`} src={mapLinks.embed} className="absolute inset-0 h-full w-full grayscale-[0.6] invert-[0.9] hue-rotate-180" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
             ) : (
               <>
-                <SmartImage id="poltrona-horizontal" alt="" sizes="(min-width: 1024px) 45vw, 100vw" className="!absolute inset-0 h-full !aspect-auto opacity-60" />
+                <SmartImage id="salao-vazio" alt="" sizes="(min-width: 1024px) 45vw, 100vw" className="!absolute inset-0 h-full !aspect-auto opacity-60" />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-3 p-6">
                   <p className="text-sm text-muted">O mapa é carregado do Google somente se você tocar abaixo.</p>
-                  <button onClick={() => setShowMap(true)} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-brass/60 bg-ink px-5 text-[14px] font-semibold text-brass-light">
+                  <button onClick={() => setShowMap(true)} className="inline-flex min-h-12 items-center gap-2 rounded-full border border-accent/60 bg-ink px-5 text-[14px] font-semibold text-accent-light">
                     <Icon name="route" className="h-[18px] w-[18px]" /> Mostrar mapa
                   </button>
                 </div>
@@ -115,8 +115,8 @@ export function Location() {
 
 function RouteBtn({ href, label, icon }: { href: string; label: string; icon: IconName }) {
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" onClick={() => track('route_click', { app: label })} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl border hairline text-[12px] transition-colors hover:border-brass/60">
-      <Icon name={icon} className="h-[18px] w-[18px] text-brass" />
+    <a href={href} target="_blank" rel="noopener noreferrer" onClick={() => track('route_click', { app: label })} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl border hairline text-[12px] transition-colors hover:border-accent/60">
+      <Icon name={icon} className="h-[18px] w-[18px] text-accent" />
       {label}
     </a>
   );
@@ -125,8 +125,8 @@ function RouteBtn({ href, label, icon }: { href: string; label: string; icon: Ic
 function Contact({ href, icon, label, onClick }: { href: string; icon: IconName; label: string; onClick?: () => void }) {
   const external = href.startsWith('http');
   return (
-    <a href={href} onClick={onClick} className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border hairline bg-ink text-[13px] font-medium transition-colors hover:border-brass/60" {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
-      <Icon name={icon} className="h-[18px] w-[18px] text-brass" />
+    <a href={href} onClick={onClick} className="flex min-h-14 items-center justify-center gap-2 rounded-2xl border hairline bg-ink text-[13px] font-medium transition-colors hover:border-accent/60" {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+      <Icon name={icon} className="h-[18px] w-[18px] text-accent" />
       {label}
     </a>
   );

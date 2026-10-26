@@ -42,12 +42,12 @@ export function SmartImage({ id, alt, sizes = '100vw', className = '', imgClassN
 export function ImagePlaceholder({ label, className = '', ratio = '4 / 5' }: { label: string; className?: string; ratio?: string }) {
   return (
     <div
-      className={`relative grid place-items-center overflow-hidden border hairline bg-[radial-gradient(120%_80%_at_30%_20%,rgb(var(--brass)/0.18),transparent_60%),linear-gradient(160deg,rgb(var(--ink-3)),rgb(var(--ink)))] ${className}`}
+      className={`relative grid place-items-center overflow-hidden border hairline bg-[radial-gradient(120%_80%_at_30%_20%,rgb(var(--accent)/0.18),transparent_60%),linear-gradient(160deg,rgb(var(--ink-3)),rgb(var(--ink)))] ${className}`}
       style={{ aspectRatio: ratio }}
       role="img"
       aria-label={label}
     >
-      <span className="display text-6xl text-brass/50">VG</span>
+      <span className="display text-6xl text-accent/50">B</span>
     </div>
   );
 }

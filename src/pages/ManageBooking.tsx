@@ -54,26 +54,26 @@ export default function ManageBooking() {
     setConfirming(false);
   };
 
-  const input = 'mt-2 block w-full rounded-2xl border hairline bg-ink-2/70 px-4 py-3.5 placeholder:text-ivory/30 focus:border-brass focus:outline-none';
+  const input = 'mt-2 block w-full rounded-2xl border hairline bg-ink-2/70 px-4 py-3.5 placeholder:text-ivory/30 focus:border-accent focus:outline-none';
   const canCancel = booking?.status === 'confirmed' && Date.parse(booking.start) - Date.now() > site.booking.cancelUntilHours * 3_600_000;
 
   return (
     <main id="conteudo" className="container-x relative z-10 min-h-[100svh] max-w-2xl pb-32 pt-28 md:pt-36">
       <p className="eyebrow">Meu agendamento</p>
       <h1 className="display mt-4 text-[clamp(2.6rem,10vw,4rem)]">
-        Consultar, remarcar <em className="brass-text">ou cancelar.</em>
+        Consultar, remarcar <em className="accent-text">ou cancelar.</em>
       </h1>
 
-      <form onSubmit={find} className="mt-10 space-y-4 rounded-3xl border hairline bg-ink-2/50 p-5 md:p-7">
+      <form onSubmit={find} className="mt-10 space-y-4 rounded-xl border hairline bg-ink-2/50 p-5 md:p-7">
         <label className="block">
           <span className="text-sm font-medium">Código do agendamento</span>
-          <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="VG-XXXXX" autoCapitalize="characters" autoComplete="off" required className={`${input} font-mono tracking-widest`} />
+          <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="BU-XXXXX" autoCapitalize="characters" autoComplete="off" required className={`${input} font-mono tracking-widest`} />
         </label>
         <label className="block">
           <span className="text-sm font-medium">WhatsApp usado na reserva</span>
           <input value={phone} onChange={(e) => setPhone(maskBrPhone(e.target.value))} type="tel" inputMode="tel" autoComplete="tel-national" placeholder="(11) 91234-5678" required className={input} />
         </label>
-        <button type="submit" disabled={state === 'loading'} className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-brass text-[15px] font-semibold text-ink disabled:opacity-50">
+        <button type="submit" disabled={state === 'loading'} className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-accent text-[15px] font-semibold text-ink disabled:opacity-50">
           {state === 'loading' ? 'Buscando…' : 'Buscar agendamento'}
         </button>
         <div aria-live="polite">
@@ -83,7 +83,7 @@ export default function ManageBooking() {
       </form>
 
       {booking && (
-        <section aria-label="Detalhes" className="mt-6 rounded-3xl border hairline bg-ink-2/70 p-6">
+        <section aria-label="Detalhes" className="mt-6 rounded-xl border hairline bg-ink-2/70 p-6">
           <div className="flex items-center justify-between">
             <p className="font-mono tracking-widest">{booking.code}</p>
             <span className={`rounded-full px-3 py-1 text-[12px] font-semibold ${booking.status === 'confirmed' ? 'bg-emerald-400/15 text-emerald-300' : 'bg-danger/15 text-danger'}`}>
@@ -91,7 +91,7 @@ export default function ManageBooking() {
             </span>
           </div>
           <p className="mt-4 font-display text-3xl italic">{formatDayLong(booking.day)}</p>
-          <p className="font-display text-4xl text-brass-light">{booking.time}</p>
+          <p className="font-display text-4xl text-accent-light">{booking.time}</p>
           <p className="mt-3 text-[15px] text-ivory/85">
             {booking.serviceIds.map((id) => serviceById(id)?.name).join(' + ')} com {proById(booking.proId)?.name}
           </p>
@@ -102,7 +102,7 @@ export default function ManageBooking() {
 
           {booking.status === 'confirmed' && (
             <div className="mt-6 grid gap-2 sm:grid-cols-2">
-              <a href={whatsappLink(`Olá! Quero remarcar meu agendamento ${booking.code} (${formatDayLong(booking.day)} às ${booking.time}).`)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-brass/60 text-[14px] font-semibold text-brass-light">
+              <a href={whatsappLink(`Olá! Quero remarcar meu agendamento ${booking.code} (${formatDayLong(booking.day)} às ${booking.time}).`)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-accent/60 text-[14px] font-semibold text-accent-light">
                 <Icon name="whatsapp" className="h-[18px] w-[18px]" /> Remarcar pelo WhatsApp
               </a>
               {canCancel ? (
@@ -120,7 +120,7 @@ export default function ManageBooking() {
             </div>
           )}
           {booking.status === 'cancelled' && (
-            <Link to="/agendar" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-brass px-6 text-[14px] font-semibold text-ink">
+            <Link to="/agendar" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-accent px-6 text-[14px] font-semibold text-ink">
               Agendar novo horário <Icon name="arrowRight" className="h-4 w-4" />
             </Link>
           )}

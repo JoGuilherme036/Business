@@ -106,7 +106,7 @@ async function busyForDay(db: D1Database, day: string): Promise<BusyMap> {
 
 function newCode() {
   const bytes = crypto.getRandomValues(new Uint8Array(5));
-  return 'VG-' + Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
+  return 'BU-' + Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
 }
 
 async function sha256(text: string) {
@@ -375,7 +375,7 @@ async function route(request: Request, env: Env): Promise<Response> {
       if (method === 'POST' && path === '/api/admin/bookings') return createBooking(request, db, { admin: true });
       const blockMatch = path.match(/^\/api\/admin\/blocks\/(\d+)$/);
       if (method === 'DELETE' && blockMatch) return removeBlock(Number(blockMatch[1]), db);
-      const statusMatch = path.match(/^\/api\/admin\/bookings\/(VG-[A-Z0-9]{5})\/status$/);
+      const statusMatch = path.match(/^\/api\/admin\/bookings\/(BU-[A-Z0-9]{5})\/status$/);
       if (method === 'POST' && statusMatch) return setStatus(statusMatch[1], request, db);
     }
     throw new HttpError(404, 'not_found');

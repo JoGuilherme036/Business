@@ -10,11 +10,11 @@ describe('openStatus (shop time zone)', () => {
     expect(openStatus(shopInstant('2026-11-03', '10:00'))).toEqual({ open: true, closesAt: '20:00' });
   });
   it('points to the next opening, skipping Sunday', () => {
-    expect(openStatus(shopInstant('2026-11-08', '10:00'))).toEqual({ open: false, opensAt: '13:00', opensDay: 'amanhã' });
+    expect(openStatus(shopInstant('2026-11-08', '10:00'))).toEqual({ open: false, opensAt: '09:00', opensDay: 'amanhã' });
     expect(openStatus(shopInstant('2026-11-07', '19:00'))).toMatchObject({ opensDay: 'segunda' });
   });
   it('opens later the same day', () => {
-    expect(statusLabel(openStatus(shopInstant('2026-11-09', '09:00'))).detail).toBe('abre hoje às 13:00');
+    expect(statusLabel(openStatus(shopInstant('2026-11-03', '07:30'))).detail).toBe('abre hoje às 09:00');
   });
   it('treats configured closed dates as closed', () => {
     expect(openStatus(shopInstant('2026-12-25', '10:00')).open).toBe(false);
@@ -39,10 +39,10 @@ describe('phone', () => {
 
 describe('links', () => {
   it('encodes WhatsApp text', () => {
-    expect(whatsappLink('Olá & até já')).toBe('https://wa.me/5511999999999?text=Ol%C3%A1%20%26%20at%C3%A9%20j%C3%A1');
+    expect(whatsappLink('Olá & até já')).toBe('https://wa.me/5586900000000?text=Ol%C3%A1%20%26%20at%C3%A9%20j%C3%A1');
   });
   it('builds an ICS event in UTC', () => {
-    const ics = buildIcs({ uid: 'VG-1', start: shopInstant('2026-11-03', '10:00'), end: shopInstant('2026-11-03', '10:45'), title: 'Corte', description: 'x' });
+    const ics = buildIcs({ uid: 'BU-1', start: shopInstant('2026-11-03', '10:00'), end: shopInstant('2026-11-03', '10:45'), title: 'Corte', description: 'x' });
     expect(ics).toContain('DTSTART:20261103T130000Z');
     expect(ics).toContain('DTEND:20261103T134500Z');
   });

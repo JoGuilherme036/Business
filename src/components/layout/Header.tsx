@@ -8,6 +8,7 @@ import { track } from '@/lib/analytics';
 import { Icon } from '../ui/Icon';
 import { Monogram } from '../ui/Monogram';
 import { LinkButton } from '../ui/Button';
+import { useCart } from '@/shop/cart';
 import { Menu } from './Menu';
 import { navLinks, scrollToSection } from './nav';
 
@@ -18,9 +19,12 @@ export function Header() {
   const status = statusLabel(useOpenStatus());
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const cart = useCart();
 
   const go = (id: string) => {
     setOpen(false);
+    const target = navLinks.find((l) => l.id === id);
+    if (target?.to) return navigate(target.to);
     if (pathname !== '/' || !scrollToSection(id, reduced)) navigate(`/#${id}`);
   };
 
@@ -28,21 +32,21 @@ export function Header() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top)] transition-[background-color,border-color] duration-500 ${
-          scrolled ? 'border-b hairline bg-ink/92' : 'border-b border-transparent'
+          scrolled ? 'border-b hairline bg-ink/90' : 'border-b border-transparent'
         }`}
       >
         <div className="container-x flex h-16 items-center justify-between gap-4 md:h-20">
           <Link to="/" className="flex items-center gap-3" aria-label={`${site.name}, página inicial`}>
             <Monogram className="h-10 w-10 md:h-11 md:w-11" />
             <span className="hidden flex-col leading-none xs:flex">
-              <span className="font-display text-lg italic tracking-tight">{site.name}</span>
+              <span className="font-display text-[15px] font-bold uppercase tracking-[0.22em]">{site.name}</span>
               <span className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted">{site.tagline}</span>
             </span>
           </Link>
 
           <nav aria-label="Principal" className="hidden items-center gap-1 lg:flex">
             {navLinks.map((l) => (
-              <button key={l.id} onClick={() => go(l.id)} className="rounded-full px-4 py-2 text-[13px] font-medium text-ivory/75 transition-colors hover:text-ivory">
+              <button key={l.id} onClick={() => go(l.id)} className="px-4 py-2 text-[11.5px] font-semibold uppercase tracking-[0.18em] text-ivory/70 transition-colors hover:text-ivory">
                 {l.label}
               </button>
             ))}
@@ -57,8 +61,16 @@ export function Header() {
               Agendar
             </LinkButton>
             <button
+              onClick={() => cart.setOpen(true)}
+              className="relative grid h-12 w-12 place-items-center rounded-full border hairline bg-ink/40 text-ivory transition-colors hover:border-accent/60"
+              aria-label={`Abrir sacola${cart.count ? `, ${cart.count} itens` : ''}`}
+            >
+              <Icon name="bag" className="h-5 w-5" />
+              {cart.count > 0 && <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-ivory px-1 text-[10.5px] font-bold tabular-nums text-ink">{cart.count}</span>}
+            </button>
+            <button
               onClick={() => setOpen(true)}
-              className="grid h-12 w-12 place-items-center rounded-full border hairline bg-ink/40 text-ivory transition-colors hover:border-brass/60 lg:hidden"
+              className="grid h-12 w-12 place-items-center rounded-full border hairline bg-ink/40 text-ivory transition-colors hover:border-accent/60 lg:hidden"
               aria-label="Abrir menu"
               aria-expanded={open}
               aria-controls="site-menu"

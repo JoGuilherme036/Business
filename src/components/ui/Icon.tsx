@@ -71,6 +71,18 @@ const paths = {
       <path d="M4.5 4.5v4h4" />
     </>
   ),
+  bag: (
+    <>
+      <path d="M5.5 8h13l-1 11.5a1.5 1.5 0 0 1-1.5 1.4H8a1.5 1.5 0 0 1-1.5-1.4z" />
+      <path d="M9 10.5V7a3 3 0 0 1 6 0v3.5" />
+    </>
+  ),
+  search: (
+    <>
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="M16 16l4.5 4.5" />
+    </>
+  ),
   play: <path d="M8 5.5v13l10-6.5z" />,
   pause: <path d="M8.5 5.5v13M15.5 5.5v13" />,
   share: (

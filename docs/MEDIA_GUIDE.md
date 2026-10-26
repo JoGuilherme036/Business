@@ -2,29 +2,26 @@
 
 As imagens ficam em `public/media/img/<id>-<largura>.webp` e são descritas em `src/data/media.json` (gerado pelo script). Os componentes referenciam só o **id**: para trocar uma foto, gere de novo com o mesmo id.
 
-## Espaços atuais
+## Imagens atuais
 
-| id | Onde aparece | Proporção de origem | Observação |
-|---|---|---|---|
-| `servico-corte` | Serviço "Fade", estilos | 4:5 | |
-| `servico-barba` | Serviço "Barba ritual", ritual (03), estilos | 4:5 | |
-| `estilo-barba` | Combo, estilos | 4:5 | |
-| `estilo-cachos` / `estilo-classico` / `estilo-ondulado` | Estilos, serviços | 4:5 | **Ilustrativas**: troque por trabalhos reais |
-| `ambiente-principal` | O espaço, ritual (01) | 16:9 | Ideal: foto real do salão |
-| `poltrona-vertical` | Poltrona com pontos interativos (O espaço) | 9:16 | Se trocar a foto, ajuste as posições dos pontos em `Space.tsx` |
-| `poltrona-horizontal` | Mapa (antes de carregar) | 16:9 | |
-| `produto-pomada` | "Na bancada" | 1:1 | |
-| `ritual-toalha` / `ritual-bancada` | Ritual (02, 04), espaço | 3:2 | |
-| *(faltando)* `barbeiro-<id>` | Cards da equipe | 4:5 | Retrato real; depois preencha `photo: 'barbeiro-<id>'` em `catalog.ts` |
-| *(faltando)* `fachada` | Localização | 3:2 | Entrada real, reconhecível por quem chega |
+Origem: 6 imagens ilustrativas (geradas por IA no padrão visual da marca). **Troque por fotos reais** assim que possível.
 
-## Animação da introdução
+| id | Onde aparece | Observação |
+|---|---|---|
+| `salao-vazio` | Experiência (01), mapa, 1ª cena da introdução | 16:9 |
+| `salao-barbeiro` | Serviço "Degradê", espaço, 2ª cena | 16:9 |
+| `corte` | Serviços de corte, experiência (03), 3ª cena | 4:5 |
+| `barba` | Barba, experiência (04) | 4:5 |
+| `lavagem` | Lavagem, espaço, experiência (02), 4ª cena | 4:5 |
+| `bancada` | Última cena da introdução e epílogo | 4:5 |
+| `produto-*` | Catálogo de produtos | Recortes 4:5 da foto `bancada` |
+| *(faltando)* `barbeiro-<id>` | Cards da equipe | Retrato real; depois preencha `photo` em `catalog.ts` |
 
-- `public/media/frames/portrait/000–071.webp` (540×960, ~2 MB no total) para telas em pé e `landscape/` (1280×720) para telas deitadas.
-- O site baixa os quadros como arquivos pequenos e só decodifica os que estão perto da posição da rolagem (mais um a cada 8), por isso a memória fica baixa mesmo no celular. Entre dois quadros vizinhos ele faz uma fusão suave.
-- Usamos imagens e não vídeo porque no iPhone e nos navegadores internos do Instagram/WhatsApp o vídeo não carrega sem um toque.
-- `poster-*.webp` (primeiro quadro) aparece na hora e é a imagem fixa com movimento reduzido. `end-*.webp` (último quadro) é o fundo do epílogo e da tela de agendamento.
-- Para trocar, rode o script com os dois vídeos novos (8 s funcionam bem; pense o movimento de câmera como uma jornada do salão até a bancada).
+## Introdução
+
+- `public/media/frames/portrait/000–071.webp` (540×960) e `landscape/` (1280×720), gerados por `scripts/build-assets.py` com zoom lento e fusão entre as fotos. O site decodifica só os quadros próximos da rolagem.
+- `poster-*.webp` é o primeiro quadro (e a imagem fixa com movimento reduzido); `end-*.webp` é o fundo do epílogo.
+- Para usar vídeo real, gere os quadros com `ffmpeg -i video.mp4 -vf fps=9,scale=540:960 %03d.png` e converta para WebP (72 quadros).
 
 ## Regras
 

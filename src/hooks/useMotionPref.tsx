@@ -5,7 +5,7 @@ type Pref = 'system' | 'reduced' | 'full';
 type Ctx = { reduced: boolean; pref: Pref; setPref: (p: Pref) => void };
 
 const MotionCtx = createContext<Ctx>({ reduced: false, pref: 'system', setPref: () => {} });
-const KEY = 'vg.motion';
+const KEY = 'business.motion';
 
 export function MotionPrefProvider({ children }: { children: ReactNode }) {
   const [system, setSystem] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);

@@ -53,7 +53,7 @@ function ProCard({ pro, next, index }: { pro: Professional; next?: string; index
         onPointerMove={onMove}
         onPointerLeave={() => setTilt({ x: 0, y: 0 })}
         style={{ transform: `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)` }}
-        className="group relative overflow-hidden rounded-[1.75rem] border hairline bg-ink-2 transition-transform duration-300 ease-out"
+        className="group relative overflow-hidden rounded-lg border hairline bg-ink-2 transition-transform duration-300 ease-out"
       >
         {pro.photo ? (
           <SmartImage id={pro.photo} alt={`Retrato de ${pro.name}`} sizes="(min-width: 768px) 30vw, 78vw" ratio="4 / 5" />
@@ -61,10 +61,10 @@ function ProCard({ pro, next, index }: { pro: Professional; next?: string; index
           <div
             role="img"
             aria-label={`Foto de ${pro.name} em breve`}
-            className="relative grid aspect-[4/3] place-items-center overflow-hidden bg-[radial-gradient(90%_70%_at_30%_25%,rgb(var(--brass)/0.22),transparent_65%),linear-gradient(160deg,rgb(var(--ink-3)),rgb(var(--ink)))]"
+            className="relative grid aspect-[4/3] place-items-center overflow-hidden bg-[radial-gradient(90%_70%_at_30%_25%,rgb(var(--accent)/0.22),transparent_65%),linear-gradient(160deg,rgb(var(--ink-3)),rgb(var(--ink)))]"
           >
-            <span aria-hidden="true" className="absolute inset-6 rounded-full border border-brass/15" />
-            <span aria-hidden="true" className="display brass-text text-[8.5rem] italic leading-none">{pro.name.slice(0, 1)}</span>
+            <span aria-hidden="true" className="absolute inset-6 rounded-full border border-accent/15" />
+            <span aria-hidden="true" className="display accent-text text-[8rem] leading-none">{pro.name.slice(0, 1)}</span>
             <span className="absolute left-5 top-5 rounded-full border hairline bg-ink/70 px-3 py-1 text-[11px] text-muted">Foto em breve</span>
           </div>
         )}
@@ -77,13 +77,13 @@ function ProCard({ pro, next, index }: { pro: Professional; next?: string; index
             ))}
           </ul>
           <p className="mt-5 flex items-start gap-2 text-[13px] text-muted">
-            <Icon name="clock" className="mt-0.5 h-4 w-4 shrink-0 text-brass" />
+            <Icon name="clock" className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
             <span>{next ? <>Próximo horário livre: <span className="text-ivory">{next}</span></> : 'Consultando agenda…'}</span>
           </p>
           <Link
             to={`/agendar?barbeiro=${pro.id}`}
             onClick={() => track('cta_book_click', { from: 'team', pro: pro.id })}
-            className="mt-5 flex min-h-12 items-center justify-between rounded-full border border-brass/50 px-5 text-[14px] font-semibold text-brass-light transition-colors hover:bg-brass hover:text-ink"
+            className="mt-5 flex min-h-12 items-center justify-between rounded-full border border-accent/50 px-5 text-[14px] font-semibold text-accent-light transition-colors hover:bg-accent hover:text-ink"
           >
             Agendar com {pro.name} <Icon name="arrowRight" className="h-4 w-4" />
           </Link>
@@ -98,7 +98,7 @@ export function Team() {
   return (
     <section id="equipe" aria-labelledby="equipe-title" className="relative z-10 scroll-mt-20 bg-ink py-20 md:py-28">
       <div className="container-x" id="equipe-title">
-        <SectionHeading chapter="V" label="Barbeiros" lines={['As mãos', <em key="e" className="brass-text">por trás da navalha.</em>]} intro="Escolha quem vai te atender ou deixe com o primeiro horário disponível." />
+        <SectionHeading chapter="IV" label="Barbeiros" lines={['Quem cuida', <em key="e" className="accent-text">da sua imagem.</em>]} intro="Escolha quem vai te atender ou deixe com o primeiro horário disponível." />
       </div>
       <div className="no-scrollbar container-x mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible">
         {team.map((p, i) => (
