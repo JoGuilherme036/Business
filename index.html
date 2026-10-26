@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0907" />
+    <meta name="color-scheme" content="dark" />
+    <title>%SITE_TITLE%</title>
+    <meta name="description" content="%SITE_DESCRIPTION%" />
+    <link rel="canonical" href="%SITE_URL%/" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content="%SITE_TITLE%" />
+    <meta property="og:description" content="%SITE_DESCRIPTION%" />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:image" content="%SITE_URL%/media/og-image.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" as="image" href="/media/poster-portrait.webp" media="(max-aspect-ratio: 1/1)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/media/poster-landscape.webp" media="(min-aspect-ratio: 1/1)" fetchpriority="high" />
+    <script type="application/ld+json">%JSON_LD%</script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="padding:24px;color:#f2eadf;background:#0b0907;font-family:sans-serif">
+        Ative o JavaScript para agendar online. Você também pode nos chamar no WhatsApp.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

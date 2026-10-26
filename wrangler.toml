@@ -1,0 +1,25 @@
+# Cloudflare Worker: static site (dist/) + schedule API + realtime hub, with a D1 database.
+# The admin password is a secret: set ADMIN_TOKEN in the Worker settings (never here).
+name = "rb-barbearia"
+main = "server/worker.ts"
+compatibility_date = "2025-06-01"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rb-barbearia"
+database_id = "bbf10777-bc76-4e97-9f9e-9533b639854a"
+migrations_dir = "migrations"
+
+[[durable_objects.bindings]]
+name = "HUB"
+class_name = "ScheduleHub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ScheduleHub"]

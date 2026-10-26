@@ -1,0 +1,12 @@
+{
+  "landscape": {
+    "count": 72,
+    "width": 1280,
+    "height": 720
+  },
+  "portrait": {
+    "count": 72,
+    "width": 540,
+    "height": 960
+  }
+}

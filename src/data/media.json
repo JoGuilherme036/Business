@@ -1,0 +1,122 @@
+{
+  "servico-barba": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(8,8,8)"
+  },
+  "ambiente-principal": {
+    "width": 1672,
+    "height": 941,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "color": "rgb(8,8,8)"
+  },
+  "estilo-cachos": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(24,24,24)"
+  },
+  "estilo-classico": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(24,24,24)"
+  },
+  "estilo-ondulado": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(24,24,24)"
+  },
+  "servico-corte": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(8,8,8)"
+  },
+  "poltrona-vertical": {
+    "width": 941,
+    "height": 1672,
+    "widths": [
+      480,
+      800,
+      941
+    ],
+    "color": "rgb(8,8,8)"
+  },
+  "poltrona-horizontal": {
+    "width": 1672,
+    "height": 941,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "color": "rgb(24,8,8)"
+  },
+  "produto-pomada": {
+    "width": 1254,
+    "height": 1254,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "color": "rgb(24,8,8)"
+  },
+  "estilo-barba": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(8,8,8)"
+  },
+  "ritual-toalha": {
+    "width": 1536,
+    "height": 1024,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "color": "rgb(8,8,8)"
+  },
+  "ritual-bancada": {
+    "width": 1536,
+    "height": 1024,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "color": "rgb(24,8,8)"
+  }
+}
