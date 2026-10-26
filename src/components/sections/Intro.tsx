@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMotionPref } from '@/hooks/useMotionPref';
 import { useOpenStatus } from '@/hooks/useMisc';
-import { statusLabel } from '@/lib/hours';
+import { hoursSummary, statusLabel } from '@/lib/hours';
+import { site } from '@/config/site';
+import { routeLink } from '@/lib/maps';
 import { track } from '@/lib/analytics';
 import { relativeDayName } from '@/lib/time';
 import { cachedBusy } from '@/booking/busyCache';
@@ -42,13 +44,6 @@ function useNextSlot() {
 // Mobile: 250svh tall, 50svh overlap → 100/150. Desktop: 270vh, 60vh overlap → 110/170.
 const FILM_END = 0.65;
 
-// Where each chapter starts on the film (0–1), matching the camera path of the video.
-const chapters = [
-  { n: '01', label: 'A chegada', at: 0 },
-  { n: '02', label: 'A cadeira', at: 0.36 },
-  { n: '03', label: 'A bancada', at: 0.72 },
-];
-
 /**
  * Pinned opening: the film plays only here, driven by this section's scroll.
  * The headline sits on a dedicated scrim so it stays readable over any frame; it hands over
@@ -65,7 +60,7 @@ export function Intro() {
   // The next section overlaps the end of this one (negative margin in LiveBoard) and slides over
   // the last frame at FILM_END, so there is no dead scroll between the film and the content.
   const film = useTransform(p, [0, FILM_END], [0, 1]);
-  const dim = useTransform(p, [0, 0.05, 0.16, FILM_END, 1], [0.38, 0.38, 0.06, 0.1, 0.5]);
+  const dim = useTransform(p, [0, 0.05, 0.16, FILM_END, 1], [0.42, 0.42, 0.08, 0.12, 0.5]);
   const heroOpacity = useTransform(p, [0, 0.05, 0.14], [1, 1, 0]);
   const heroY = useTransform(p, [0, 0.14], [0, -70]);
   const heroEvents = useTransform(heroOpacity, (v) => (v < 0.2 ? 'none' : 'auto'));
@@ -75,86 +70,100 @@ export function Intro() {
   const fade = (delay: number) => ({ initial: { opacity: 0, y: reduced ? 0 : 14 }, animate: { opacity: 1, y: 0 }, transition: { duration: reduced ? 0 : 0.7, delay: reduced ? 0 : delay, ease } });
   const skip = () => document.getElementById('agenda')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
 
+  const hours = hoursSummary();
+
   return (
     <section ref={ref} aria-labelledby="hero-title" className={reduced ? 'relative' : 'relative h-[250svh] md:h-[270vh]'}>
-      <div className={`${reduced ? 'relative' : 'sticky top-0'} h-[100svh] min-h-[620px] overflow-hidden`}>
+      <div className={`${reduced ? 'relative' : 'sticky top-0'} h-[100svh] min-h-[640px] overflow-hidden`}>
         <ScrollFilm progress={film} />
 
         {/* Light shaping. The text scrim only exists while the headline is on screen. */}
-        <motion.div aria-hidden="true" className="absolute inset-0 bg-ink" style={{ opacity: reduced ? 0.38 : dim }} />
-        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-ink/85 to-transparent" />
+        <motion.div aria-hidden="true" className="absolute inset-0 bg-ink" style={{ opacity: reduced ? 0.45 : dim }} />
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink to-transparent" />
         <motion.div aria-hidden="true" className="absolute inset-0" style={{ opacity: reduced ? 1 : heroOpacity }}>
-          <div className="absolute inset-x-0 bottom-0 h-[78%] bg-gradient-to-t from-ink via-ink/85 to-transparent md:hidden" />
-          <div className="absolute inset-y-0 left-0 hidden w-[72%] bg-gradient-to-r from-ink via-ink/80 to-transparent md:block" />
+          <div className="absolute inset-x-0 bottom-0 h-[85%] bg-gradient-to-t from-ink via-ink/90 to-transparent md:hidden" />
+          <div className="absolute inset-y-0 left-0 hidden w-[78%] bg-gradient-to-r from-ink via-ink/85 to-transparent md:block" />
+          <div className="absolute inset-x-0 bottom-0 hidden h-1/3 bg-gradient-to-t from-ink to-transparent md:block" />
         </motion.div>
-        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink/85 to-transparent" />
 
         <motion.div
-          className="container-x relative flex h-full flex-col justify-end pb-8 pt-24 short:pb-6 md:justify-center md:pb-16"
+          className="container-x relative flex h-full flex-col pt-24 md:pt-28"
           style={reduced ? undefined : { opacity: heroOpacity, y: heroY, pointerEvents: heroEvents }}
         >
-          <motion.p {...fade(0.1)} className="mb-6 inline-flex w-fit items-center gap-2.5 rounded-full border hairline bg-ink/70 px-3.5 py-2 text-[12px] short:mb-4">
-            <span className="relative flex h-2 w-2">
-              {status.open && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
-              <span className={`relative inline-flex h-2 w-2 rounded-full ${status.open ? 'bg-emerald-400' : 'bg-muted'}`} />
-            </span>
-            <span className="font-semibold">{label.short}</span>
-            <span className="text-ivory/70">· {label.detail}</span>
-          </motion.p>
+          <div className="flex flex-1 flex-col justify-end pb-8 md:justify-center md:pb-0">
+            <motion.p {...fade(0.1)} className="flex items-center gap-4 text-[10.5px] font-semibold uppercase tracking-[0.36em] text-ivory/70 short:text-[9.5px]">
+              <span className="h-px w-10 bg-ivory/60" />
+              {site.concept}
+            </motion.p>
 
-          <h1 id="hero-title" className="display text-[clamp(2.7rem,12.4vw,8.4rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.55)] short:text-[clamp(2.3rem,10.5vw,4.8rem)] tiny:text-[clamp(2rem,9.5vw,3.4rem)]">
-            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.15)}>Imagem</motion.span></span>
-            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.25)}>masculina em</motion.span></span>
-            <span className="block overflow-hidden pb-[0.1em]">
-              <motion.span className="accent-text block italic" {...line(0.35)}>outro nível.</motion.span>
-            </span>
-          </h1>
+            <h1 id="hero-title" className="display mt-6 max-w-[15ch] text-[clamp(2.2rem,9.6vw,5.6rem)] uppercase leading-[0.98] tracking-[-0.03em] short:mt-4 short:text-[clamp(1.8rem,7.4vw,3.6rem)]" style={{ fontStretch: '125%' }}>
+              <span className="block overflow-hidden pb-[0.04em]"><motion.span className="block font-black" {...line(0.15)}>Imagem</motion.span></span>
+              <span className="block overflow-hidden pb-[0.04em]"><motion.span className="block font-black" {...line(0.25)}>masculina</motion.span></span>
+              <span className="block overflow-hidden pb-[0.08em]">
+                <motion.span className="outline-text block font-extrabold" {...line(0.35)}>em outro nível.</motion.span>
+              </span>
+            </h1>
 
-          <motion.p {...fade(0.55)} className="mt-5 max-w-md text-[15.5px] leading-relaxed text-ivory short:mt-3 short:text-[14.5px] sm:text-base tiny:hidden">
-            Corte, barba e cuidado completo para quem leva a própria imagem a sério. Hora marcada, ambiente exclusivo, atendimento sem pressa.
-          </motion.p>
+            <motion.p {...fade(0.55)} className="mt-6 max-w-md text-[15px] leading-relaxed text-ivory/75 short:mt-4 short:text-[14px] sm:text-base tiny:hidden">
+              Corte, barba e cuidado completo para quem leva a própria imagem a sério. Hora marcada, ambiente exclusivo e atendimento sem pressa.
+            </motion.p>
 
-          <motion.div {...fade(0.65)} className="mt-7 flex gap-2.5 short:mt-5 sm:gap-3">
-            <LinkButton to="/agendar" size="lg" iconRight="arrowRight" className="flex-1 !px-5 sm:flex-none sm:!px-7" onClick={() => track('cta_book_click', { from: 'hero' })}>
-              Agendar horário
-            </LinkButton>
-            <Button variant="ghost" size="lg" className="!bg-ink/60 !px-5 sm:!px-7" onClick={() => scrollToSection('servicos', reduced)}>
-              <span className="sm:hidden">Serviços</span>
-              <span className="hidden sm:inline">Ver serviços e preços</span>
-            </Button>
-          </motion.div>
-
-          {next && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }}>
-              <Link
-                to={`/agendar?servico=${QUICK_SERVICE}&dia=${next.day}&hora=${next.time}`}
-                onClick={() => track('cta_book_click', { from: 'hero_next_slot' })}
-                className="group mt-4 inline-flex min-h-11 flex-wrap items-center gap-x-2.5 text-[13.5px] text-ivory/85 short:mt-2"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
-                </span>
-                <span className="tiny:hidden">Próximo horário livre:</span>
-                <span className="hidden tiny:inline">Livre</span>
-                <span className="font-semibold text-accent-light underline decoration-accent/40 underline-offset-4 group-hover:decoration-accent">
-                  {relativeDayName(next.day).toLowerCase()} às {next.time}
-                </span>
-                <Icon name="arrowRight" className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5" />
-              </Link>
+            <motion.div {...fade(0.65)} className="mt-8 flex gap-2.5 short:mt-5 sm:gap-3">
+              <LinkButton to="/agendar" size="lg" iconRight="arrowRight" className="flex-1 !px-5 sm:flex-none sm:!px-8" onClick={() => track('cta_book_click', { from: 'hero' })}>
+                Agendar horário
+              </LinkButton>
+              <Button variant="ghost" size="lg" className="!bg-ink/40 !px-5 sm:!px-8" onClick={() => scrollToSection('servicos', reduced)}>
+                <span className="sm:hidden">Serviços</span>
+                <span className="hidden sm:inline">Serviços e preços</span>
+              </Button>
             </motion.div>
-          )}
+          </div>
+
+          {/* Corporate info bar: status, next free slot, address and hours at a glance. */}
+          <motion.dl {...fade(0.8)} className="grid grid-cols-2 border-t border-white/15 pb-[max(env(safe-area-inset-bottom),20px)] md:grid-cols-4 md:pb-8">
+            <InfoCell label="Agora">
+              <span className="flex items-center gap-2">
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${status.open ? 'bg-emerald-400 shadow-[0_0_10px_rgb(52_211_153)]' : 'bg-muted'}`} />
+                {label.short}
+              </span>
+              <span className="text-ivory/50">{label.detail}</span>
+            </InfoCell>
+            <InfoCell label="Próximo horário" className="border-l border-white/15 md:border-l">
+              {next ? (
+                <Link
+                  to={`/agendar?servico=${QUICK_SERVICE}&dia=${next.day}&hora=${next.time}`}
+                  onClick={() => track('cta_book_click', { from: 'hero_next_slot' })}
+                  className="group inline-flex items-center gap-1.5 underline decoration-white/30 underline-offset-4 hover:decoration-white"
+                >
+                  {relativeDayName(next.day)} às {next.time}
+                  <Icon name="arrowRight" className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              ) : (
+                <span className="text-ivory/50">Consultando agenda…</span>
+              )}
+            </InfoCell>
+            <InfoCell label="Endereço" className="hidden border-l border-white/15 md:block">
+              <a href={routeLink()} target="_blank" rel="noopener noreferrer" onClick={() => track('route_click', { from: 'hero' })} className="hover:underline">
+                {site.address.street}
+              </a>
+              <span className="text-ivory/50">{site.address.city}/{site.address.state}</span>
+            </InfoCell>
+            <InfoCell label="Horários" className="hidden border-l border-white/15 md:block">
+              {hours.map((h) => (
+                <span key={h}>{h}</span>
+              ))}
+            </InfoCell>
+          </motion.dl>
         </motion.div>
 
         {!reduced && (
           <>
             <Caption progress={p} range={[0.17, 0.23, 0.33, 0.39]} chapter="02" label="A cadeira" text="Cada detalhe da sua imagem, no seu tempo." />
             <Caption progress={p} range={[0.43, 0.49, 0.57, 0.63]} chapter="03" label="A bancada" text="Técnica, ferramentas e produtos de verdade." />
-            <ChapterRail progress={film} />
             <motion.button
               onClick={skip}
               style={{ opacity: skipOpacity }}
-              className="absolute right-4 top-[calc(env(safe-area-inset-top)+5rem)] inline-flex min-h-11 items-center gap-2 rounded-full border hairline bg-ink/60 px-4 text-[12px] font-semibold text-ivory/85 hover:text-ivory md:bottom-10 md:right-12 md:top-auto"
+              className="absolute right-[max(1rem,env(safe-area-inset-right))] top-[calc(env(safe-area-inset-top)+5rem)] inline-flex min-h-11 items-center gap-2 rounded-[3px] border border-white/20 bg-ink/50 px-4 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-ivory/80 hover:text-ivory md:top-[calc(env(safe-area-inset-top)+6.5rem)] md:right-12"
             >
               Pular introdução <Icon name="arrowDown" className="h-4 w-4" />
             </motion.button>
@@ -165,6 +174,15 @@ export function Intro() {
   );
 }
 
+function InfoCell({ label, children, className = '' }: { label: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`min-w-0 py-4 pr-3 first:pl-0 md:py-6 [&:not(:first-child)]:pl-4 md:[&:not(:first-child)]:pl-6 ${className}`}>
+      <dt className="text-[9.5px] font-semibold uppercase tracking-[0.3em] text-ivory/45">{label}</dt>
+      <dd className="mt-2 flex flex-col gap-0.5 text-[13px] leading-snug text-ivory">{children}</dd>
+    </div>
+  );
+}
+
 function Caption({ progress, range, chapter, label, text }: { progress: MotionValue<number>; range: number[]; chapter: string; label: string; text: string }) {
   const opacity = useTransform(progress, range, [0, 1, 1, 0]);
   const y = useTransform(progress, [range[0], range[1]], [28, 0]);
@@ -172,38 +190,12 @@ function Caption({ progress, range, chapter, label, text }: { progress: MotionVa
     <motion.div style={{ opacity, y }} className="pointer-events-none absolute inset-x-0 bottom-32 md:bottom-24">
       <div className="container-x">
         <p className="eyebrow flex items-center gap-3">
-          <span className="font-display text-[13px] normal-case italic tracking-normal text-accent-light">{chapter}</span>
-          <span className="h-px w-10 bg-accent/50" />
+          <span className="font-display text-[11px] font-bold tracking-[0.2em] text-ivory">{chapter}</span>
+          <span className="h-px w-10 bg-ivory/40" />
           {label}
         </p>
-        <p className="display mt-4 max-w-3xl text-[clamp(1.9rem,7vw,4.6rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.8)]">{text}</p>
+        <p className="display mt-4 max-w-3xl text-[clamp(1.7rem,6vw,4rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.8)]">{text}</p>
       </div>
-    </motion.div>
-  );
-}
-
-function ChapterRail({ progress }: { progress: MotionValue<number> }) {
-  return (
-    <div aria-hidden="true" className="absolute right-6 top-1/2 hidden -translate-y-1/2 md:block lg:right-12">
-      <div className="relative h-56 w-px bg-ivory/15">
-        <motion.div style={{ scaleY: progress }} className="absolute inset-0 origin-top bg-accent" />
-        {chapters.map((c) => (
-          <ChapterMark key={c.n} progress={progress} chapter={c} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function ChapterMark({ progress, chapter }: { progress: MotionValue<number>; chapter: (typeof chapters)[number] }) {
-  const opacity = useTransform(progress, (v) => (v >= chapter.at - 0.01 ? 1 : 0.35));
-  return (
-    <motion.div style={{ opacity, top: `${chapter.at * 100}%` }} className="absolute right-0 flex -translate-y-1/2 translate-x-[3px] items-center gap-3 whitespace-nowrap">
-      <span className="text-right text-[11px] uppercase tracking-[0.25em] text-ivory/80">
-        <span className="mr-2 font-display text-[13px] normal-case italic tracking-normal text-accent-light">{chapter.n}</span>
-        {chapter.label}
-      </span>
-      <span className="h-[7px] w-[7px] rounded-full bg-accent shadow-[0_0_12px_rgb(var(--accent))]" />
     </motion.div>
   );
 }

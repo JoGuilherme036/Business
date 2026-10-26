@@ -10,7 +10,7 @@ export function Monogram({ className = 'h-10 w-10' }: { className?: string }) {
       </defs>
       <rect x="1.5" y="1.5" width="45" height="45" fill="none" stroke="url(#mono-accent)" strokeWidth="1" />
       <rect x="5" y="5" width="38" height="38" fill="none" stroke="url(#mono-accent)" strokeWidth="0.5" opacity="0.6" />
-      <text x="24" y="31.5" textAnchor="middle" fontFamily="'Syne Variable', system-ui, sans-serif" fontWeight="800" fontSize="21" fill="url(#mono-accent)" letterSpacing="0">
+      <text x="24" y="31.5" textAnchor="middle" fontFamily="'Archivo Variable', 'Arial Black', sans-serif" fontWeight="900" fontSize="21" fill="url(#mono-accent)" letterSpacing="0">
         B
       </text>
     </svg>

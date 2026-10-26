@@ -1,6 +1,6 @@
 # Design system — "Business"
 
-Conceito: **corporativo premium em preto total**. Superfícies pretas, tipografia ampla e geométrica (como o logotipo), hairlines de luz champagne que lembram as fitas de LED do salão, e botões retos em marfim.
+Conceito: **corporativo premium em preto e branco**. Superfícies pretas, fotos em preto e branco, tipografia expandida como o letreiro BUSINESS e botões retos brancos. Sem dourado e sem elementos 3D.
 
 ## Cores (`src/styles/index.css`)
 
@@ -8,20 +8,20 @@ Conceito: **corporativo premium em preto total**. Superfícies pretas, tipografi
 |---|---|---|
 | `--ink` | 0 0 0 | Fundo principal (preto total) |
 | `--ink-2` / `--ink-3` | 11 11 11 / 22 22 22 | Superfícies, cartões, comanda |
-| `--ivory` | 246 245 242 | Texto principal e botão primário |
-| `--muted` | 152 152 150 | Texto secundário |
-| `--accent` | 214 184 138 | Champagne: eyebrows, estados ativos, preços |
-| `--accent-light` / `--accent-deep` | 238 218 178 / 150 118 74 | Gradiente do acento |
+| `--ivory` | 255 255 255 | Texto principal e botão primário |
+| `--muted` | 150 150 150 | Texto secundário |
+| `--accent` / `--accent-light` | 255 255 255 | Mantidos por compatibilidade: agora são branco |
+| `--accent-deep` | 140 140 140 | Cinza de apoio |
 | `--steel` | 96 96 100 | Apoio neutro (reflexos 3D) |
 | `--danger` | 255 140 120 | Erros |
 
-O botão primário é **marfim com texto preto**; o champagne é reservado a detalhes, para manter o tom sóbrio.
+A única cor fora do preto e branco é o verde do "Aberto agora" (estado). O plano em destaque do clube é invertido (cartão branco).
 
 ## Tipografia
 
-- **Syne** (display, ampla e geométrica): títulos, preços, nome da marca em caixa alta com tracking.
-- **Instrument Serif itálico**: palavras de ênfase em champagne (`<em class="accent-text">`), em contraste com a Syne.
-- **Manrope**: texto e interface. Campos de formulário com 16 px (sem zoom no iPhone).
+- **Archivo** (variável, largura até 125%): a mesma família em todo o site. Títulos e logotipo em largura expandida e peso alto, como o letreiro; ênfase em peso leve e cinza; texto corrido em largura normal.
+- Logotipo: componente `Logo` (BUSINESS / BARBEARIA espaçado).
+- Hero: título em caixa alta, última linha vazada (`.outline-text`).
 
 ## Formas
 
@@ -29,14 +29,14 @@ Cantos pequenos (`rounded-lg`/`rounded-[3px]` nos botões), bordas finas `hairli
 
 ## Estrutura narrativa
 
-Introdução fixa de ~1 tela de rolagem (cenas geradas das fotos: salão → barbeiro → cadeira → lavagem → bancada), seguida da agenda ao vivo, manifesto, serviços com comanda, experiência (4 etapas), **produtos**, barbeiros, espaço, clube (medalha 3D), localização, dúvidas e epílogo.
+Introdução fixa de ~1 tela de rolagem (cenas geradas das fotos: salão → barbeiro → cadeira → lavagem → bancada), seguida da agenda ao vivo, manifesto, serviços com comanda, experiência (4 etapas), **produtos**, barbeiros, espaço, clube, localização, dúvidas e epílogo.
 
 ## Elementos de assinatura
 
 - **Comanda**: recibo escuro com bordas picotadas; lista serviços, tempo e total.
 - **Agenda ao vivo**: próximos horários livres do serviço escolhido.
 - **Catálogo**: cartões `ProductCard`, detalhe em modal (`ProductDialog`) e sacola lateral (`CartDrawer`).
-- **Medalha 3D** champagne (React Three Fiber), com fallback em SVG.
+- **Barra de informações** no rodapé da tela inicial: status, próximo horário, endereço e horários.
 
 ## Motion
 

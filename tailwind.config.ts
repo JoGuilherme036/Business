@@ -13,9 +13,8 @@ export default {
         danger: 'rgb(var(--danger) / <alpha-value>)',
       },
       fontFamily: {
-        display: ['"Syne Variable"', 'system-ui', 'sans-serif'],
-        serif: ['"Instrument Serif"', 'Georgia', 'serif'],
-        sans: ['"Manrope Variable"', 'system-ui', 'sans-serif'],
+        display: ['"Archivo Variable"', '"Arial Black"', 'system-ui', 'sans-serif'],
+        sans: ['"Archivo Variable"', 'system-ui', 'sans-serif'],
       },
       transitionTimingFunction: {
         expo: 'cubic-bezier(0.16, 1, 0.3, 1)',

@@ -6,7 +6,7 @@ import { useOpenStatus, useScrolledPast } from '@/hooks/useMisc';
 import { statusLabel } from '@/lib/hours';
 import { track } from '@/lib/analytics';
 import { Icon } from '../ui/Icon';
-import { Monogram } from '../ui/Monogram';
+import { Logo } from '../ui/Logo';
 import { LinkButton } from '../ui/Button';
 import { useCart } from '@/shop/cart';
 import { Menu } from './Menu';
@@ -37,11 +37,7 @@ export function Header() {
       >
         <div className="container-x flex h-16 items-center justify-between gap-4 md:h-20">
           <Link to="/" className="flex items-center gap-3" aria-label={`${site.name}, página inicial`}>
-            <Monogram className="h-10 w-10 md:h-11 md:w-11" />
-            <span className="hidden flex-col leading-none xs:flex">
-              <span className="font-display text-[15px] font-bold uppercase tracking-[0.22em]">{site.name}</span>
-              <span className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted">{site.tagline}</span>
-            </span>
+            <Logo />
           </Link>
 
           <nav aria-label="Principal" className="hidden items-center gap-1 lg:flex">

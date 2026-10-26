@@ -8,9 +8,9 @@ Outputs (public/media, src/data):
   - frames/{portrait,landscape}/NNN.webp + frames.json   scroll-scrubbed intro film (Ken Burns + crossfades)
   - poster-*.webp, end-*.webp, og-image.jpg
 """
-import json, math, shutil, sys
+import json, math, os, shutil, sys
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps
 
 src_dir = Path(sys.argv[1])
 OUT = Path('public/media')
@@ -19,7 +19,16 @@ DATA = Path('src/data')
 def find(n):  # source files end with "-<n>.png"
     return next(p for p in src_dir.glob('*.png') if p.stem.endswith(f'-{n}'))
 
-SRC = {k: Image.open(find(n)).convert('RGB') for k, n in {
+# The brand palette is black and white, so photos are converted to monochrome (MONO=0 keeps colour).
+MONO = os.environ.get('MONO', '1') != '0'
+
+def load(path):
+    im = Image.open(path).convert('RGB')
+    if MONO:
+        im = ImageEnhance.Contrast(ImageOps.grayscale(im)).enhance(1.12).convert('RGB')
+    return im
+
+SRC = {k: load(find(n)) for k, n in {
     'salao-vazio': 2, 'salao-barbeiro': 1, 'corte': 3, 'barba': 4, 'lavagem': 5, 'bancada': 6}.items()}
 
 WIDTHS = [480, 800, 1200]

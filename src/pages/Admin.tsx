@@ -18,6 +18,7 @@ import { formatRanges } from '@/lib/hours';
 import { addDays, dayOfMonth, formatDayLong, formatDayShort, shopNow, weekdayOf } from '@/lib/time';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { Icon } from '@/components/ui/Icon';
+import { Logo } from '@/components/ui/Logo';
 import { Monogram } from '@/components/ui/Monogram';
 
 const clock = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: site.timeZone });
@@ -75,7 +76,7 @@ function Login({ onSuccess }: { onSuccess: () => void }) {
   return (
     <main id="conteudo" className="grid min-h-[100svh] place-items-center px-5">
       <form onSubmit={submit} className="w-full max-w-sm rounded-xl border hairline bg-ink-2 p-7">
-        <Monogram className="h-12 w-12" />
+        <Logo />
         <h1 className="display mt-6 text-4xl">
           Painel da <em className="accent-text">barbearia</em>
         </h1>
@@ -148,7 +149,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <div className="flex min-w-0 items-center gap-3">
             <Monogram className="hidden h-9 w-9 sm:block" />
             <div className="leading-tight">
-              <p className="font-display text-lg italic">Agenda</p>
+              <p className="font-display text-lg font-bold">Agenda</p>
               <p className="flex items-center gap-1.5 text-[11px] text-muted" aria-live="polite">
                 <span className="relative flex h-1.5 w-1.5">
                   {live && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />}

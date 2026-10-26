@@ -3,7 +3,7 @@ import { fullAddress, site } from '@/config/site';
 import { formatRanges } from '@/lib/hours';
 import { weekdayNames } from '@/lib/time';
 import { useMotionPref } from '@/hooks/useMotionPref';
-import { Monogram } from '../ui/Monogram';
+import { Logo } from '../ui/Logo';
 import { Icon } from '../ui/Icon';
 
 export function Footer() {
@@ -14,10 +14,8 @@ export function Footer() {
       <div className="pole mb-16" aria-hidden="true" />
       <div className="container-x grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <div className="flex items-center gap-3">
-            <Monogram className="h-12 w-12" />
-            <p className="font-display text-2xl italic">{site.name}</p>
-          </div>
+          <Logo size="lg" />
+          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.3em] text-ivory/55">{site.concept}</p>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">{fullAddress}</p>
           <div className="mt-6 flex gap-2">
             <a href={site.contact.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="grid h-12 w-12 place-items-center rounded-full border hairline hover:border-accent/60">

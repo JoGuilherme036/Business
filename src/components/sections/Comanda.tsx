@@ -16,7 +16,7 @@ export function Comanda({ className = '' }: { className?: string }) {
   const remove = (id: string) => update({ serviceIds: draft.serviceIds.filter((x) => x !== id), time: null });
 
   return (
-    <div className={`comanda text-ink ${className}`}>
+    <div className={`comanda text-ivory ${className}`}>
       <div className="comanda-paper bg-ink-3 px-6 pb-8 pt-9">
         <div className="flex items-baseline justify-between gap-4 border-b border-dashed border-ivory/25 pb-3">
           <p className="font-display text-[1.7rem] font-semibold leading-none tracking-[-0.02em]">Comanda</p>

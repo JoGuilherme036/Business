@@ -1,6 +1,6 @@
 # Business Barbearia — site premium com agendamento e catálogo de produtos
 
-Site mobile-first da **Business Barbearia** (Teresina/PI), no tema **preto total** com acentos em champagne: introdução em que as cenas avançam conforme a rolagem (gerada a partir das fotos da marca), agenda ao vivo, serviços com comanda, **catálogo de produtos com sacola e reserva pelo WhatsApp**, agendamento completo, painel da barbearia e medalha 3D do clube.
+Site mobile-first da **Business Barbearia** (Teresina/PI), no tema **preto e branco**, com a tipografia expandida do letreiro: introdução em que as cenas avançam conforme a rolagem (gerada a partir das fotos da marca), agenda ao vivo, serviços com comanda, **catálogo de produtos com sacola e reserva pelo WhatsApp**, agendamento completo, painel da barbearia e planos do clube.
 
 > ⚠️ **Dados a confirmar.** Endereço, horários e Instagram vêm do perfil oficial da barbearia. WhatsApp/telefone, e-mail, bairro, coordenadas, preços, equipe, planos e a lista de produtos são **de demonstração** e estão marcados com `DEMO` em `src/config/`.
 >
@@ -24,7 +24,6 @@ npm test           # testes unitários (disponibilidade, horários, adaptador de
 | Serviços + comanda | `src/components/sections/Services.tsx`, `Comanda.tsx` | Toque em + para somar serviços numa comanda (tempo e total na hora); "Escolher horário" leva tudo para o agendamento. A barra inferior mostra quantos itens há na comanda |
 | Catálogo de produtos | `src/pages/Products.tsx`, `src/shop/`, `src/config/products.ts` | Página `/produtos` com filtro por categoria, busca, ordenação, detalhe do produto (link compartilhável `?produto=id`), kits e **sacola** salva no aparelho. O pedido é enviado por WhatsApp para retirada na barbearia (sem pagamento online). Na home, a seção "A linha Business" destaca os principais |
 | Página inicial | `src/pages/Home.tsx` + `src/components/sections/` | Manifesto, experiência (fixada no desktop), produtos, barbeiros, espaço, clube, localização, dúvidas, epílogo com o último quadro da introdução |
-| Medalha 3D | `src/components/three/Medallion.tsx` | R3F + Drei, gravação desenhada em canvas com a fonte da marca, vira com a rolagem; só carrega perto da seção |
 | Agendamento | `src/pages/Booking.tsx` + `src/components/booking/` | Serviço → barbeiro (ou primeiro disponível) → dia/horário → dados → revisão → confirmação com código, .ics, Google Agenda, WhatsApp, rota |
 | Meu agendamento | `src/pages/ManageBooking.tsx` | Consulta por código + telefone e cancelamento dentro da política |
 | Painel da barbearia | `src/pages/Admin.tsx` (`/admin`) | Agenda do dia por barbeiro, **agendar cliente** que ligou ou chegou sem hora (sem a antecedência mínima, telefone opcional), concluir/faltou/cancelar, **bloquear horário, dia inteiro ou um barbeiro** (inclusive vários dias, como férias), aviso dos clientes afetados com link de WhatsApp |
@@ -69,7 +68,7 @@ As fotos, os recortes de produtos e os quadros da introdução (zoom lento + fus
 
 ```bash
 pip install pillow
-python3 scripts/build-assets.py <pasta-com-as-6-imagens-png>
+python3 scripts/build-assets.py <pasta-com-as-6-imagens-png>   # MONO=0 mantém as fotos coloridas
 ```
 
 Gera `public/media/img/*`, `frames/`, `poster-*`, `end-*`, `og-image.jpg` e `src/data/media.json` / `frames.json`.

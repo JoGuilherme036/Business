@@ -6,12 +6,12 @@
   --ink: 0 0 0;
   --ink-2: 11 11 11;
   --ink-3: 22 22 22;
-  --ivory: 246 245 242;
-  --muted: 152 152 150;
-  --accent: 214 184 138;
-  --accent-light: 238 218 178;
-  --accent-deep: 150 118 74;
-  --steel: 96 96 100;
+  --ivory: 255 255 255;
+  --muted: 150 150 150;
+  --accent: 255 255 255;
+  --accent-light: 255 255 255;
+  --accent-deep: 140 140 140;
+  --steel: 96 96 96;
   --danger: 255 140 120;
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -57,28 +57,32 @@
   .container-x {
     @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8 lg:px-12;
   }
+  /* Brand type: Archivo in its expanded width, like the BUSINESS wordmark. */
   .display {
-    @apply font-display font-semibold leading-[1] tracking-[-0.035em];
+    @apply font-display font-bold leading-[1.02] tracking-[-0.025em];
+    font-stretch: 118%;
   }
-  /* Accent words: Syne has no italic, so emphasis switches to Instrument Serif italic. */
+  .font-display {
+    font-stretch: 118%;
+  }
+  /* Emphasis inside headlines: same face, lighter weight, in grey. */
+  .display em,
+  .display .italic,
   .display.italic,
   .font-display.italic,
   .font-display em {
-    font-family: 'Instrument Serif', Georgia, serif;
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+    font-style: normal;
+    font-weight: 300;
+    color: rgb(var(--ivory) / 0.5);
   }
-  .display em,
-  .display .italic {
-    font-family: 'Instrument Serif', Georgia, serif;
-    font-style: italic;
-    font-weight: 400;
-    letter-spacing: -0.01em;
-    font-size: 1.12em; /* the serif sets smaller than Syne at the same size */
+  /* Outlined letters for the hero's last line. */
+  .outline-text {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(var(--ivory) / 0.9);
   }
   .eyebrow {
-    @apply font-sans text-[10.5px] font-semibold uppercase tracking-[0.34em] text-accent;
+    @apply font-sans text-[10.5px] font-semibold uppercase tracking-[0.34em];
+    color: rgb(var(--ivory) / 0.55);
   }
   .hairline {
     border-color: rgb(255 255 255 / 0.12);
@@ -86,13 +90,10 @@
   .slab {
     /* Readable surface over the scroll film. Solid enough to avoid backdrop-filter costs on mobile. */
     background: linear-gradient(180deg, rgb(var(--ink) / 0.9), rgb(var(--ink-2) / 0.94));
-    border: 1px solid rgb(var(--accent) / 0.16);
+    border: 1px solid rgb(255 255 255 / 0.1);
   }
   .accent-text {
-    background: linear-gradient(100deg, rgb(var(--accent-light)), rgb(var(--accent)) 45%, rgb(var(--accent-deep)) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: rgb(var(--ivory) / 0.5);
   }
   .grain::after {
     content: '';
@@ -106,7 +107,7 @@
   /* Signature divider: a hairline of light, like the LED strips in the salon. */
   .pole {
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--accent) / 0.7) 20%, rgb(var(--accent-light)) 50%, rgb(var(--accent) / 0.7) 80%, transparent);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35) 20%, rgb(255 255 255 / 0.8) 50%, rgb(255 255 255 / 0.35) 80%, transparent);
   }
   .pole-thin {
     height: 1px;
