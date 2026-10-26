@@ -44,7 +44,7 @@ export function Club() {
         </div>
 
         <div id="clube-title">
-          <SectionHeading chapter="VIII" label="Clube RB" lines={['Sua cadeira,', <em key="e" className="brass-text">todo mês.</em>]} intro="Assinatura para quem não abre mão do corte em dia. Prioridade na agenda e benefícios da casa." />
+          <SectionHeading chapter="VIII" label="Clube Velha Guarda" lines={['Sua cadeira,', <em key="e" className="brass-text">todo mês.</em>]} intro="Assinatura para quem não abre mão do corte em dia. Prioridade na agenda e benefícios da casa." />
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {clubPlans.map((p, i) => (
               <Reveal key={p.id} delay={i * 0.08}>

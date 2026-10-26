@@ -6,24 +6,25 @@ export type TimeRange = { start: string; end: string }; // "HH:mm", local time o
 
 export const site = {
   demo: true, // DEMO: set to false once all real data below is filled in
-  name: 'RB Barbearia', // DEMO
-  shortName: 'RB',
-  concept: 'Ateliê noturno de barbearia',
-  url: 'https://rb-barbearia.example', // DEMO: production domain, no trailing slash
+  name: 'Velha Guarda Barbearia', // DEMO
+  shortName: 'VG',
+  concept: 'Barbearia de bairro à moda antiga',
+  tagline: 'Barbearia retrô', // short label under the logo
+  url: 'https://velhaguarda.example', // DEMO: production domain, no trailing slash
 
   seo: {
-    title: 'RB Barbearia — Ateliê noturno de corte e barba',
+    title: 'Velha Guarda Barbearia — Corte, barba e navalha à moda antiga',
     description:
-      'Corte, barba e ritual de toalha quente sob luz âmbar. Agende online em menos de um minuto, sem cadastro.',
+      'Barbearia de bairro com alma retrô: corte na tesoura, barba na navalha e toalha quente. Agende online em menos de um minuto, sem cadastro.',
   },
 
   contact: {
     whatsapp: '5511999999999', // DEMO: country + area code + number, digits only
     phone: '+55 11 99999-9999', // DEMO: display format
     phoneHref: '+5511999999999', // DEMO
-    email: 'contato@rb-barbearia.example', // DEMO
-    instagram: 'https://instagram.com/rb.barbearia', // DEMO
-    instagramHandle: '@rb.barbearia', // DEMO
+    email: 'contato@velhaguarda.example', // DEMO
+    instagram: 'https://instagram.com/velhaguarda.barbearia', // DEMO
+    instagramHandle: '@velhaguarda.barbearia', // DEMO
   },
 
   address: {
@@ -34,7 +35,7 @@ export const site = {
     zip: '01000-000', // DEMO
     lat: -23.55052, // DEMO
     lng: -46.633308, // DEMO
-    reference: 'Em frente à praça, entrada pela porta de vidro com o monograma RB.', // DEMO
+    reference: 'Em frente à praça, sob o poste listrado vermelho e branco na porta.', // DEMO
     parking: 'Estacionamento conveniado a 50 m.', // DEMO
   },
 

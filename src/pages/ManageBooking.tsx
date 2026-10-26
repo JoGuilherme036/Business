@@ -67,7 +67,7 @@ export default function ManageBooking() {
       <form onSubmit={find} className="mt-10 space-y-4 rounded-3xl border hairline bg-ink-2/50 p-5 md:p-7">
         <label className="block">
           <span className="text-sm font-medium">Código do agendamento</span>
-          <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="RB-XXXXX" autoCapitalize="characters" autoComplete="off" required className={`${input} font-mono tracking-widest`} />
+          <input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} placeholder="VG-XXXXX" autoCapitalize="characters" autoComplete="off" required className={`${input} font-mono tracking-widest`} />
         </label>
         <label className="block">
           <span className="text-sm font-medium">WhatsApp usado na reserva</span>

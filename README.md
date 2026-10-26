@@ -1,6 +1,6 @@
-# RB Barbearia — site com vídeo no scroll, 3D e agendamento
+# Velha Guarda Barbearia — site com vídeo no scroll, 3D e agendamento
 
-Site mobile-first de barbearia no conceito **"Ateliê noturno"**: uma introdução em que o vídeo avança conforme a rolagem, uma agenda ao vivo, um cardápio de serviços com comanda, seções editoriais com motion design, uma medalha 3D (Three.js + React Three Fiber + Drei) e um fluxo de agendamento completo.
+Site mobile-first de barbearia no conceito **"Velha Guarda"** (barbearia de bairro retrô: marinho profundo, creme e vermelho de poste de barbeiro, tipografia Fraunces): uma introdução em que o vídeo avança conforme a rolagem, uma agenda ao vivo, um cardápio de serviços com comanda, seções editoriais com motion design, uma medalha 3D (Three.js + React Three Fiber + Drei) e um fluxo de agendamento completo.
 
 > ⚠️ **Dados comerciais de demonstração.** Nome, endereço, telefone, preços, equipe e planos são fictícios e estão marcados com `DEMO` em `src/config/`.
 >
@@ -35,12 +35,12 @@ npm test           # testes unitários (disponibilidade, horários, adaptador de
 
 ## Publicar na Cloudflare (uma vez)
 
-O banco D1 `rb-barbearia` já foi criado na conta Cloudflare e as tabelas já existem (`wrangler.toml` aponta para ele).
+Este projeto tem banco próprio: crie-o com `npx wrangler d1 create velha-guarda`, cole o `database_id` no `wrangler.toml` e aplique as tabelas com `npm run db:migrate:remote`.
 
-1. No painel da Cloudflare: **Workers & Pages → Criar → Importar um repositório** e escolha `BARBER-SITE`.
-2. Nome do projeto: **`rb-barbearia`** (precisa ser igual ao `name` do `wrangler.toml`). Comando de build: `npm run build`. Comando de deploy: `npx wrangler deploy` (padrão).
+1. No painel da Cloudflare: **Workers & Pages → Criar → Importar um repositório** e escolha `business`.
+2. Nome do projeto: **`velha-guarda-barbearia`** (precisa ser igual ao `name` do `wrangler.toml`). Comando de build: `npm run build`. Comando de deploy: `npx wrangler deploy` (padrão).
 3. Depois do primeiro deploy: **Configurações → Variáveis e segredos → Adicionar** um segredo `ADMIN_TOKEN` com a senha do painel, e faça um novo deploy.
-4. Pronto: o site fica em `https://rb-barbearia.<sua-conta>.workers.dev` e o painel em `/admin`. Cada `git push` na `main` publica sozinho. Para usar um domínio próprio: **Configurações → Domínios e rotas**.
+4. Pronto: o site fica em `https://velha-guarda-barbearia.<sua-conta>.workers.dev` e o painel em `/admin`. Cada `git push` na `main` publica sozinho. Para usar um domínio próprio: **Configurações → Domínios e rotas**.
 
 Para testar tudo localmente: `npm run build && npm run db:migrate:local && npm run worker:dev` (crie `.dev.vars` com `ADMIN_TOKEN=uma-senha`).
 

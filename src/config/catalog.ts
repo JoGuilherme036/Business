@@ -23,7 +23,7 @@ export const categories: { id: ServiceCategory; label: string }[] = [
 export const services: Service[] = [
   {
     id: 'corte-assinatura',
-    name: 'Corte assinatura',
+    name: 'Corte da casa',
     category: 'cortes',
     description: 'Consulta de estilo, corte na tesoura e máquina, lavagem e finalização com pomada.',
     durationMin: 45,
@@ -41,7 +41,7 @@ export const services: Service[] = [
   },
   {
     id: 'classico',
-    name: 'Clássico na tesoura',
+    name: 'Social na tesoura',
     category: 'cortes',
     description: 'Corte social com volume controlado, risca marcada e acabamento natural.',
     durationMin: 45,
@@ -50,18 +50,18 @@ export const services: Service[] = [
   },
   {
     id: 'barba-ritual',
-    name: 'Barba ritual',
+    name: 'Barba na navalha',
     category: 'barba',
-    description: 'Toalha quente, óleo pré-barba, navalha, toalha fria e bálsamo.',
+    description: 'Toalha quente, espuma de pincel, navalha de aço, toalha fria e loção pós-barba.',
     durationMin: 35,
     priceCents: 5500,
     image: 'servico-barba',
   },
   {
     id: 'corte-barba',
-    name: 'Corte + barba ritual',
+    name: 'Corte + barba na navalha',
     category: 'combos',
-    description: 'O atendimento completo da casa: corte assinatura seguido da barba ritual.',
+    description: 'O atendimento completo da casa: corte da casa seguido da barba na navalha.',
     durationMin: 80,
     priceCents: 11500,
     image: 'estilo-barba',

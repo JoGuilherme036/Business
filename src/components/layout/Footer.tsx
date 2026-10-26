@@ -10,7 +10,8 @@ export function Footer() {
   const { reduced, setPref } = useMotionPref();
   const order = [1, 2, 3, 4, 5, 6, 0] as const;
   return (
-    <footer className="relative z-10 border-t hairline bg-ink pb-28 pt-16 md:pb-12">
+    <footer className="relative z-10 bg-ink pb-28 md:pb-12">
+      <div className="pole mb-16" aria-hidden="true" />
       <div className="container-x grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">

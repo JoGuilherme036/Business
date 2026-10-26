@@ -13,7 +13,7 @@ type Store = { bookings: Booking[]; idempotency: Record<string, string>; blocks:
 
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
-export const LOCAL_STORE_KEY = 'rb.demo.bookings.v1';
+export const LOCAL_STORE_KEY = 'vg.demo.bookings.v1';
 export const DEMO_ADMIN_PASSWORD = 'demo';
 const CODE_ALPHABET = 'ACDEFGHJKMNPQRTUVWXY34679';
 
@@ -46,7 +46,7 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
   const newCode = (store: Store) => {
     let code = '';
     do {
-      code = 'RB-' + Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join('');
+      code = 'VG-' + Array.from({ length: 5 }, () => CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)]).join('');
     } while (store.bookings.some((b) => b.code === code));
     return code;
   };

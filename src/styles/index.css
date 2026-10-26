@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 :root {
-  --ink: 11 9 7;
-  --ink-2: 20 16 12;
-  --ink-3: 31 25 20;
-  --ivory: 242 234 223;
-  --muted: 176 163 148;
-  --brass: 205 154 94;
-  --brass-light: 232 194 140;
-  --brass-deep: 140 96 52;
-  --moss: 38 63 54;
-  --danger: 236 128 104;
+  --ink: 9 15 28;
+  --ink-2: 15 24 42;
+  --ink-3: 24 36 60;
+  --ivory: 244 238 226;
+  --muted: 160 170 188;
+  --brass: 226 78 70;
+  --brass-light: 244 128 116;
+  --brass-deep: 168 40 42;
+  --moss: 44 78 120;
+  --danger: 255 150 120;
 
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-quart: cubic-bezier(0.76, 0, 0.24, 1);
@@ -85,6 +85,14 @@
     z-index: 60;
     opacity: 0.06;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* Barber-pole stripe: signature divider of the "Velha Guarda" theme. */
+  .pole {
+    height: 6px;
+    background: repeating-linear-gradient(-45deg, rgb(var(--brass)) 0 10px, rgb(var(--ivory)) 10px 20px, rgb(var(--moss)) 20px 30px, rgb(var(--ivory)) 30px 40px);
+  }
+  .pole-thin {
+    height: 3px;
   }
   .no-scrollbar {
     scrollbar-width: none;

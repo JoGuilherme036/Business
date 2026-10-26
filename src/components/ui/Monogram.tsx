@@ -10,8 +10,8 @@ export function Monogram({ className = 'h-10 w-10' }: { className?: string }) {
       </defs>
       <circle cx="24" cy="24" r="22.5" fill="none" stroke="url(#mono-brass)" strokeWidth="1" />
       <circle cx="24" cy="24" r="19.5" fill="none" stroke="url(#mono-brass)" strokeWidth="0.5" opacity="0.6" />
-      <text x="24" y="30.5" textAnchor="middle" fontFamily="'Bodoni Moda Variable', Didot, serif" fontSize="18" fontStyle="italic" fill="url(#mono-brass)" letterSpacing="-1">
-        RB
+      <text x="24" y="30.5" textAnchor="middle" fontFamily="'Fraunces Variable', Georgia, serif" fontSize="18" fontStyle="italic" fill="url(#mono-brass)" letterSpacing="-1">
+        VG
       </text>
     </svg>
   );

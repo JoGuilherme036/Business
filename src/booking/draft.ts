@@ -15,7 +15,7 @@ export type Draft = {
   idempotencyKey: string;
 };
 
-const KEY = 'rb.booking.draft.v1';
+const KEY = 'vg.booking.draft.v1';
 
 export const emptyDraft = (): Draft => ({
   serviceIds: [],

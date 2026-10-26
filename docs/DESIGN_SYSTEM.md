@@ -1,25 +1,25 @@
-# Design system — "Ateliê noturno"
+# Design system — "Velha Guarda"
 
-Conceito: um ateliê de barbearia à noite, com mármore escuro, couro, latão e luz âmbar. Ele vem direto do vídeo de fundo. A marca precisa continuar reconhecível com as animações desligadas.
+Conceito: a barbearia de bairro à moda antiga, à noite: marinho profundo, creme, aço cromado e o vermelho do poste de barbeiro. A divisória listrada (`.pole`) é o elemento de assinatura. Os nomes dos tokens (`brass*`) foram mantidos por compatibilidade, mas agora representam o **vermelho de acento**.
 
 ## Cores (`src/styles/index.css`)
 
 | Token | RGB | Uso |
 |---|---|---|
-| `--ink` | 11 9 7 | Fundo principal (preto quente) |
-| `--ink-2` / `--ink-3` | 20 16 12 / 31 25 20 | Superfícies, cartões |
-| `--ivory` | 242 234 223 | Texto principal |
-| `--muted` | 176 163 148 | Texto secundário (≈ 8:1 sobre `ink`) |
-| `--brass` | 205 154 94 | Acento, CTA principal, estados ativos |
-| `--brass-light` / `--brass-deep` | 232 194 140 / 140 96 52 | Gradiente do latão, preços |
-| `--moss` | 38 63 54 | Apoio frio (reflexos 3D) |
-| `--danger` | 236 128 104 | Erros |
+| `--ink` | 9 15 28 | Fundo principal (marinho noturno) |
+| `--ink-2` / `--ink-3` | 15 24 42 / 24 36 60 | Superfícies, cartões |
+| `--ivory` | 244 238 226 | Texto principal (creme) |
+| `--muted` | 160 170 188 | Texto secundário |
+| `--brass` | 226 78 70 | Acento (vermelho de poste), CTA principal, estados ativos |
+| `--brass-light` / `--brass-deep` | 244 128 116 / 168 40 42 | Gradiente do acento, preços |
+| `--moss` | 44 78 120 | Azul de apoio (listras e reflexos 3D) |
+| `--danger` | 255 150 120 | Erros |
 
-Texto escuro sobre latão nos botões primários; nunca latão sobre latão.
+Texto escuro sobre o vermelho nos botões primários; nunca acento sobre acento. Verifique o contraste dos botões ao ajustar o vermelho.
 
 ## Tipografia
 
-- **Bodoni Moda** (display, alto contraste; itálico para ênfase em latão): títulos, preços, números de capítulo.
+- **Fraunces** (display serifada "soft"; itálico para ênfase no acento): títulos, preços, números de capítulo.
 - **Manrope** (texto e interface).
 - Escala fluida com `clamp()`; campos de formulário com 16 px, para o iPhone não dar zoom.
 

@@ -13,7 +13,7 @@ export default {
         danger: 'rgb(var(--danger) / <alpha-value>)',
       },
       fontFamily: {
-        display: ['"Bodoni Moda Variable"', 'Didot', 'Georgia', 'serif'],
+        display: ['"Fraunces Variable"', 'Georgia', 'serif'],
         sans: ['"Manrope Variable"', 'system-ui', 'sans-serif'],
       },
       transitionTimingFunction: {

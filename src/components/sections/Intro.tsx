@@ -103,15 +103,15 @@ export function Intro() {
           </motion.p>
 
           <h1 id="hero-title" className="display text-[clamp(3.3rem,15.5vw,9.5rem)] [text-shadow:0_4px_40px_rgb(0_0_0/0.55)] short:text-[clamp(2.8rem,13vw,5.5rem)] tiny:text-[clamp(2.4rem,11.5vw,4rem)]">
-            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.15)}>Precisão</motion.span></span>
-            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.25)}>sob luz</motion.span></span>
+            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.15)}>Tradição</motion.span></span>
+            <span className="block overflow-hidden pb-[0.06em]"><motion.span className="block" {...line(0.25)}>na ponta da</motion.span></span>
             <span className="block overflow-hidden pb-[0.1em]">
-              <motion.span className="brass-text block italic" {...line(0.35)}>âmbar.</motion.span>
+              <motion.span className="brass-text block italic" {...line(0.35)}>navalha.</motion.span>
             </span>
           </h1>
 
           <motion.p {...fade(0.55)} className="mt-5 max-w-md text-[15.5px] leading-relaxed text-ivory short:mt-3 short:text-[14.5px] sm:text-base tiny:hidden">
-            Corte, barba e ritual de toalha quente num ateliê feito para a noite da cidade. Hora marcada, sem fila, sem pressa.
+            Corte na tesoura, barba na navalha e toalha quente, como se fazia antigamente. Hora marcada, sem fila, sem pressa.
           </motion.p>
 
           <motion.div {...fade(0.65)} className="mt-7 flex gap-2.5 short:mt-5 sm:gap-3">

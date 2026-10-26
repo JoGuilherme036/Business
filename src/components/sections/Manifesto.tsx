@@ -13,7 +13,7 @@ export function Manifesto() {
       <div className="container-x relative">
         <ScrollWords
           className="display max-w-5xl text-[clamp(1.9rem,6.6vw,4.4rem)] leading-[1.08]"
-          text="Não somos uma barbearia de passagem. Somos um ateliê: ferramentas afiadas, luz baixa e o tempo que o seu corte pede."
+          text="Não somos uma barbearia de passagem. Somos a barbearia do bairro: poste na porta, navalha afiada e o tempo que o seu corte pede."
         />
         <div className="mt-16 grid gap-px overflow-hidden rounded-3xl border hairline bg-brass/10 sm:grid-cols-3">
           {principles.map((p, i) => (

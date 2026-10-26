@@ -1,10 +1,10 @@
 // Editorial content. Edit freely; only publish policies the shop has approved.
 
 export const ritualSteps = [
-  { n: '01', title: 'Recepção', text: 'Café ou uma dose, conversa rápida e a escolha do que você quer hoje.', image: 'ambiente-principal' },
+  { n: '01', title: 'Recepção', text: 'Cafezinho, prosa rápida e a escolha do que você quer hoje.', image: 'ambiente-principal' },
   { n: '02', title: 'Toalha quente', text: 'Vapor e calor abrem os poros e preparam a pele para a navalha.', image: 'ritual-toalha' },
-  { n: '03', title: 'Ofício', text: 'Tesoura, máquina e navalha. Sem pressa, com medida.', image: 'servico-barba' },
-  { n: '04', title: 'Acabamento', text: 'Bálsamo, pomada e a última olhada no espelho antes de sair.', image: 'ritual-bancada' },
+  { n: '03', title: 'Ofício', text: 'Tesoura, máquina e navalha de aço, como manda a tradição. Sem pressa, com medida.', image: 'servico-barba' },
+  { n: '04', title: 'Acabamento', text: 'Loção pós-barba, pomada e a última olhada no espelho antes de sair.', image: 'ritual-bancada' },
 ] as const;
 
 export const styles = [
@@ -18,8 +18,8 @@ export const styles = [
 
 export const clubPlans = [
   // DEMO: publish only real plans and prices.
-  { id: 'essencial', name: 'Essencial', price: 'R$ 129/mês', perks: ['2 cortes por mês', 'Agendamento prioritário', 'Bebida da casa'] },
-  { id: 'completo', name: 'Completo', price: 'R$ 219/mês', perks: ['Cortes ilimitados*', '2 barbas ritual por mês', 'Prioridade em encaixes', '10% em produtos'], highlight: true },
+  { id: 'essencial', name: 'Freguês', price: 'R$ 129/mês', perks: ['2 cortes por mês', 'Agendamento prioritário', 'Bebida da casa'] },
+  { id: 'completo', name: 'Sócio da casa', price: 'R$ 219/mês', perks: ['Cortes ilimitados*', '2 barbas ritual por mês', 'Prioridade em encaixes', '10% em produtos'], highlight: true },
 ] as const;
 
 export const faq = [

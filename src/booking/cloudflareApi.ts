@@ -4,7 +4,7 @@ import { BookingError, type AdminApi, type Booking, type BookingApi, type Bookin
 // LIVE adapter: talks to the Cloudflare Worker API in server/ (D1 database).
 
 const KNOWN: BookingErrorCode[] = ['slot_taken', 'invalid', 'not_found', 'too_late', 'unauthorized'];
-const ADMIN_KEY = 'rb.admin.token';
+const ADMIN_KEY = 'vg.admin.token';
 
 async function request<T>(base: string, path: string, init: RequestInit = {}): Promise<T> {
   let res: Response;

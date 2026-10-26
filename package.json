@@ -1,5 +1,5 @@
 {
-  "name": "barber-site",
+  "name": "velha-guarda-barbearia",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -11,13 +11,13 @@
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "assets": "node scripts/prepare-assets.mjs",
-    "db:migrate:local": "wrangler d1 migrations apply rb-barbearia --local",
-    "db:migrate:remote": "wrangler d1 migrations apply rb-barbearia --remote",
+    "db:migrate:local": "wrangler d1 migrations apply velha-guarda --local",
+    "db:migrate:remote": "wrangler d1 migrations apply velha-guarda --remote",
     "worker:dev": "wrangler dev --port 8787",
     "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
-    "@fontsource-variable/bodoni-moda": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
     "@react-three/drei": "^9.117.3",
     "@react-three/fiber": "^8.17.10",

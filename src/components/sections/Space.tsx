@@ -60,14 +60,14 @@ export function Space() {
   return (
     <section aria-labelledby="espaco-title" className="relative z-10 rounded-[2rem] slab py-20 md:rounded-[3rem] md:py-28">
       <div className="container-x" id="espaco-title">
-        <SectionHeading chapter="VII" label="O espaço" lines={['Um ateliê', <em key="e" className="brass-text">para a noite.</em>]} intro="Mármore escuro, couro, latão e luz baixa. Tudo pensado para você desligar por uma hora." />
+        <SectionHeading chapter="VII" label="O espaço" lines={['Uma casa', <em key="e" className="brass-text">de bairro.</em>]} intro="Azulejo, couro, cromados e rádio baixinho. Tudo pensado para você desligar por uma hora." />
       </div>
 
       <div className="container-x mt-12 grid gap-4 md:grid-cols-12 md:gap-6">
         <Reveal className="md:col-span-7">
           <div ref={ref} className="h-full overflow-hidden rounded-[1.75rem] border hairline">
             <motion.div style={{ y, scale: 1.12 }} className="h-full">
-              <SmartImage id="ambiente-principal" alt="Salão da barbearia com cadeiras de couro e luz âmbar" sizes="(min-width: 768px) 58vw, 100vw" ratio="16 / 10" className="h-full md:!aspect-auto" />
+              <SmartImage id="ambiente-principal" alt="Salão da barbearia com cadeiras de couro e espelhos" sizes="(min-width: 768px) 58vw, 100vw" ratio="16 / 10" className="h-full md:!aspect-auto" />
             </motion.div>
           </div>
         </Reveal>

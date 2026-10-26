@@ -47,7 +47,7 @@ export function ImagePlaceholder({ label, className = '', ratio = '4 / 5' }: { l
       role="img"
       aria-label={label}
     >
-      <span className="display text-6xl text-brass/50">RB</span>
+      <span className="display text-6xl text-brass/50">VG</span>
     </div>
   );
 }

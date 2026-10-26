@@ -36,7 +36,7 @@ export function Header() {
             <Monogram className="h-10 w-10 md:h-11 md:w-11" />
             <span className="hidden flex-col leading-none xs:flex">
               <span className="font-display text-lg italic tracking-tight">{site.name}</span>
-              <span className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted">{site.concept.split(' ')[0]} noturno</span>
+              <span className="mt-1 text-[10px] uppercase tracking-[0.3em] text-muted">{site.tagline}</span>
             </span>
           </Link>
 

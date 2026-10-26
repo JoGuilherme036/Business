@@ -42,7 +42,7 @@ describe('links', () => {
     expect(whatsappLink('Olá & até já')).toBe('https://wa.me/5511999999999?text=Ol%C3%A1%20%26%20at%C3%A9%20j%C3%A1');
   });
   it('builds an ICS event in UTC', () => {
-    const ics = buildIcs({ uid: 'RB-1', start: shopInstant('2026-11-03', '10:00'), end: shopInstant('2026-11-03', '10:45'), title: 'Corte', description: 'x' });
+    const ics = buildIcs({ uid: 'VG-1', start: shopInstant('2026-11-03', '10:00'), end: shopInstant('2026-11-03', '10:45'), title: 'Corte', description: 'x' });
     expect(ics).toContain('DTSTART:20261103T130000Z');
     expect(ics).toContain('DTEND:20261103T134500Z');
   });
