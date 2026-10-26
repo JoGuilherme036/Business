@@ -8,7 +8,7 @@ Usage: python3 scripts/build-assets.py <images-dir> <intro-video.mp4>
 
 Outputs (public/media, src/data):
   - img/<id>-<w>.webp + media.json     responsive photos and product crops
-  - frames/{portrait,landscape}/NNN.webp + frames.json   intro film
+  - frames/{portrait,landscape}/NNN.webp + frames.json   intro film (1920×1080 and 720×1280, 24 fps)
   - poster-*.webp (first frame), end-*.webp (last frame), og-image.jpg
 Requires Pillow and ffmpeg. MONO=1 converts the photos to black and white.
 """
@@ -78,23 +78,23 @@ DATA.mkdir(exist_ok=True)
 json.dump(manifest, open(DATA / 'media.json', 'w'), indent=2)
 
 # ---------------------------------------------------------------- intro film (video → WebP frames)
-FPS = 12  # 8 s video → 96 frames
+FPS = 24  # every frame of the 8 s video (192): no blending needed between frames
 
 def raw_frames():
     tmp = Path(tempfile.mkdtemp())
-    subprocess.run(['ffmpeg', '-v', 'error', '-i', video, '-vf', f'fps={FPS},scale=1280:720', str(tmp / '%03d.png')], check=True)
+    subprocess.run(['ffmpeg', '-v', 'error', '-i', video, '-vf', f'fps={FPS},scale=1920:1080:flags=lanczos', str(tmp / '%03d.png')], check=True)
     return tmp, sorted(tmp.glob('*.png'))
 
 def portrait(im):
     """9:16 frame: the 16:9 film enlarged so the logo fills the width, feathered over a blurred copy."""
-    W, H = 540, 960
-    bg = ImageOps.fit(im, (W, H)).filter(ImageFilter.GaussianBlur(28))
+    W, H = 720, 1280
+    bg = ImageOps.fit(im, (W, H)).filter(ImageFilter.GaussianBlur(36))
     bg = ImageEnhance.Brightness(bg).enhance(0.55)
-    fw = 640
+    fw = 853
     fg = im.resize((fw, round(im.height * fw / im.width)), Image.LANCZOS)
     fg = fg.crop(((fw - W) // 2, 0, (fw - W) // 2 + W, fg.height))
     mask = Image.new('L', fg.size, 255)
-    feather = 90
+    feather = 120
     for y in range(feather):
         v = round(255 * y / feather)
         mask.paste(v, (0, y, W, y + 1))
@@ -117,7 +117,7 @@ tmp, files = raw_frames()
 land = [Image.open(f).convert('RGB') for f in files]
 if MONO:
     land = [ImageOps.grayscale(f).convert('RGB') for f in land]
-info = {'landscape': write('landscape', land, 58), 'portrait': write('portrait', [portrait(f) for f in land], 60)}
+info = {'landscape': write('landscape', land, 80), 'portrait': write('portrait', [portrait(f) for f in land], 78)}
 shutil.rmtree(tmp)
 json.dump(info, open(DATA / 'frames.json', 'w'), indent=2)
 

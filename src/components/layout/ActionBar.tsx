@@ -13,7 +13,7 @@ import { Icon, type IconName } from '../ui/Icon';
 export function ActionBar() {
   const { pathname } = useLocation();
   const [visible, setVisible] = useState(pathname !== '/');
-  const hiddenRoute = pathname.startsWith('/agendar') || pathname.startsWith('/admin');
+  const hiddenRoute = pathname.startsWith('/agendar') || pathname.startsWith('/admin') || pathname.startsWith('/equipe');
   const { draft } = useDraft();
   const order = summarize(draft.serviceIds);
 

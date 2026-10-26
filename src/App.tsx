@@ -35,7 +35,7 @@ function PageFallback() {
 function Shell() {
   const { reduced } = useMotionPref();
   const { pathname } = useLocation();
-  const immersive = pathname.startsWith('/agendar') || pathname.startsWith('/admin');
+  const immersive = pathname.startsWith('/agendar') || pathname.startsWith('/admin') || pathname.startsWith('/equipe');
   return (
     <MotionConfig reducedMotion={reduced ? 'always' : 'never'}>
       <a href="#conteudo" className="sr-only z-[70] rounded-full bg-accent px-4 py-2 text-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
@@ -55,6 +55,7 @@ function Shell() {
           <Route path="/agendar" element={<Booking />} />
           <Route path="/meu-agendamento" element={<ManageBooking />} />
           <Route path="/privacidade" element={<Privacy />} />
+          <Route path="/equipe" element={<Admin />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

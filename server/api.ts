@@ -1,6 +1,7 @@
 // Schedule API for the Cloudflare Worker (server/worker.ts) + D1.
 // Availability rules are the same modules the site uses, so client and server always agree;
-// the server re-checks everything and the insert itself is atomic (INSERT … WHERE NOT EXISTS).
+// the server re-checks everything and the insert itself is atomic (INSERT … WHERE NOT EXISTS),
+// backed by a unique index, so two people can never take the same slot. Team routes need a session (auth.ts).
 import { site } from '../src/config/site';
 import { serviceById, team } from '../src/config/catalog';
 import { eligiblePros, proSlots, summarize, type BusyMap } from '../src/booking/availability';
@@ -8,6 +9,8 @@ import { isValidBrPhone, normalizeBrPhone } from '../src/lib/phone';
 import { addDays, shopInstant } from '../src/lib/time';
 import type { Block, Booking, BookingStatus, DayClosures } from '../src/booking/types';
 import type { D1Database, Env, ExecutionContext } from './d1';
+import type { StaffUser } from '../src/booking/types';
+import * as auth from './auth';
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -109,22 +112,9 @@ function newCode() {
   return 'BU-' + Array.from(bytes, (b) => CODE_ALPHABET[b % CODE_ALPHABET.length]).join('');
 }
 
-async function sha256(text: string) {
-  return new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
-}
-
-async function requireAdmin(request: Request, env: Env) {
-  if (!env.ADMIN_TOKEN) throw new HttpError(503, 'admin_not_configured');
-  const given = (request.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
-  const [a, b] = await Promise.all([sha256(given), sha256(env.ADMIN_TOKEN)]);
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
-  if (diff !== 0) throw new HttpError(401, 'unauthorized');
-}
-
 /* ---------------- public ---------------- */
 
-async function createBooking(request: Request, db: D1Database, opts: { admin?: boolean } = {}) {
+async function createBooking(request: Request, db: D1Database, opts: { admin?: boolean; staff?: StaffUser } = {}) {
   type Body = {
     idempotencyKey?: unknown;
     serviceIds?: unknown;
@@ -173,15 +163,15 @@ async function createBooking(request: Request, db: D1Database, opts: { admin?: b
       const res = await db
         .prepare(
           `INSERT INTO bookings (code, professional_id, service_ids, local_day, local_time, starts_at, ends_at, busy_until,
-             duration_min, total_cents, customer_name, customer_phone, customer_email, notes, idempotency_key, created_at, updated_at)
-           SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?16
+             duration_min, total_cents, customer_name, customer_phone, customer_email, notes, idempotency_key, created_at, updated_at, created_by)
+           SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?16, ?17
            WHERE NOT EXISTS (
              SELECT 1 FROM bookings WHERE professional_id = ?2 AND status = 'confirmed' AND starts_at < ?8 AND busy_until > ?6
            ) AND NOT EXISTS (
              SELECT 1 FROM blocks WHERE (professional_id IS NULL OR professional_id = ?2) AND starts_at < ?7 AND ends_at > ?6
            )`,
         )
-        .bind(code, pro.id, JSON.stringify(serviceIds), day, time, start, end, busyUntil, durationMin, priceCents, name, normalizeBrPhone(phone), email || null, notes || null, key, stamp)
+        .bind(code, pro.id, JSON.stringify(serviceIds), day, time, start, end, busyUntil, durationMin, priceCents, name, normalizeBrPhone(phone), email || null, notes || null, key, stamp, opts.staff?.id ?? null)
         .run();
       if (res.meta.changes === 1) {
         await bumpVersion(db);
@@ -303,10 +293,10 @@ async function removeBlock(id: number, db: D1Database) {
   return json({ ok: true });
 }
 
-async function setStatus(code: string, request: Request, db: D1Database) {
+async function setStatus(code: string, request: Request, db: D1Database, staff: StaffUser) {
   const { status } = await readJson<{ status?: string }>(request);
   if (!['cancelled', 'completed', 'no_show'].includes(status ?? '')) throw new HttpError(400, 'invalid');
-  const res = await db.prepare('UPDATE bookings SET status = ?, updated_at = ? WHERE code = ?').bind(status, Date.now(), code).run();
+  const res = await db.prepare('UPDATE bookings SET status = ?, updated_at = ?, updated_by = ? WHERE code = ?').bind(status, Date.now(), staff.id, code).run();
   if (res.meta.changes === 0) throw new HttpError(404, 'not_found');
   await bumpVersion(db);
   const row = await db.prepare('SELECT * FROM bookings WHERE code = ?').bind(code).first<BookingRow>();
@@ -339,7 +329,7 @@ export async function handle(request: Request, env: Env, ctx?: ExecutionContext)
     }
     return response;
   } catch (e) {
-    if (e instanceof HttpError) return json({ error: e.code }, e.status);
+    if (e instanceof HttpError || e instanceof auth.AuthError) return json({ error: e.code }, e.status);
     console.error(e);
     return json({ error: 'server_error' }, 500);
   }
@@ -367,16 +357,32 @@ async function route(request: Request, env: Env): Promise<Response> {
     if (method === 'POST' && path === '/api/bookings/lookup') return findBooking(request, db);
     if (method === 'POST' && path === '/api/bookings/cancel') return cancelBooking(request, db);
 
+    /* team accounts */
+    if (method === 'GET' && path === '/api/staff/setup') return json({ needed: await auth.setupNeeded(db) });
+    if (method === 'POST' && path === '/api/staff/setup') return json(await auth.setup(await readJson(request), env), 201);
+    if (method === 'POST' && path === '/api/staff/login') return json(await auth.login(await readJson(request), db));
+    if (path.startsWith('/api/staff/')) {
+      const me = await auth.requireStaff(request, db);
+      if (method === 'GET' && path === '/api/staff/me') return json(me);
+      if (method === 'POST' && path === '/api/staff/logout') return (await auth.logout(request, db), json({ ok: true }));
+      if (method === 'POST' && path === '/api/staff/password') return (await auth.changePassword(me, await readJson(request), request, db), json({ ok: true }));
+      if (me.role !== 'admin') throw new HttpError(403, 'forbidden');
+      if (method === 'GET' && path === '/api/staff/users') return json({ users: await auth.listUsers(db) });
+      if (method === 'POST' && path === '/api/staff/users') return json(await auth.createUser(await readJson(request), db), 201);
+      const userMatch = path.match(/^\/api\/staff\/users\/(\d+)$/);
+      if (method === 'PATCH' && userMatch) return json(await auth.updateUser(me, Number(userMatch[1]), await readJson(request), db));
+    }
+
+    /* schedule management: any signed-in team member */
     if (path.startsWith('/api/admin/')) {
-      await requireAdmin(request, env);
-      if (method === 'GET' && path === '/api/admin/session') return json({ ok: true });
+      const staff = await auth.requireStaff(request, db);
       if (method === 'GET' && path === '/api/admin/day') return adminDay(url, db);
       if (method === 'POST' && path === '/api/admin/blocks') return addBlock(request, db);
-      if (method === 'POST' && path === '/api/admin/bookings') return createBooking(request, db, { admin: true });
+      if (method === 'POST' && path === '/api/admin/bookings') return createBooking(request, db, { admin: true, staff });
       const blockMatch = path.match(/^\/api\/admin\/blocks\/(\d+)$/);
       if (method === 'DELETE' && blockMatch) return removeBlock(Number(blockMatch[1]), db);
       const statusMatch = path.match(/^\/api\/admin\/bookings\/(BU-[A-Z0-9]{5})\/status$/);
-      if (method === 'POST' && statusMatch) return setStatus(statusMatch[1], request, db);
+      if (method === 'POST' && statusMatch) return setStatus(statusMatch[1], request, db, staff);
     }
     throw new HttpError(404, 'not_found');
   }

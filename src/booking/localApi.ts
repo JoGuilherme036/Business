@@ -3,7 +3,7 @@ import { team } from '@/config/catalog';
 import { normalizeBrPhone, isValidBrPhone } from '@/lib/phone';
 import { addDays, shopInstant } from '@/lib/time';
 import { eligiblePros, overlaps, proSlots, summarize, type BusyMap } from './availability';
-import { BookingError, type AdminApi, type Block, type Booking, type BookingApi, type CreateBookingRequest } from './types';
+import { BookingError, type AdminApi, type Block, type Booking, type BookingApi, type CreateBookingRequest, type StaffUser } from './types';
 
 // DEMO adapter: simulates the server in the browser so the full flow (and the admin panel)
 // can be tried without a backend. Data lives only on this device. Not a real schedule.
@@ -14,7 +14,14 @@ type Store = { bookings: Booking[]; idempotency: Record<string, string>; blocks:
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
 export const LOCAL_STORE_KEY = 'business.demo.bookings.v1';
-export const DEMO_ADMIN_PASSWORD = 'demo';
+// Demo accounts (this browser only). The live system uses the accounts in the Cloudflare database.
+export const DEMO_LOGINS = [
+  { username: 'admin', password: 'business123', name: 'Administração', role: 'admin' as const, proId: null },
+  { username: 'lucas', password: 'business123', name: 'Lucas', role: 'barbeiro' as const, proId: 'lucas' },
+];
+const USERS_KEY = 'business.demo.staff.v1';
+const SESSION_KEY = 'business.demo.session';
+type DemoUser = StaffUser & { password: string };
 const CODE_ALPHABET = 'ACDEFGHJKMNPQRTUVWXY34679';
 
 export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number; now?: () => Date } = {}): BookingApi & { admin: AdminApi } {
@@ -99,10 +106,89 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
 
   const strip = ({ start: _s, end: _e, ...b }: StoredBlock): Block => b;
 
+  const readUsers = (): DemoUser[] => {
+    try {
+      const u = JSON.parse(storage.getItem(USERS_KEY) ?? '') as DemoUser[];
+      if (Array.isArray(u) && u.length) return u;
+    } catch {
+      /* first run */
+    }
+    return DEMO_LOGINS.map((l, i) => ({ id: i + 1, username: l.username, name: l.name, role: l.role, proId: l.proId, active: true, password: l.password, lastLoginAt: null }));
+  };
+  const writeUsers = (u: DemoUser[]) => storage.setItem(USERS_KEY, JSON.stringify(u));
+  const pub = ({ password: _p, ...u }: DemoUser): StaffUser => u;
+  const current = () => {
+    const id = Number(storage.getItem(SESSION_KEY) ?? 0);
+    const u = readUsers().find((x) => x.id === id && x.active);
+    if (!u) throw new BookingError('unauthorized');
+    return u;
+  };
+  const requireAdmin = () => {
+    if (current().role !== 'admin') throw new BookingError('forbidden');
+  };
+  const checkPassword = (p: string) => {
+    if (p.length < 8 || !/[a-zA-Z]/.test(p) || !/\d/.test(p)) throw new BookingError('weak_password');
+  };
+
   const admin: AdminApi = {
-    async login(password) {
+    async setupNeeded() {
+      return false;
+    },
+    async setup() {
+      throw new BookingError('setup_done');
+    },
+    async login(username, password) {
       await wait();
-      if (password !== DEMO_ADMIN_PASSWORD) throw new BookingError('unauthorized');
+      const u = readUsers().find((x) => x.username === username.trim().toLowerCase() && x.active);
+      if (!u || u.password !== password) throw new BookingError('unauthorized');
+      const users = readUsers();
+      const stored = users.find((x) => x.id === u.id)!;
+      stored.lastLoginAt = now().toISOString();
+      writeUsers(users);
+      storage.setItem(SESSION_KEY, String(u.id));
+      return pub(stored);
+    },
+    async me() {
+      return pub(current());
+    },
+    async logout() {
+      storage.setItem(SESSION_KEY, '0');
+    },
+    async changePassword(cur, next) {
+      await wait();
+      const users = readUsers();
+      const u = users.find((x) => x.id === current().id)!;
+      if (u.password !== cur) throw new BookingError('unauthorized');
+      checkPassword(next);
+      u.password = next;
+      writeUsers(users);
+    },
+    async users() {
+      requireAdmin();
+      return readUsers().map(pub);
+    },
+    async createUser(nu) {
+      await wait();
+      requireAdmin();
+      const users = readUsers();
+      if (!/^[a-z0-9._-]{3,32}$/.test(nu.username.toLowerCase()) || nu.name.trim().length < 2) throw new BookingError('invalid');
+      if (users.some((x) => x.username === nu.username.toLowerCase())) throw new BookingError('username_taken');
+      checkPassword(nu.password);
+      const u: DemoUser = { id: Math.max(0, ...users.map((x) => x.id)) + 1, username: nu.username.toLowerCase(), name: nu.name.trim(), role: nu.role, proId: nu.proId, active: true, password: nu.password, lastLoginAt: null };
+      writeUsers([...users, u]);
+      return pub(u);
+    },
+    async updateUser(id, patch) {
+      await wait();
+      requireAdmin();
+      const users = readUsers();
+      const u = users.find((x) => x.id === id);
+      if (!u) throw new BookingError('not_found');
+      if (id === current().id && (patch.active === false || (patch.role && patch.role !== 'admin'))) throw new BookingError('invalid');
+      if (patch.password !== undefined) checkPassword(patch.password);
+      Object.assign(u, Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)));
+      writeUsers(users);
+      return pub(u);
     },
     async day(day) {
       await wait();

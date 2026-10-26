@@ -5,9 +5,11 @@ import { proById, serviceById, services, team } from '@/config/catalog';
 import { site } from '@/config/site';
 import { adminApi, bookingApi } from '@/booking/api';
 import { clearAdminSession } from '@/booking/cloudflareApi';
-import { DEMO_ADMIN_PASSWORD } from '@/booking/localApi';
+import { DEMO_LOGINS } from '@/booking/localApi';
+import { asset } from '@/lib/asset';
+import { TeamPanel, AccountPanel } from '@/components/staff/TeamPanel';
 import { notifyScheduleChanged, useScheduleVersion } from '@/booking/sync';
-import { BookingError, type Block, type Booking, type BookingStatus, type BusyMap } from '@/booking/types';
+import { BookingError, type Block, type Booking, type BookingStatus, type BusyMap, type StaffUser } from '@/booking/types';
 import { eligiblePros, slotsFor, summarize } from '@/booking/availability';
 import { toggleService } from '@/booking/selection';
 import { maskBrPhone } from '@/lib/phone';
@@ -19,7 +21,6 @@ import { addDays, dayOfMonth, formatDayLong, formatDayShort, shopNow, weekdayOf 
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { Icon } from '@/components/ui/Icon';
 import { Logo } from '@/components/ui/Logo';
-import { Monogram } from '@/components/ui/Monogram';
 
 const clock = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: site.timeZone });
 const clockSec = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: site.timeZone });
@@ -33,82 +34,170 @@ const statusStyle: Record<BookingStatus, string> = {
 const field = 'mt-1.5 block w-full rounded-xl border hairline bg-ink px-3.5 py-3 text-ivory focus:border-accent focus:outline-none';
 
 export default function Admin() {
-  useDocumentTitle('Painel da barbearia');
-  const [authed, setAuthed] = useState(false);
-  const [checking, setChecking] = useState(bookingApi.mode === 'live');
+  useDocumentTitle('Área da equipe');
+  const [user, setUser] = useState<StaffUser | null>(null);
+  const [state, setState] = useState<'checking' | 'setup' | 'login' | 'ready'>('checking');
 
-  // A live session survives a refresh (token in sessionStorage); confirm it is still valid.
+  // A saved session survives a refresh; confirm it is still valid before showing the agenda.
   useEffect(() => {
-    if (bookingApi.mode !== 'live') return;
-    adminApi
-      .day(shopNow().day)
-      .then(() => setAuthed(true))
-      .catch(() => undefined)
-      .finally(() => setChecking(false));
+    let alive = true;
+    (async () => {
+      try {
+        const me = await adminApi.me();
+        if (alive) setUser(me), setState('ready');
+      } catch {
+        const needed = await adminApi.setupNeeded().catch(() => false);
+        if (alive) setState(needed ? 'setup' : 'login');
+      }
+    })();
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  if (checking) return <div className="grid min-h-[100svh] place-items-center text-muted">Carregando…</div>;
-  return authed ? (
-    <Dashboard
-      onLogout={() => {
-        clearAdminSession();
-        setAuthed(false);
-      }}
-    />
-  ) : (
-    <Login onSuccess={() => setAuthed(true)} />
-  );
+  const signedIn = (u: StaffUser) => {
+    setUser(u);
+    setState('ready');
+  };
+  const signOut = useCallback(async () => {
+    await adminApi.logout().catch(() => undefined);
+    clearAdminSession();
+    setUser(null);
+    setState('login');
+  }, []);
+
+  if (state === 'checking') return <div className="grid min-h-[100svh] place-items-center text-muted">Carregando…</div>;
+  if (state === 'setup') return <Setup onSuccess={signedIn} />;
+  if (state === 'login' || !user) return <Login onSuccess={signedIn} />;
+  return <Dashboard user={user} onUserChange={setUser} onLogout={signOut} />;
 }
 
-function Login({ onSuccess }: { onSuccess: () => void }) {
-  const [password, setPassword] = useState('');
-  const [state, setState] = useState<'idle' | 'loading' | 'wrong' | 'error'>('idle');
-  const submit = async (e: FormEvent) => {
-    e.preventDefault();
-    setState('loading');
-    try {
-      await adminApi.login(password);
-      onSuccess();
-    } catch (err) {
-      setState(err instanceof BookingError && err.code === 'unauthorized' ? 'wrong' : 'error');
-    }
-  };
+const loginErrors: Partial<Record<string, string>> = {
+  unauthorized: 'Usuário ou senha incorretos.',
+  locked: 'Muitas tentativas. Aguarde 15 minutos ou peça ao administrador para redefinir a senha.',
+  weak_password: 'A senha precisa de pelo menos 8 caracteres, com letras e números.',
+  username_taken: 'Esse usuário já existe.',
+  setup_done: 'A conta de administrador já foi criada. Entre com usuário e senha.',
+  invalid: 'Confira os dados: o usuário aceita letras minúsculas, números, ponto, hífen e sublinhado (3 a 32).',
+};
+const errorText = (e: unknown) => (e instanceof BookingError ? loginErrors[e.code] : undefined) ?? 'Não foi possível conectar. Tente de novo.';
+
+function AuthCard({ title, subtitle, children, onSubmit }: { title: React.ReactNode; subtitle: string; children: React.ReactNode; onSubmit: (e: FormEvent) => void }) {
   return (
-    <main id="conteudo" className="grid min-h-[100svh] place-items-center px-5">
-      <form onSubmit={submit} className="w-full max-w-sm rounded-xl border hairline bg-ink-2 p-7">
-        <Logo />
-        <h1 className="display mt-6 text-4xl">
-          Painel da <em className="accent-text">barbearia</em>
-        </h1>
-        <p className="mt-2 text-sm text-muted">Agenda do dia, bloqueios de horário, dia ou barbeiro.</p>
-        <label className="mt-6 block">
-          <span className="text-sm font-medium">Senha</span>
-          <input id="admin-password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={field} required />
-        </label>
-        <div aria-live="polite" className="mt-2 min-h-5 text-[13px] text-danger">
-          {state === 'wrong' && 'Senha incorreta.'}
-          {state === 'error' && 'Não foi possível conectar. Tente de novo.'}
+    <main id="conteudo" className="grid min-h-[100svh] md:grid-cols-[1.1fr_1fr]">
+      <div className="relative hidden overflow-hidden md:block">
+        <img src={asset('media/img/salao-1200.webp')} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-r from-ink/30 via-ink/40 to-ink" />
+        <div className="absolute bottom-10 left-10 max-w-sm">
+          <Logo size="lg" />
+          <p className="mt-6 text-sm leading-relaxed text-ivory/75">Agenda da equipe em tempo real. Toda alteração aparece na hora em todos os aparelhos, e um horário marcado aqui some do site no mesmo instante.</p>
         </div>
-        <button type="submit" disabled={state === 'loading'} className="mt-3 min-h-12 w-full rounded-full bg-accent text-[15px] font-semibold text-ink disabled:opacity-50">
-          {state === 'loading' ? 'Entrando…' : 'Entrar'}
-        </button>
-        {bookingApi.mode === 'demo' && (
-          <p className="mt-4 rounded-xl border border-accent/30 bg-accent/10 px-3 py-2 text-[12px] text-accent-light">
-            Modo demonstração: senha <b>{DEMO_ADMIN_PASSWORD}</b>. Os dados ficam só neste navegador.
-          </p>
-        )}
-        <Link to="/" className="mt-5 inline-flex min-h-11 items-center gap-2 text-[13px] text-muted hover:text-ivory">
-          <Icon name="arrowLeft" className="h-4 w-4" /> Voltar ao site
-        </Link>
-      </form>
+      </div>
+      <div className="grid place-items-center px-5 py-12">
+        <form onSubmit={onSubmit} className="w-full max-w-sm">
+          <div className="md:hidden">
+            <Logo />
+          </div>
+          <p className="eyebrow mt-8 md:mt-0">Área da equipe</p>
+          <h1 className="display mt-3 text-4xl">{title}</h1>
+          <p className="mt-2 text-sm text-muted">{subtitle}</p>
+          {children}
+          <Link to="/" className="mt-6 inline-flex min-h-11 items-center gap-2 text-[13px] text-muted hover:text-ivory">
+            <Icon name="arrowLeft" className="h-4 w-4" /> Voltar ao site
+          </Link>
+        </form>
+      </div>
     </main>
   );
 }
 
-function Dashboard({ onLogout }: { onLogout: () => void }) {
+function Login({ onSuccess }: { onSuccess: (u: StaffUser) => void }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(true);
+  const [state, setState] = useState<{ loading: boolean; error?: string }>({ loading: false });
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setState({ loading: true });
+    try {
+      onSuccess(await adminApi.login(username, password, remember));
+    } catch (err) {
+      setState({ loading: false, error: errorText(err) });
+    }
+  };
+  return (
+    <AuthCard title="Entrar" subtitle="Acesso restrito aos funcionários da barbearia." onSubmit={submit}>
+      <label className="mt-7 block">
+        <span className="text-sm font-medium">Usuário</span>
+        <input id="staff-username" autoComplete="username" autoCapitalize="none" spellCheck={false} value={username} onChange={(e) => setUsername(e.target.value)} className={field} required />
+      </label>
+      <label className="mt-4 block">
+        <span className="text-sm font-medium">Senha</span>
+        <input id="staff-password" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className={field} required />
+      </label>
+      <label className="mt-4 flex min-h-11 items-center gap-3 text-sm text-ivory/80">
+        <input id="staff-remember" type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="h-4 w-4 accent-white" />
+        Manter conectado neste aparelho
+      </label>
+      <div aria-live="polite" className="mt-1 min-h-5 text-[13px] text-danger">{state.error}</div>
+      <button type="submit" disabled={state.loading} className="mt-3 min-h-12 w-full rounded-[3px] bg-ivory text-[12.5px] font-semibold uppercase tracking-[0.14em] text-ink disabled:opacity-50">
+        {state.loading ? 'Entrando…' : 'Entrar'}
+      </button>
+      {bookingApi.mode === 'demo' && (
+        <p className="mt-4 rounded-lg border hairline bg-ink-2 px-3 py-2 text-[12px] text-ivory/75">
+          Modo demonstração: usuário <b>{DEMO_LOGINS[0].username}</b> ou <b>{DEMO_LOGINS[1].username}</b>, senha <b>{DEMO_LOGINS[0].password}</b>. Os dados ficam só neste navegador.
+        </p>
+      )}
+    </AuthCard>
+  );
+}
+
+function Setup({ onSuccess }: { onSuccess: (u: StaffUser) => void }) {
+  const [form, setForm] = useState({ setupKey: '', name: '', username: '', password: '' });
+  const [state, setState] = useState<{ loading: boolean; error?: string }>({ loading: false });
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    setState({ loading: true });
+    try {
+      onSuccess(await adminApi.setup(form));
+    } catch (err) {
+      setState({ loading: false, error: err instanceof BookingError && err.code === 'unauthorized' ? 'Chave de configuração incorreta.' : errorText(err) });
+    }
+  };
+  return (
+    <AuthCard title="Primeiro acesso" subtitle="Crie a conta do administrador. Depois, ele cadastra os demais funcionários." onSubmit={submit}>
+      <label className="mt-7 block">
+        <span className="text-sm font-medium">Chave de configuração</span>
+        <input id="setup-key" type="password" autoComplete="off" value={form.setupKey} onChange={set('setupKey')} className={field} required />
+        <span className="mt-1 block text-[12px] text-muted">O segredo ADMIN_TOKEN definido na Cloudflare.</span>
+      </label>
+      <label className="mt-4 block">
+        <span className="text-sm font-medium">Seu nome</span>
+        <input id="setup-name" autoComplete="name" value={form.name} onChange={set('name')} className={field} required />
+      </label>
+      <label className="mt-4 block">
+        <span className="text-sm font-medium">Usuário</span>
+        <input id="setup-username" autoComplete="username" autoCapitalize="none" value={form.username} onChange={set('username')} className={field} required />
+      </label>
+      <label className="mt-4 block">
+        <span className="text-sm font-medium">Senha</span>
+        <input id="setup-password" type="password" autoComplete="new-password" value={form.password} onChange={set('password')} className={field} required />
+        <span className="mt-1 block text-[12px] text-muted">Mínimo de 8 caracteres, com letras e números.</span>
+      </label>
+      <div aria-live="polite" className="mt-1 min-h-5 text-[13px] text-danger">{state.error}</div>
+      <button type="submit" disabled={state.loading} className="mt-3 min-h-12 w-full rounded-[3px] bg-ivory text-[12.5px] font-semibold uppercase tracking-[0.14em] text-ink disabled:opacity-50">
+        {state.loading ? 'Criando…' : 'Criar administrador'}
+      </button>
+    </AuthCard>
+  );
+}
+
+function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserChange: (u: StaffUser) => void; onLogout: () => void }) {
   const today = shopNow().day;
+  const [tab, setTab] = useState<'agenda' | 'equipe' | 'conta'>('agenda');
   const [day, setDay] = useState(today);
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<string>(user.proId ?? 'all');
   const [data, setData] = useState<{ bookings: Booking[]; blocks: Block[] } | null>(null);
   const [error, setError] = useState(false);
   const [sheet, setSheet] = useState<'block' | 'book' | null>(null);
@@ -147,9 +236,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       <header className="sticky top-0 z-30 border-b hairline bg-ink/95 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4">
           <div className="flex min-w-0 items-center gap-3">
-            <Monogram className="hidden h-9 w-9 sm:block" />
-            <div className="leading-tight">
-              <p className="font-display text-lg font-bold">Agenda</p>
+            <Link to="/" aria-label="Voltar ao site" className="hidden sm:block">
+              <Logo size="sm" />
+            </Link>
+            <div className="leading-tight sm:border-l sm:hairline sm:pl-3">
+              <p className="font-display text-[15px] font-bold">Área da equipe</p>
               <p className="flex items-center gap-1.5 text-[11px] text-muted" aria-live="polite">
                 <span className="relative flex h-1.5 w-1.5">
                   {live && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />}
@@ -160,17 +251,38 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
+            {tab === 'agenda' && (
+              <>
             <button onClick={() => setSheet('book')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-accent/60 px-3.5 text-[13px] font-semibold text-accent-light sm:px-4">
               <Icon name="calendar" className="h-4 w-4" /> Agendar
             </button>
             <button onClick={() => setSheet('block')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-accent px-3.5 text-[13px] font-semibold text-ink sm:px-4">
               <Icon name="close" className="h-4 w-4 rotate-45" /> Bloquear
             </button>
-            <button onClick={onLogout} className="grid h-11 w-11 place-items-center rounded-full border hairline" aria-label="Sair do painel">
+              </>
+            )}
+            <span className="hidden text-right text-[11px] leading-tight text-muted lg:block">
+              <span className="block text-[13px] font-semibold text-ivory">{user.name}</span>
+              {user.role === 'admin' ? 'Administrador' : 'Barbeiro'}
+            </span>
+            <button onClick={onLogout} className="grid h-11 w-11 place-items-center rounded-full border hairline" aria-label="Sair da área da equipe" title="Sair">
               <Icon name="arrowUpRight" className="h-4 w-4" />
             </button>
           </div>
         </div>
+        <nav aria-label="Seções da área da equipe" className="no-scrollbar mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-3">
+          {([['agenda', 'Agenda'], ...(user.role === 'admin' ? [['equipe', 'Equipe e acessos']] : []), ['conta', 'Minha conta']] as [typeof tab, string][]).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              aria-current={tab === id ? 'page' : undefined}
+              className={`min-h-10 shrink-0 rounded-[3px] px-4 text-[11.5px] font-semibold uppercase tracking-[0.14em] ${tab === id ? 'bg-ivory text-ink' : 'text-ivory/70 hover:text-ivory'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+        {tab === 'agenda' && (
         <div className="no-scrollbar mx-auto flex max-w-6xl gap-1.5 overflow-x-auto px-4 pb-3" role="listbox" aria-label="Dia">
           {days.map((d) => {
             const on = d === day;
@@ -189,8 +301,12 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             );
           })}
         </div>
+        )}
       </header>
 
+      {tab === 'equipe' && <TeamPanel me={user} />}
+      {tab === 'conta' && <AccountPanel me={user} onChange={onUserChange} />}
+      {tab === 'agenda' && (
       <main id="conteudo" className="mx-auto max-w-6xl px-4 pt-6">
         {bookingApi.mode === 'demo' && (
           <p className="mb-4 rounded-xl border border-accent/30 bg-accent/10 px-4 py-2 text-[13px] text-accent-light">
@@ -261,6 +377,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           })}
         </div>
       </main>
+      )}
 
       <AnimatePresence>
         {sheet === 'block' && <BlockSheet day={day} onClose={() => setSheet(null)} onCreated={changed} />}

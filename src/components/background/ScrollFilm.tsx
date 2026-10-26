@@ -10,9 +10,9 @@ type Frame = ImageBitmap | HTMLImageElement;
 const pickSet = (): SetName => (window.innerWidth / window.innerHeight < 1 ? 'portrait' : 'landscape');
 const frameUrl = (set: SetName, i: number) => asset(`media/frames/${set}/${String(i).padStart(3, '0')}.webp`);
 
-const KEY_STEP = 8; // every 8th frame stays decoded, so a nearby frame is always ready
-const WINDOW = 6; // frames decoded on each side of the scroll position
-const MAX_DECODING = 3;
+const KEYS = 10; // about this many evenly spaced frames stay decoded, so a nearby frame is always ready
+const WINDOW = 8; // frames decoded on each side of the scroll position
+const MAX_DECODING = 4;
 
 /** Coarse-to-fine order (0, 64, 32, 16, 48, …) so the whole film is scrubbable early and sharpens as it loads. */
 function loadOrder(count: number, minStep: number) {
@@ -30,7 +30,7 @@ function loadOrder(count: number, minStep: number) {
  * light WebP sequence. Works in every browser, including iOS Safari and in-app browsers where
  * inline video won't load without a tap. Compressed frames are kept as small blobs; only the
  * frames around the scroll position are decoded (off the main thread), and two neighbours are
- * cross-faded so 72 frames read as continuous motion.
+ * drawn at full resolution.
  */
 export function ScrollFilm({ progress }: { progress: MotionValue<number> }) {
   const { reduced } = useMotionPref();
@@ -51,8 +51,10 @@ export function ScrollFilm({ progress }: { progress: MotionValue<number> }) {
     if (!canvas || !ctx) return;
 
     const { count, width, height } = frames[set];
+    const KEY_STEP = Math.max(1, Math.round(count / KEYS));
     canvas.width = width;
     canvas.height = height;
+    ctx.imageSmoothingQuality = 'high';
     setReady(false);
 
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
@@ -116,22 +118,14 @@ export function ScrollFilm({ progress }: { progress: MotionValue<number> }) {
       return -1;
     };
 
+    // Every source frame is in the sequence (24 fps), so the nearest one is drawn as is: sharp,
+    // with no ghosting from blending two frames of a fast-moving part.
     const draw = () => {
-      const pos = current * (count - 1);
-      const i0 = Math.floor(pos);
-      const frac = pos - i0;
-      const a = nearest(i0);
+      const a = nearest(Math.round(current * (count - 1)));
       if (a < 0) return;
-      const exact = a === i0 && decoded.has(i0 + 1) && frac > 0.02;
-      const key = exact ? `${i0}:${frac.toFixed(2)}` : `${a}`;
+      const key = String(a);
       if (key === drawnKey) return;
-      ctx.globalAlpha = 1;
       ctx.drawImage(decoded.get(a)!, 0, 0, width, height);
-      if (exact) {
-        ctx.globalAlpha = frac;
-        ctx.drawImage(decoded.get(i0 + 1)!, 0, 0, width, height);
-        ctx.globalAlpha = 1;
-      }
       drawnKey = key;
       setReady(true);
     };
@@ -167,7 +161,7 @@ export function ScrollFilm({ progress }: { progress: MotionValue<number> }) {
         pump();
       }
     };
-    Array.from({ length: 4 }, loader);
+    Array.from({ length: 6 }, loader);
 
     return () => {
       disposed = true;

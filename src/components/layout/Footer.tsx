@@ -48,7 +48,7 @@ export function Footer() {
             <li><Link className="hover:text-accent-light" to="/agendar">Agendar horário</Link></li>
             <li><Link className="hover:text-accent-light" to="/meu-agendamento">Meu agendamento</Link></li>
             <li><Link className="hover:text-accent-light" to="/privacidade">Privacidade</Link></li>
-            <li><Link className="hover:text-accent-light" to="/admin">Área da barbearia</Link></li>
+            <li><Link className="hover:text-accent-light" to="/equipe">Área da equipe</Link></li>
             <li>
               <button className="text-left hover:text-accent-light" onClick={() => setPref(reduced ? 'full' : 'reduced')} aria-pressed={reduced}>
                 {reduced ? 'Ativar animações' : 'Reduzir animações'}

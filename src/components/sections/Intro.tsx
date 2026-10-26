@@ -41,11 +41,32 @@ function useNextSlot() {
   return next;
 }
 
-// Mobile: 360svh tall with a 50svh overlap from the agenda → it starts covering at 210/260 ≈ 0.81.
-// Desktop: 380vh with 60vh overlap → 220/280 ≈ 0.79. The film plays in the first 60% of the scroll,
+// Mobile: 400svh tall with a 50svh overlap from the agenda → it starts covering at 250/300 ≈ 0.83.
+// Desktop: 420vh with 60vh overlap → 260/320 ≈ 0.81. The film plays in the first 62% of the scroll,
 // then the finished logo holds while the hero content appears below it.
-const FILM_END = 0.6;
-const HERO_IN = [0.55, 0.63];
+const FILM_END = 0.62;
+const HERO_IN = [0.6, 0.68];
+// Where the finished logo ends in each frame set (fraction of the frame height, measured on the last frame).
+const LOGO_BOTTOM = { landscape: 0.58, portrait: 0.53 } as const;
+
+/** Places the hero content just under the logo, whatever the screen shape (the film is drawn "cover"). */
+function useHeroLayout() {
+  const measure = () => {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const set = vw / vh < 1 ? 'portrait' : 'landscape';
+    const aspect = set === 'portrait' ? 9 / 16 : 16 / 9;
+    const frameH = Math.max(vh, vw / aspect);
+    return { top: vh / 2 + (LOGO_BOTTOM[set] - 0.5) * frameH + (set === 'portrait' ? 20 : 28), compact: vh < 860 };
+  };
+  const [layout, setLayout] = useState(measure);
+  useEffect(() => {
+    const on = () => setLayout(measure());
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
+  return layout;
+}
 
 /**
  * Pinned opening: the clipper animation is scrubbed frame by frame by this section's scroll. It
@@ -75,9 +96,12 @@ export function Intro() {
     window.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
   };
   const hours = hoursSummary();
+  const layout = useHeroLayout();
+  // On shorter screens the info bar steps aside while the headline and buttons are shown.
+  const barOpacity = useTransform(p, HERO_IN, [1, layout.compact ? 0 : 1]);
 
   return (
-    <section ref={ref} aria-labelledby="hero-title" className={reduced ? 'relative' : 'relative h-[360svh] md:h-[380vh]'}>
+    <section ref={ref} aria-labelledby="hero-title" className={reduced ? 'relative' : 'relative h-[400svh] md:h-[420vh]'}>
       <div className={`${reduced ? 'relative' : 'sticky top-0'} h-[100svh] min-h-[640px] overflow-hidden bg-ink`}>
         {reduced ? (
           <picture aria-hidden="true">
@@ -117,8 +141,8 @@ export function Intro() {
 
         {/* Hero content: appears under the finished logo. */}
         <motion.div
-          className="absolute inset-x-0 top-[calc(50%+3.2rem)] md:top-[calc(50%+5.5rem)]"
-          style={reduced ? undefined : { opacity: heroOpacity, y: heroY, pointerEvents: heroEvents }}
+          className="absolute inset-x-0"
+          style={reduced ? { top: layout.top } : { top: layout.top, opacity: heroOpacity, y: heroY, pointerEvents: heroEvents }}
         >
           <div className="container-x flex flex-col items-center text-center">
             <p className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.36em] text-ivory/70 md:text-[10.5px]">
@@ -142,7 +166,7 @@ export function Intro() {
         </motion.div>
 
         {/* Corporate info bar: status, next free slot, address and hours at a glance. */}
-        <div className="absolute inset-x-0 bottom-0">
+        <motion.div className="absolute inset-x-0 bottom-0" style={reduced ? undefined : { opacity: barOpacity }}>
           <motion.dl {...fade(0.5)} className="container-x grid grid-cols-2 pb-[max(env(safe-area-inset-bottom),16px)] md:grid-cols-4 md:pb-6">
             <InfoCell label="Agora" className="border-t border-ivory/15">
               <span className="flex items-center gap-2">
@@ -177,7 +201,7 @@ export function Intro() {
               ))}
             </InfoCell>
           </motion.dl>
-        </div>
+        </motion.div>
 
         {!reduced && (
           <motion.button

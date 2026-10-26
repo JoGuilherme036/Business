@@ -13,7 +13,7 @@ run_worker_first = ["/api/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "business-barbearia"
-database_id = "SUBSTITUA-PELO-ID-DO-SEU-D1" # rode: npx wrangler d1 create business-barbearia
+database_id = "8802452f-f8d0-4ec6-a65e-c45eaa62f4e4"
 migrations_dir = "migrations"
 
 [[durable_objects.bindings]]

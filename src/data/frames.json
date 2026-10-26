@@ -1,12 +1,12 @@
 {
   "landscape": {
-    "count": 96,
-    "width": 1280,
-    "height": 720
+    "count": 192,
+    "width": 1920,
+    "height": 1080
   },
   "portrait": {
-    "count": 96,
-    "width": 540,
-    "height": 960
+    "count": 192,
+    "width": 720,
+    "height": 1280
   }
 }

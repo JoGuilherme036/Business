@@ -26,23 +26,40 @@ npm test           # testes unitários (disponibilidade, horários, adaptador de
 | Página inicial | `src/pages/Home.tsx` + `src/components/sections/` | Manifesto, experiência (fixada no desktop), produtos, barbeiros, espaço, clube, localização, dúvidas, epílogo com o último quadro da introdução |
 | Agendamento | `src/pages/Booking.tsx` + `src/components/booking/` | Serviço → barbeiro (ou primeiro disponível) → dia/horário → dados → revisão → confirmação com código, .ics, Google Agenda, WhatsApp, rota |
 | Meu agendamento | `src/pages/ManageBooking.tsx` | Consulta por código + telefone e cancelamento dentro da política |
-| Painel da barbearia | `src/pages/Admin.tsx` (`/admin`) | Agenda do dia por barbeiro, **agendar cliente** que ligou ou chegou sem hora (sem a antecedência mínima, telefone opcional), concluir/faltou/cancelar, **bloquear horário, dia inteiro ou um barbeiro** (inclusive vários dias, como férias), aviso dos clientes afetados com link de WhatsApp |
+| Área da equipe | `src/pages/Admin.tsx`, `src/components/staff/` (`/equipe`) | Login por usuário e senha, perfis, gestão de acessos; Agenda do dia por barbeiro, **agendar cliente** que ligou ou chegou sem hora (sem a antecedência mínima, telefone opcional), concluir/faltou/cancelar, **bloquear horário, dia inteiro ou um barbeiro** (inclusive vários dias, como férias), aviso dos clientes afetados com link de WhatsApp |
 | API da agenda | `server/worker.ts` + `server/api.ts` + `migrations/` | Cloudflare Worker + D1. Usa as mesmas regras de horário do site e grava de forma atômica (sem reserva dupla) |
 | Tempo real | `server/hub.ts` + `src/booking/sync.ts` | Durable Object com WebSocket: o servidor avisa todos os aparelhos no instante da mudança (medido: 0,14 s). Se a conexão cair, consulta a cada 3 s e reconecta sozinho |
 | WhatsApp, rota, ligar | `src/lib/whatsapp.ts`, `src/lib/maps.ts` | Mensagens contextuais; Google Maps, Waze e Apple Mapas |
 | Aberto agora | `src/lib/hours.ts` | Calculado no fuso da barbearia, com datas fechadas |
 | SEO | `index.html`, `src/lib/seo.ts` | Título, Open Graph e JSON-LD `BarberShop` gerados do mesmo arquivo de configuração |
 
-## Publicar na Cloudflare (uma vez)
+## Publicar na Cloudflare
 
-Este projeto tem banco próprio: crie-o com `npx wrangler d1 create business-barbearia`, cole o `database_id` no `wrangler.toml` e aplique as tabelas com `npm run db:migrate:remote`.
+O banco **D1 `business-barbearia` já foi criado** na conta Cloudflare, com todas as tabelas (agenda, bloqueios, equipe e sessões). O `wrangler.toml` já aponta para ele.
 
-1. No painel da Cloudflare: **Workers & Pages → Criar → Importar um repositório** e escolha `business`.
-2. Nome do projeto: **`business-barbearia`** (precisa ser igual ao `name` do `wrangler.toml`). Comando de build: `npm run build`. Comando de deploy: `npx wrangler deploy` (padrão).
-3. Depois do primeiro deploy: **Configurações → Variáveis e segredos → Adicionar** um segredo `ADMIN_TOKEN` com a senha do painel, e faça um novo deploy.
-4. Pronto: o site fica em `https://business-barbearia.<sua-conta>.workers.dev` e o painel em `/admin`. Cada `git push` na `main` publica sozinho. Para usar um domínio próprio: **Configurações → Domínios e rotas**.
+1. No painel da Cloudflare: **Workers & Pages → Criar → Importar um repositório** e escolha `JoGuilherme036/Business`, branch `business-site` (ou `main`, depois do merge).
+2. Nome do projeto: **`business-barbearia`** (igual ao `name` do `wrangler.toml`). Comando de build: `npm run build`. Comando de deploy: `npx wrangler deploy`.
+3. **Configurações → Variáveis e segredos → Adicionar** o segredo `ADMIN_TOKEN` (uma chave longa, só sua) e faça um novo deploy.
+4. Abra `https://business-barbearia.<sua-conta>.workers.dev/equipe`. No **primeiro acesso**, informe a chave `ADMIN_TOKEN` e crie o usuário administrador. Depois, em **Equipe e acessos**, cadastre cada funcionário com usuário e senha próprios.
 
-Para testar tudo localmente: `npm run build && npm run db:migrate:local && npm run worker:dev` (crie `.dev.vars` com `ADMIN_TOKEN=uma-senha`).
+Cada `git push` publica sozinho. Para domínio próprio: **Configurações → Domínios e rotas**. Se criar novas migrações no futuro: `npm run db:migrate:remote`.
+
+### Área da equipe (`/equipe`)
+
+- Login com **usuário e senha** por funcionário (perfis Administrador e Barbeiro). Senhas guardadas com PBKDF2-SHA256 (100 mil iterações) e sal; a sessão é um token aleatório guardado só como hash.
+- 5 tentativas erradas bloqueiam a conta por 15 minutos. Desativar um acesso ou trocar a senha encerra as sessões abertas.
+- Agenda do dia por barbeiro, agendar cliente (telefone opcional), concluir/faltou/cancelar, bloqueios de horário, dia ou barbeiro.
+- **Tempo real**: toda mudança é avisada a todos os aparelhos pelo Durable Object (WebSocket), em menos de 1 segundo.
+- **Sem reserva dupla**: a gravação é atômica no D1 (`INSERT … WHERE NOT EXISTS` + índice único por barbeiro e horário). Se duas pessoas tentarem o mesmo horário ao mesmo tempo, só uma consegue.
+
+### Testar o servidor localmente
+
+```bash
+npm run build && npm run db:migrate:local
+echo "ADMIN_TOKEN=chave-teste-123" > .dev.vars
+npm run worker:dev            # outro terminal:
+node scripts/e2e-api.mjs      # 32 verificações: login, permissões, tempo real, 25 reservas simultâneas
+```
 
 ## Antes de publicar (checklist do dono)
 
@@ -50,7 +67,7 @@ Para testar tudo localmente: `npm run build && npm run db:migrate:local && npm r
 2. **Catálogo e equipe** em `src/config/catalog.ts`; planos, FAQ e textos em `src/config/content.ts`.
 3. **Fotos reais**: as imagens atuais são ilustrativas (geradas por IA, no padrão visual da marca). Troque por fotos reais da equipe, do espaço e dos produtos (veja `docs/MEDIA_GUIDE.md`). Os produtos usam recortes da foto da bancada; preencha `image` em `src/config/products.ts` com a foto real de cada um.
 3a. **Produtos**: edite `src/config/products.ts` (nome, preço, tamanho, descrição, kits).
-4. **Senha do painel**: defina o segredo `ADMIN_TOKEN` na Cloudflare (veja acima). Use uma senha longa.
+4. **Acesso da equipe**: defina o segredo `ADMIN_TOKEN` na Cloudflare, crie o administrador em `/equipe` e cadastre os funcionários.
 5. **Domínio**: atualize `site.url`, `public/robots.txt` e `public/sitemap.xml`.
 6. Revise `src/pages/Privacy.tsx` e as políticas de atraso/cancelamento.
 

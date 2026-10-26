@@ -103,10 +103,19 @@ describe('blocks, closures and sync version (demo adapter)', () => {
     expect((await api.getBusy('2026-11-03')).lucas).toBeUndefined(); // completed no longer occupies
   });
 
-  it('checks the demo admin password', async () => {
+  it('signs team members in with user and password, and only admins manage accounts', async () => {
     const api = createLocalApi(memoryStorage(), { latencyMs: 0, now });
-    await expect(api.admin.login('errada')).rejects.toMatchObject({ code: 'unauthorized' });
-    await expect(api.admin.login('demo')).resolves.toBeUndefined();
+    await expect(api.admin.me()).rejects.toMatchObject({ code: 'unauthorized' });
+    await expect(api.admin.login('admin', 'errada', false)).rejects.toMatchObject({ code: 'unauthorized' });
+    expect((await api.admin.login('admin', 'business123', false)).role).toBe('admin');
+    const novo = await api.admin.createUser({ username: 'mateus', name: 'Mateus', password: 'senha1234', role: 'barbeiro', proId: 'mateus' });
+    await expect(api.admin.createUser({ username: 'mateus', name: 'Outro', password: 'senha1234', role: 'barbeiro', proId: null })).rejects.toMatchObject({ code: 'username_taken' });
+    await expect(api.admin.createUser({ username: 'fraca', name: 'Fraca', password: '123', role: 'barbeiro', proId: null })).rejects.toMatchObject({ code: 'weak_password' });
+    await api.admin.login('mateus', 'senha1234', false);
+    await expect(api.admin.users()).rejects.toMatchObject({ code: 'forbidden' });
+    await api.admin.login('admin', 'business123', false);
+    await api.admin.updateUser(novo.id, { active: false });
+    await expect(api.admin.login('mateus', 'senha1234', false)).rejects.toMatchObject({ code: 'unauthorized' });
   });
 });
 
