@@ -42,7 +42,7 @@ export function ProductDialog({ product, onClose, onOpenProduct }: { product: Pr
             role="dialog"
             aria-modal="true"
             aria-label={product.name}
-            className="relative grid max-h-[92svh] w-full max-w-5xl overflow-y-auto rounded-t-2xl border border-white/10 bg-ink-2 md:max-h-[86vh] md:grid-cols-2 md:rounded-xl"
+            className="relative grid max-h-[92svh] w-full max-w-5xl overflow-y-auto rounded-t-2xl border border-ivory/10 bg-ink-2 md:max-h-[86vh] md:grid-cols-2 md:rounded-xl"
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 60, opacity: 0 }}
@@ -54,7 +54,7 @@ export function ProductDialog({ product, onClose, onOpenProduct }: { product: Pr
             </div>
 
             <div className="relative flex flex-col p-6 md:p-10">
-              <button ref={closeRef} onClick={onClose} aria-label="Fechar detalhes" className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-ink/70">
+              <button ref={closeRef} onClick={onClose} aria-label="Fechar detalhes" className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full border border-ivory/15 bg-ink/70">
                 <Icon name="close" className="h-5 w-5" />
               </button>
               <p className="eyebrow">{product.size} · Linha Business</p>
@@ -95,7 +95,7 @@ export function ProductDialog({ product, onClose, onOpenProduct }: { product: Pr
               </div>
 
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <div className="flex items-center rounded-[3px] border border-white/20" role="group" aria-label="Quantidade">
+                <div className="flex items-center rounded-[3px] border border-ivory/20" role="group" aria-label="Quantidade">
                   <button className="grid h-12 w-12 place-items-center disabled:opacity-30" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1} aria-label="Diminuir">
                     <Icon name="minus" className="h-4 w-4" />
                   </button>

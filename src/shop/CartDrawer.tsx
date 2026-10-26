@@ -41,7 +41,7 @@ export function CartDrawer() {
             role="dialog"
             aria-modal="true"
             aria-label="Sacola de produtos"
-            className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-white/10 bg-ink"
+            className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-ivory/10 bg-ink"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -68,7 +68,7 @@ export function CartDrawer() {
               </div>
             ) : (
               <>
-                <ul className="flex-1 divide-y divide-white/10 overflow-y-auto px-5">
+                <ul className="flex-1 divide-y divide-ivory/10 overflow-y-auto px-5">
                   {items.map(({ product, qty }) => (
                     <li key={product.id} className="flex gap-4 py-5">
                       <SmartImage id={product.image} alt="" sizes="96px" ratio="4 / 5" focal={product.focal} className="w-20 shrink-0 rounded-md" />
@@ -76,7 +76,7 @@ export function CartDrawer() {
                         <p className="font-display text-[15px] font-semibold leading-tight">{product.name}</p>
                         <p className="mt-1 text-[12px] text-muted">{product.size}</p>
                         <div className="mt-auto flex items-center justify-between pt-3">
-                          <div className="flex items-center rounded-[3px] border border-white/20" role="group" aria-label={`Quantidade de ${product.name}`}>
+                          <div className="flex items-center rounded-[3px] border border-ivory/20" role="group" aria-label={`Quantidade de ${product.name}`}>
                             <button className="grid h-10 w-10 place-items-center" onClick={() => setQty(product.id, qty - 1)} aria-label={qty === 1 ? `Remover ${product.name}` : 'Diminuir'}>
                               <Icon name={qty === 1 ? 'close' : 'minus'} className="h-4 w-4" />
                             </button>

@@ -1,5 +1,5 @@
 {
-  "salao-vazio": {
+  "salao": {
     "width": 1672,
     "height": 941,
     "widths": [
@@ -7,17 +7,7 @@
       800,
       1200
     ],
-    "color": "rgb(35,35,35)"
-  },
-  "salao-barbeiro": {
-    "width": 1672,
-    "height": 941,
-    "widths": [
-      480,
-      800,
-      1200
-    ],
-    "color": "rgb(29,29,29)"
+    "color": "rgb(67,62,58)"
   },
   "corte": {
     "width": 1122,
@@ -27,7 +17,7 @@
       800,
       1122
     ],
-    "color": "rgb(41,41,41)"
+    "color": "rgb(56,48,44)"
   },
   "barba": {
     "width": 1122,
@@ -37,7 +27,17 @@
       800,
       1122
     ],
-    "color": "rgb(35,35,35)"
+    "color": "rgb(55,49,45)"
+  },
+  "navalha": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(67,60,56)"
   },
   "lavagem": {
     "width": 1122,
@@ -47,7 +47,37 @@
       800,
       1122
     ],
-    "color": "rgb(34,34,34)"
+    "color": "rgb(51,45,41)"
+  },
+  "finalizacao": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(57,47,42)"
+  },
+  "resultado": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(69,62,57)"
+  },
+  "consultoria": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(59,53,48)"
   },
   "bancada": {
     "width": 1122,
@@ -57,59 +87,9 @@
       800,
       1122
     ],
-    "color": "rgb(35,35,35)"
+    "color": "rgb(58,58,57)"
   },
-  "produto-pomada": {
-    "width": 380,
-    "height": 475,
-    "widths": [
-      380
-    ],
-    "color": "rgb(27,27,27)"
-  },
-  "produto-oleo": {
-    "width": 356,
-    "height": 445,
-    "widths": [
-      356
-    ],
-    "color": "rgb(27,27,27)"
-  },
-  "produto-shampoo": {
-    "width": 480,
-    "height": 600,
-    "widths": [
-      480
-    ],
-    "color": "rgb(35,35,35)"
-  },
-  "produto-pincel": {
-    "width": 348,
-    "height": 435,
-    "widths": [
-      348
-    ],
-    "color": "rgb(46,46,46)"
-  },
-  "produto-kit-cabelo": {
-    "width": 600,
-    "height": 750,
-    "widths": [
-      480,
-      600
-    ],
-    "color": "rgb(31,31,31)"
-  },
-  "produto-kit-barba": {
-    "width": 640,
-    "height": 800,
-    "widths": [
-      480,
-      640
-    ],
-    "color": "rgb(31,31,31)"
-  },
-  "produto-kit": {
+  "bancada-barba": {
     "width": 1122,
     "height": 1402,
     "widths": [
@@ -117,6 +97,78 @@
       800,
       1122
     ],
-    "color": "rgb(35,35,35)"
+    "color": "rgb(63,61,60)"
+  },
+  "produto-shampoo": {
+    "width": 460,
+    "height": 575,
+    "widths": [
+      460
+    ],
+    "color": "rgb(52,52,51)"
+  },
+  "produto-spray": {
+    "width": 520,
+    "height": 650,
+    "widths": [
+      480,
+      520
+    ],
+    "color": "rgb(44,43,42)"
+  },
+  "produto-kit-cabelo": {
+    "width": 700,
+    "height": 875,
+    "widths": [
+      480,
+      700
+    ],
+    "color": "rgb(60,60,61)"
+  },
+  "produto-kit-business": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(58,58,57)"
+  },
+  "produto-oleo": {
+    "width": 480,
+    "height": 600,
+    "widths": [
+      480
+    ],
+    "color": "rgb(42,40,39)"
+  },
+  "produto-pincel": {
+    "width": 512,
+    "height": 640,
+    "widths": [
+      480,
+      512
+    ],
+    "color": "rgb(62,58,55)"
+  },
+  "produto-pomada": {
+    "width": 620,
+    "height": 775,
+    "widths": [
+      480,
+      620
+    ],
+    "color": "rgb(65,63,62)"
+  },
+  "produto-kit-barba": {
+    "width": 1122,
+    "height": 1402,
+    "widths": [
+      480,
+      800,
+      1122
+    ],
+    "color": "rgb(63,61,60)"
   }
 }

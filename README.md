@@ -1,6 +1,6 @@
 # Business Barbearia — site premium com agendamento e catálogo de produtos
 
-Site mobile-first da **Business Barbearia** (Teresina/PI), no tema **preto e branco**, com a tipografia expandida do letreiro: introdução em que as cenas avançam conforme a rolagem (gerada a partir das fotos da marca), agenda ao vivo, serviços com comanda, **catálogo de produtos com sacola e reserva pelo WhatsApp**, agendamento completo, painel da barbearia e planos do clube.
+Site mobile-first da **Business Barbearia** (Teresina/PI), no tema **preto e branco** (seções pretas intercaladas com brancas), com a tipografia expandida do letreiro: introdução com o vídeo da máquina que se desmonta e forma o logotipo, quadro a quadro conforme a rolagem, agenda ao vivo, serviços com comanda, **catálogo de produtos com sacola e reserva pelo WhatsApp**, agendamento completo, painel da barbearia e planos do clube.
 
 > ⚠️ **Dados a confirmar.** Endereço, horários e Instagram vêm do perfil oficial da barbearia. WhatsApp/telefone, e-mail, bairro, coordenadas, preços, equipe, planos e a lista de produtos são **de demonstração** e estão marcados com `DEMO` em `src/config/`.
 >
@@ -68,7 +68,7 @@ As fotos, os recortes de produtos e os quadros da introdução (zoom lento + fus
 
 ```bash
 pip install pillow
-python3 scripts/build-assets.py <pasta-com-as-6-imagens-png>   # MONO=0 mantém as fotos coloridas
+python3 scripts/build-assets.py <pasta-com-as-10-imagens-png> <video-de-abertura.mp4>   # MONO=1 deixa as fotos em P&B
 ```
 
 Gera `public/media/img/*`, `frames/`, `poster-*`, `end-*`, `og-image.jpg` e `src/data/media.json` / `frames.json`.

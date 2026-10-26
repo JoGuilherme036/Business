@@ -69,11 +69,15 @@
   .display em,
   .display .italic,
   .display.italic,
-  .font-display.italic,
   .font-display em {
     font-style: normal;
     font-weight: 300;
     color: rgb(var(--ivory) / 0.5);
+  }
+  /* Archivo has an italic, but the brand type stays upright. */
+  .font-display.italic {
+    font-style: normal;
+    font-weight: 600;
   }
   /* Outlined letters for the hero's last line. */
   .outline-text {
@@ -85,12 +89,26 @@
     color: rgb(var(--ivory) / 0.55);
   }
   .hairline {
-    border-color: rgb(255 255 255 / 0.12);
+    border-color: rgb(var(--ivory) / 0.12);
+  }
+  /* White band: flips the palette inside the section so every token-based component inverts. */
+  .theme-light {
+    --ink: 255 255 255;
+    --ink-2: 244 244 244;
+    --ink-3: 232 232 232;
+    --ivory: 0 0 0;
+    --muted: 92 92 92;
+    --accent: 0 0 0;
+    --accent-light: 0 0 0;
+    --accent-deep: 110 110 110;
+    color-scheme: light;
+    background: rgb(var(--ink));
+    color: rgb(var(--ivory));
   }
   .slab {
     /* Readable surface over the scroll film. Solid enough to avoid backdrop-filter costs on mobile. */
     background: linear-gradient(180deg, rgb(var(--ink) / 0.9), rgb(var(--ink-2) / 0.94));
-    border: 1px solid rgb(255 255 255 / 0.1);
+    border: 1px solid rgb(var(--ivory) / 0.1);
   }
   .accent-text {
     color: rgb(var(--ivory) / 0.5);
@@ -114,8 +132,8 @@
   }
   /* Brushed-metal surface for premium cards. */
   .glass {
-    background: linear-gradient(160deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.012) 55%);
-    border: 1px solid rgb(255 255 255 / 0.09);
+    background: linear-gradient(160deg, rgb(var(--ivory) / 0.055), rgb(var(--ivory) / 0.012) 55%);
+    border: 1px solid rgb(var(--ivory) / 0.09);
   }
   .no-scrollbar {
     scrollbar-width: none;
@@ -126,6 +144,11 @@
   .pb-safe {
     padding-bottom: max(env(safe-area-inset-bottom), 0px);
   }
+}
+
+@keyframes cue {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
 }
 
 @media (prefers-reduced-motion: reduce) {

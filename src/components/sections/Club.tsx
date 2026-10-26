@@ -35,7 +35,7 @@ export function Club() {
                     </div>
                     <h3 className="mt-4 font-display text-3xl font-bold uppercase tracking-[-0.01em]">{p.name}</h3>
                     <p className={`mt-2 font-display text-xl font-medium tabular-nums ${hl ? 'text-ink/75' : 'text-ivory/75'}`}>{p.price}</p>
-                    <ul className={`mt-6 flex-1 space-y-3 border-t pt-6 text-sm ${hl ? 'border-ink/15' : 'border-white/10 text-ivory/85'}`}>
+                    <ul className={`mt-6 flex-1 space-y-3 border-t pt-6 text-sm ${hl ? 'border-ink/15' : 'border-ivory/10 text-ivory/85'}`}>
                       {p.perks.map((perk) => (
                         <li key={perk} className="flex gap-2.5">
                           <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0" />
@@ -47,7 +47,7 @@ export function Club() {
                       href={whatsappLink(waMessages.plan(p.name))}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] text-[12px] font-semibold uppercase tracking-[0.14em] transition-colors ${hl ? 'bg-ink text-ivory hover:bg-ink-3' : 'border border-white/25 hover:bg-ivory hover:text-ink'}`}
+                      className={`mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] text-[12px] font-semibold uppercase tracking-[0.14em] transition-colors ${hl ? 'bg-ink text-ivory hover:bg-ink-3' : 'border border-ivory/25 hover:bg-ivory hover:text-ink'}`}
                     >
                       <Icon name="whatsapp" className="h-[18px] w-[18px]" /> Quero assinar
                     </a>

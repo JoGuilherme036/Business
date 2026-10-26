@@ -18,7 +18,7 @@ export function Services() {
   const { draft, update } = useDraft();
   const list = services.filter((s) => filter === 'all' || s.category === filter);
   const previewService = serviceById(preview);
-  const previewImage = previewService?.image ?? 'bancada';
+  const previewImage = previewService?.image ?? 'salao';
 
   const toggle = (id: string) => {
     update({ serviceIds: toggleService(draft.serviceIds, id), time: null });

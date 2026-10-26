@@ -18,7 +18,7 @@ export function ProductCard({ product, onOpen, className = '', sizes = '(min-wid
         {product.badge && (
           <span className="absolute left-3 top-3 rounded-[3px] bg-ivory px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-ink">{product.badge}</span>
         )}
-        <span className="absolute right-3 top-3 rounded-[3px] border border-white/15 bg-ink/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory/80 backdrop-blur-[2px]">
+        <span className="absolute right-3 top-3 rounded-[3px] border border-ivory/15 bg-ink/60 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-ivory/80 backdrop-blur-[2px]">
           {categoryLabel[product.category]}
         </span>
       </button>

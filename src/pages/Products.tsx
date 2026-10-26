@@ -75,7 +75,7 @@ export default function Products() {
                   role="tab"
                   aria-selected={on}
                   onClick={() => update({ categoria: c.id === 'todos' ? null : c.id })}
-                  className={`min-h-11 shrink-0 rounded-[3px] border px-4 text-[11.5px] font-semibold uppercase tracking-[0.14em] transition-colors ${on ? 'border-ivory bg-ivory text-ink' : 'border-white/15 text-ivory/80 hover:border-white/40'}`}
+                  className={`min-h-11 shrink-0 rounded-[3px] border px-4 text-[11.5px] font-semibold uppercase tracking-[0.14em] transition-colors ${on ? 'border-ivory bg-ivory text-ink' : 'border-ivory/15 text-ivory/80 hover:border-ivory/40'}`}
                 >
                   {c.label}
                 </button>
@@ -91,12 +91,12 @@ export default function Products() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar"
                 type="search"
-                className="h-11 w-full rounded-[3px] border border-white/15 bg-transparent pl-9 pr-3 text-[14px] placeholder:text-muted focus:border-accent focus:outline-none"
+                className="h-11 w-full rounded-[3px] border border-ivory/15 bg-transparent pl-9 pr-3 text-[14px] placeholder:text-muted focus:border-accent focus:outline-none"
               />
             </label>
             <label>
               <span className="sr-only">Ordenar por</span>
-              <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="h-11 rounded-[3px] border border-white/15 bg-ink px-3 text-[13px] focus:border-accent focus:outline-none">
+              <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} className="h-11 rounded-[3px] border border-ivory/15 bg-ink px-3 text-[13px] focus:border-accent focus:outline-none">
                 <option value="destaques">Destaques</option>
                 <option value="menor">Menor preço</option>
                 <option value="maior">Maior preço</option>
@@ -135,7 +135,7 @@ export default function Products() {
             </div>
             <div className="flex flex-wrap gap-3">
               <LinkButton to="/agendar" iconRight="arrowRight">Agendar horário</LinkButton>
-              <button onClick={() => setOpen(true)} className="inline-flex min-h-12 items-center gap-2 rounded-[3px] border border-white/25 px-5 text-[12px] font-semibold uppercase tracking-[0.14em] hover:border-accent">
+              <button onClick={() => setOpen(true)} className="inline-flex min-h-12 items-center gap-2 rounded-[3px] border border-ivory/25 px-5 text-[12px] font-semibold uppercase tracking-[0.14em] hover:border-accent">
                 <Icon name="bag" className="h-4 w-4" /> Sacola{count ? ` (${count})` : ''}
               </button>
             </div>

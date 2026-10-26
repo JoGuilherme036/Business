@@ -1,6 +1,6 @@
 # Design system — "Business"
 
-Conceito: **corporativo premium em preto e branco**. Superfícies pretas, fotos em preto e branco, tipografia expandida como o letreiro BUSINESS e botões retos brancos. Sem dourado e sem elementos 3D.
+Conceito: **corporativo premium em preto e branco**. Seções pretas intercaladas com seções brancas (`.theme-light`, que inverte os tokens), fotos em cores, tipografia expandida como o letreiro BUSINESS e botões retos brancos. Sem dourado e sem elementos 3D.
 
 ## Cores (`src/styles/index.css`)
 

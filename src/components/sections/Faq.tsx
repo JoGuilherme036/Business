@@ -7,7 +7,7 @@ import { Icon } from '../ui/Icon';
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section aria-labelledby="faq-title" className="relative z-10 rounded-b-xl bg-ink-2 pb-24 pt-4 md:rounded-b-2xl md:pb-32">
+    <section aria-labelledby="faq-title" className="theme-light relative z-10 py-24 md:py-32">
       <div className="container-x grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
         <div id="faq-title">
           <SectionHeading chapter="VIII" label="Dúvidas" lines={['Antes de', <em key="e" className="accent-text">sentar.</em>]} />

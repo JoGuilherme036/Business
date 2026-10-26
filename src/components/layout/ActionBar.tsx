@@ -19,7 +19,12 @@ export function ActionBar() {
 
   useEffect(() => {
     if (pathname !== '/') return setVisible(true);
-    const on = () => setVisible(window.scrollY > window.innerHeight * 0.4);
+    // On the home page the intro has its own actions: show the bar once the agenda comes into view.
+    const on = () => {
+      const agenda = document.getElementById('agenda');
+      const threshold = agenda ? agenda.offsetTop - window.innerHeight * 0.6 : window.innerHeight * 0.4;
+      setVisible(window.scrollY > threshold);
+    };
     on();
     window.addEventListener('scroll', on, { passive: true });
     return () => window.removeEventListener('scroll', on);

@@ -37,7 +37,7 @@ export const services: Service[] = [
     description: 'Transição limpa do zero ao topo, desenho milimétrico e acabamento na navalha.',
     durationMin: 50,
     priceCents: 7000,
-    image: 'salao-barbeiro',
+    image: 'finalizacao',
   },
   {
     id: 'classico',
@@ -46,7 +46,7 @@ export const services: Service[] = [
     description: 'Corte alinhado e natural, com volume controlado e risca marcada.',
     durationMin: 40,
     priceCents: 5500,
-    image: 'corte',
+    image: 'resultado',
   },
   {
     id: 'barba-ritual',
@@ -55,7 +55,7 @@ export const services: Service[] = [
     description: 'Toalha quente, óleo pré-barba, navalha, toalha fria e finalização hidratante.',
     durationMin: 35,
     priceCents: 5000,
-    image: 'barba',
+    image: 'navalha',
   },
   {
     id: 'corte-barba',
@@ -74,7 +74,7 @@ export const services: Service[] = [
     description: 'Corte, barba, lavagem com massagem e sobrancelha. Imagem completa, sem pressa.',
     durationMin: 110,
     priceCents: 15500,
-    image: 'lavagem',
+    image: 'consultoria',
     includes: ['corte-assinatura', 'barba-ritual', 'hidratacao', 'sobrancelha'],
   },
   {

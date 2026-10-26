@@ -1,10 +1,10 @@
 // Editorial content. Edit freely; only publish policies the shop has approved.
 
 export const ritualSteps = [
-  { n: '01', title: 'Recepção', text: 'Café, conversa e a consulta de imagem: entendemos o que combina com você.', image: 'salao-vazio' },
+  { n: '01', title: 'Consultoria', text: 'Conversa e consulta de imagem: entendemos o que combina com o seu rosto e a sua rotina.', image: 'consultoria' },
   { n: '02', title: 'Lavagem', text: 'Lavatório com massagem no couro cabeludo para começar o atendimento relaxado.', image: 'lavagem' },
   { n: '03', title: 'Corte', text: 'Tesoura, máquina e acabamento milimétrico, com o tempo que o resultado pede.', image: 'corte' },
-  { n: '04', title: 'Barba e finalização', text: 'Toalha quente, navalha e produtos da linha Business para sair pronto.', image: 'barba' },
+  { n: '04', title: 'Barba e finalização', text: 'Toalha quente, navalha e produtos da linha Business para sair pronto.', image: 'navalha' },
 ] as const;
 
 export const clubPlans = [
