@@ -118,7 +118,7 @@ export function Intro() {
         {!reduced && (
           <motion.div style={{ opacity: cueOpacity }} className="pointer-events-none absolute inset-x-0 top-[calc(env(safe-area-inset-top)+9.5rem)] md:top-32">
             <div className="container-x flex flex-col items-center text-center">
-              <motion.p {...fade(0.2)} className="text-[10.5px] font-semibold uppercase tracking-[0.36em] text-ivory/70">{site.concept}</motion.p>
+              <motion.p {...fade(0.2)} className="text-[10px] font-semibold uppercase tracking-[0.3em] text-ivory/70 sm:text-[10.5px] sm:tracking-[0.36em]">{site.concept}</motion.p>
               <motion.p {...fade(0.35)} className="mt-3 text-[12.5px] text-ivory/55">{site.address.city} · {site.address.state}</motion.p>
             </div>
           </motion.div>
@@ -145,19 +145,20 @@ export function Intro() {
           style={reduced ? { top: layout.top } : { top: layout.top, opacity: heroOpacity, y: heroY, pointerEvents: heroEvents }}
         >
           <div className="container-x flex flex-col items-center text-center">
-            <p className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.36em] text-ivory/70 md:text-[10.5px]">
-              <span className="h-px w-8 bg-ivory/50" />
+            <p className="flex items-center gap-3 text-[9.5px] font-semibold uppercase tracking-[0.28em] text-ivory/70 sm:tracking-[0.36em] md:text-[10.5px]">
+              <span className="hidden h-px w-8 bg-ivory/50 sm:block" />
               {site.concept}
-              <span className="h-px w-8 bg-ivory/50" />
+              <span className="hidden h-px w-8 bg-ivory/50 sm:block" />
             </p>
             <h1 id="hero-title" className="display mt-4 max-w-[22ch] text-[clamp(1.35rem,5.6vw,2.6rem)] uppercase leading-[1.05]" style={{ fontStretch: '125%' }}>
               Imagem masculina <span className="outline-text">em outro nível.</span>
             </h1>
             <div className="mt-6 flex w-full max-w-md gap-2.5 sm:w-auto sm:max-w-none sm:gap-3">
-              <LinkButton to="/agendar" size="lg" iconRight="arrowRight" className="flex-1 !px-5 sm:flex-none sm:!px-8" onClick={() => track('cta_book_click', { from: 'hero' })}>
-                Agendar horário
+              <LinkButton to="/agendar" size="lg" iconRight="arrowRight" className="min-w-0 flex-1 !px-4 sm:flex-none sm:!px-8" onClick={() => track('cta_book_click', { from: 'hero' })}>
+                <span className="sm:hidden">Agendar</span>
+                <span className="hidden sm:inline">Agendar horário</span>
               </LinkButton>
-              <ExternalButton href={whatsappLink(waMessages.schedule())} variant="ghost" size="lg" icon="whatsapp" className="!bg-ink/40 !px-5 sm:!px-8" onClick={() => track('whatsapp_click', { from: 'hero' })}>
+              <ExternalButton href={whatsappLink(waMessages.schedule())} variant="ghost" size="lg" icon="whatsapp" className="min-w-0 flex-1 !bg-ink/40 !px-4 sm:flex-none sm:!px-8" onClick={() => track('whatsapp_click', { from: 'hero' })}>
                 WhatsApp
               </ExternalButton>
             </div>

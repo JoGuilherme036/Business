@@ -75,7 +75,7 @@ export function Services() {
                       )}
 
                       <span className="min-w-0">
-                        <span className="block font-display text-[1.4rem] leading-tight transition-transform duration-500 ease-expo group-hover:translate-x-1 md:text-[1.75rem]">{s.name}</span>
+                        <span className="block font-display text-[1.2rem] font-semibold leading-tight tracking-[-0.02em] xs:text-[1.3rem] transition-transform duration-500 ease-expo group-hover:translate-x-1 md:text-[1.75rem]">{s.name}</span>
                         <span className="mt-1 block text-[13px] text-ivory/75 sm:hidden">
                           {formatDuration(s.durationMin)}
                           {site.booking.showServicePrices && <> · <span className="text-accent-light">{formatPrice(s.priceCents)}</span></>}

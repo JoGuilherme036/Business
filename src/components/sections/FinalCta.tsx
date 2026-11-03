@@ -10,9 +10,9 @@ export function FinalCta() {
     <section aria-labelledby="cta-title" className="relative z-10 flex min-h-[88svh] items-end overflow-hidden pb-20 pt-32 md:items-center md:pb-24">
       <picture aria-hidden="true">
         <source media="(min-aspect-ratio: 1/1)" srcSet={asset('media/end-landscape.webp')} />
-        <img src={asset('media/end-portrait.webp')} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
+        <img src={asset('media/end-portrait.webp')} alt="" loading="lazy" decoding="async" className="absolute inset-x-0 top-0 h-[55%] w-full object-cover object-center md:inset-0 md:h-full" />
       </picture>
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-ink/30 md:bg-gradient-to-r md:from-ink md:via-ink/75 md:to-ink/10" />
+      <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_top,rgb(var(--ink))_45%,rgb(var(--ink)/0.6)_70%,rgb(var(--ink)/0.2))] md:bg-gradient-to-r md:from-ink md:via-ink/75 md:to-ink/10" />
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-ink to-transparent" />
       <div className="container-x relative">
         <Reveal>

@@ -235,7 +235,7 @@ export default function Booking() {
             <button
               onClick={next}
               disabled={!canContinue || submitting}
-              className="inline-flex min-h-14 items-center gap-2 rounded-full bg-accent px-6 text-[15px] font-semibold text-ink shadow-[0_10px_30px_-12px_rgb(var(--accent)/0.7)] transition-[transform,opacity] active:scale-[0.97] disabled:opacity-40"
+              className="inline-flex min-h-14 items-center gap-2 rounded-[3px] bg-ivory px-6 text-[12.5px] font-semibold uppercase tracking-[0.12em] text-ink transition-[transform,opacity] active:scale-[0.97] disabled:opacity-30"
             >
               {submitting ? (
                 <>

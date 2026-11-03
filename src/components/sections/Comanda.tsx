@@ -18,7 +18,7 @@ export function Comanda({ className = '' }: { className?: string }) {
   return (
     <div className={`comanda text-ivory ${className}`}>
       <div className="comanda-paper bg-ink-3 px-6 pb-8 pt-9">
-        <div className="flex items-baseline justify-between gap-4 border-b border-dashed border-ivory/25 pb-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-dashed border-ivory/25 pb-3">
           <p className="font-display text-[1.7rem] font-semibold leading-none tracking-[-0.02em]">Comanda</p>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/55">
             {site.shortName} · {dateFmt.format(new Date()).replace('.', '')}

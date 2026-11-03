@@ -12,7 +12,7 @@ export function Manifesto() {
     <section aria-label="Manifesto" className="theme-light relative z-10 py-24 md:py-32">
       <div className="container-x relative">
         <ScrollWords
-          className="display max-w-5xl text-[clamp(1.9rem,6.6vw,4.4rem)] leading-[1.08]"
+          className="display max-w-5xl text-[clamp(1.55rem,6.4vw,4.4rem)] leading-[1.08]"
           text="Não cortamos apenas cabelo. Construímos a imagem de quem entra aqui: técnica, ambiente exclusivo e o tempo que o seu resultado pede."
         />
         <div className="mt-16 grid gap-px overflow-hidden rounded-lg border hairline bg-ivory/10 sm:grid-cols-3">

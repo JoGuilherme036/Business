@@ -258,15 +258,15 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
           <div className="flex items-center gap-1.5 sm:gap-2">
             {tab === 'agenda' && (
               <>
-            <button onClick={() => setSheet('book')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-accent/60 px-3.5 text-[13px] font-semibold text-accent-light sm:px-4">
+            <button onClick={() => setSheet('book')} className="hidden min-h-11 items-center gap-1.5 rounded-[3px] border border-ivory/40 px-4 text-[11.5px] font-semibold uppercase tracking-[0.12em] md:inline-flex">
               <Icon name="calendar" className="h-4 w-4" /> Agendar
             </button>
-            <button onClick={() => setSheet('block')} className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-accent px-3.5 text-[13px] font-semibold text-ink sm:px-4">
+            <button onClick={() => setSheet('block')} className="hidden min-h-11 items-center gap-1.5 rounded-[3px] bg-ivory px-4 text-[11.5px] font-semibold uppercase tracking-[0.12em] text-ink md:inline-flex">
               <Icon name="close" className="h-4 w-4 rotate-45" /> Bloquear
             </button>
               </>
             )}
-            <span className="hidden text-right text-[11px] leading-tight text-muted lg:block">
+            <span className="text-right text-[11px] leading-tight text-muted md:hidden lg:block">
               <span className="block text-[13px] font-semibold text-ivory">{user.name}</span>
               {user.role === 'admin' ? 'Administrador' : 'Barbeiro'}
             </span>
@@ -320,14 +320,14 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
         )}
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="display text-[clamp(2rem,7vw,3rem)]">{formatDayLong(day)}</h1>
+            <h1 className="display text-[clamp(1.6rem,6.4vw,3rem)]">{formatDayLong(day)}</h1>
             <p className="mt-1 text-sm text-muted">
               {active.length} {active.length === 1 ? 'atendimento' : 'atendimentos'} · {formatPrice(revenue)} previstos · horário da casa {formatRanges(site.hours[weekdayOf(day)])}
             </p>
           </div>
           <div role="group" aria-label="Barbeiro" className="no-scrollbar flex gap-1.5 overflow-x-auto">
             {[{ id: 'all', name: 'Todos' }, ...team].map((p) => (
-              <button key={p.id} onClick={() => setFilter(p.id)} aria-pressed={filter === p.id} className={`min-h-10 shrink-0 rounded-full border px-4 text-[13px] font-semibold ${filter === p.id ? 'border-accent bg-accent text-ink' : 'hairline'}`}>
+              <button key={p.id} onClick={() => setFilter(p.id)} aria-pressed={filter === p.id} className={`min-h-10 shrink-0 rounded-[3px] border px-4 text-[12px] font-semibold uppercase tracking-[0.08em] ${filter === p.id ? 'border-ivory bg-ivory text-ink' : 'hairline'}`}>
                 {p.name}
               </button>
             ))}
@@ -375,7 +375,7 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
             return (
               <section key={p.id} aria-label={p.name} className="rounded-xl border hairline bg-ink-2 p-4">
                 <header className="mb-3 flex items-baseline justify-between">
-                  <h2 className="font-display text-2xl italic">{p.name}</h2>
+                  <h2 className="font-display text-xl font-bold sm:text-2xl">{p.name}</h2>
                   <span className="text-[12px] text-muted">{off ? 'Bloqueado o dia todo' : schedule.length ? formatRanges(schedule) : 'Folga'}</span>
                 </header>
                 {!data ? (
@@ -402,6 +402,19 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
           })}
         </div>
       </main>
+      )}
+
+      {tab === 'agenda' && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t hairline bg-ink/95 px-4 pb-[max(env(safe-area-inset-bottom),12px)] pt-3 backdrop-blur-md md:hidden">
+          <div className="grid grid-cols-2 gap-2">
+            <button onClick={() => setSheet('book')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] border border-ivory/40 text-[12px] font-semibold uppercase tracking-[0.12em]">
+              <Icon name="calendar" className="h-4 w-4" /> Agendar
+            </button>
+            <button onClick={() => setSheet('block')} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[3px] bg-ivory text-[12px] font-semibold uppercase tracking-[0.12em] text-ink">
+              <Icon name="close" className="h-4 w-4 rotate-45" /> Bloquear
+            </button>
+          </div>
+        </div>
       )}
 
       <AnimatePresence>

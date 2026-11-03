@@ -39,13 +39,13 @@ export function Location() {
       <div className="container-x mt-12 grid gap-4 lg:grid-cols-[1.1fr_1fr] lg:gap-6">
         <Reveal className="flex flex-col gap-4">
           <div className="rounded-xl border hairline bg-ink p-6 md:p-8">
-            <p className="flex items-center gap-3" aria-live="polite">
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1" aria-live="polite">
               <span className="relative flex h-3 w-3">
                 {status.open && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />}
                 <span className={`relative inline-flex h-3 w-3 rounded-full ${status.open ? 'bg-emerald-400' : 'bg-muted'}`} />
               </span>
-              <span className="font-display text-3xl italic">{label.short}</span>
-              <span className="text-sm text-muted">{label.detail}</span>
+              <span className="font-display text-2xl font-bold tracking-[-0.02em] sm:text-3xl">{label.short}</span>
+              <span className="text-sm text-muted">· {label.detail}</span>
             </p>
 
             <address className="mt-6 select-text not-italic">

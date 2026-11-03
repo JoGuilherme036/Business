@@ -49,7 +49,7 @@ function ProCard({ pro, next, index }: { pro: Professional; next?: string; index
     setTilt({ x: ((e.clientY - r.top) / r.height - 0.5) * -6, y: ((e.clientX - r.left) / r.width - 0.5) * 8 });
   };
   return (
-    <Reveal delay={index * 0.08} className="w-[78%] max-w-[22rem] shrink-0 snap-center md:w-auto md:max-w-none">
+    <Reveal delay={index * 0.08} className="w-[84%] max-w-[22rem] shrink-0 snap-center md:w-auto md:max-w-none">
       <article
         onPointerMove={onMove}
         onPointerLeave={() => setTilt({ x: 0, y: 0 })}
@@ -62,16 +62,17 @@ function ProCard({ pro, next, index }: { pro: Professional; next?: string; index
           <div
             role="img"
             aria-label={`Foto de ${pro.name} em breve`}
-            className="relative grid aspect-[4/3] place-items-center overflow-hidden bg-[radial-gradient(90%_70%_at_30%_25%,rgb(var(--accent)/0.22),transparent_65%),linear-gradient(160deg,rgb(var(--ink-3)),rgb(var(--ink)))]"
+            className="relative grid aspect-[16/10] place-items-center overflow-hidden border-b hairline bg-[radial-gradient(80%_80%_at_50%_0%,rgb(var(--ivory)/0.08),transparent_70%),linear-gradient(180deg,rgb(var(--ink-3)),rgb(var(--ink-2)))]"
           >
-            <span aria-hidden="true" className="absolute inset-6 rounded-full border border-accent/15" />
-            <span aria-hidden="true" className="display accent-text text-[8rem] leading-none">{pro.name.slice(0, 1)}</span>
-            <span className="absolute left-5 top-5 rounded-full border hairline bg-ink/70 px-3 py-1 text-[11px] text-muted">Foto em breve</span>
+            <span aria-hidden="true" className="grid h-24 w-24 place-items-center rounded-full border border-ivory/20 font-display text-4xl font-black uppercase" style={{ fontStretch: '125%' }}>
+              {pro.name.slice(0, 1)}
+            </span>
+            <span className="absolute left-4 top-4 rounded-[3px] border hairline bg-ink/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Foto em breve</span>
           </div>
         )}
         <div className="p-6">
           <p className="eyebrow">{pro.role}</p>
-          <h3 className="mt-2 font-display text-4xl italic">{pro.name}</h3>
+          <h3 className="mt-2 font-display text-3xl font-bold tracking-[-0.02em]">{pro.name}</h3>
           <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Especialidades">
             {pro.specialties.map((s) => (
               <li key={s} className="rounded-full border hairline px-3 py-1 text-[12px] text-ivory/80">{s}</li>
