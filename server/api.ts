@@ -7,7 +7,7 @@ import { serviceById, team } from '../src/config/catalog';
 import { eligiblePros, proSlots, summarize, type BusyMap } from '../src/booking/availability';
 import { isValidBrPhone, normalizeBrPhone } from '../src/lib/phone';
 import { addDays, shopInstant } from '../src/lib/time';
-import type { Block, Booking, BookingStatus, DayClosures } from '../src/booking/types';
+import type { Block, Booking, BookingStatus, CustomerInfo, DayClosures } from '../src/booking/types';
 import type { D1Database, Env, ExecutionContext } from './d1';
 import type { StaffUser } from '../src/booking/types';
 import * as auth from './auth';
@@ -95,7 +95,7 @@ const bumpVersion = (db: D1Database) => db.prepare("UPDATE meta SET value = valu
 
 async function busyForDay(db: D1Database, day: string): Promise<BusyMap> {
   const [bookings, blocks] = await Promise.all([
-    db.prepare("SELECT professional_id, starts_at, ends_at FROM bookings WHERE local_day = ? AND status = 'confirmed'").bind(day).all<{ professional_id: string; starts_at: number; ends_at: number }>(),
+    db.prepare("SELECT professional_id, starts_at, ends_at FROM bookings WHERE local_day = ? AND status IN ('pending', 'confirmed')").bind(day).all<{ professional_id: string; starts_at: number; ends_at: number }>(),
     db.prepare('SELECT professional_id, starts_at, ends_at FROM blocks WHERE local_day = ?').bind(day).all<{ professional_id: string | null; starts_at: number; ends_at: number }>(),
   ]);
   const map: BusyMap = {};
@@ -145,6 +145,13 @@ async function createBooking(request: Request, db: D1Database, opts: { admin?: b
   const existing = await db.prepare('SELECT * FROM bookings WHERE idempotency_key = ?').bind(key).first<BookingRow>();
   if (existing) return json(toBooking(existing));
 
+  // The team decides who gets a slot: clients the shop marked are asked to talk on WhatsApp instead.
+  if (!opts.admin && phone) {
+    const c = await db.prepare('SELECT blocked FROM customers WHERE phone = ?').bind(normalizeBrPhone(phone)).first<{ blocked: number }>();
+    if (c?.blocked) throw new HttpError(403, 'contact_shop');
+  }
+  // Online requests wait for the team's approval (they hold the slot meanwhile); the team's own bookings are confirmed.
+  const status = opts.admin || !site.booking.requireApproval ? 'confirmed' : 'pending';
   const { durationMin, priceCents } = summarize(serviceIds);
   const busy = await busyForDay(db, day);
   const now = new Date();
@@ -163,15 +170,15 @@ async function createBooking(request: Request, db: D1Database, opts: { admin?: b
       const res = await db
         .prepare(
           `INSERT INTO bookings (code, professional_id, service_ids, local_day, local_time, starts_at, ends_at, busy_until,
-             duration_min, total_cents, customer_name, customer_phone, customer_email, notes, idempotency_key, created_at, updated_at, created_by)
-           SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?16, ?17
+             duration_min, total_cents, customer_name, customer_phone, customer_email, notes, idempotency_key, created_at, updated_at, created_by, status)
+           SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?16, ?17, ?18
            WHERE NOT EXISTS (
-             SELECT 1 FROM bookings WHERE professional_id = ?2 AND status = 'confirmed' AND starts_at < ?8 AND busy_until > ?6
+             SELECT 1 FROM bookings WHERE professional_id = ?2 AND status IN ('pending', 'confirmed') AND starts_at < ?8 AND busy_until > ?6
            ) AND NOT EXISTS (
              SELECT 1 FROM blocks WHERE (professional_id IS NULL OR professional_id = ?2) AND starts_at < ?7 AND ends_at > ?6
            )`,
         )
-        .bind(code, pro.id, JSON.stringify(serviceIds), day, time, start, end, busyUntil, durationMin, priceCents, name, normalizeBrPhone(phone), email || null, notes || null, key, stamp, opts.staff?.id ?? null)
+        .bind(code, pro.id, JSON.stringify(serviceIds), day, time, start, end, busyUntil, durationMin, priceCents, name, normalizeBrPhone(phone), email || null, notes || null, key, stamp, opts.staff?.id ?? null, status)
         .run();
       if (res.meta.changes === 1) {
         await bumpVersion(db);
@@ -203,9 +210,9 @@ async function cancelBooking(request: Request, db: D1Database) {
   const p = normalizeBrPhone(phone);
   const row = await db.prepare('SELECT * FROM bookings WHERE code = ? AND customer_phone = ?').bind(c, p).first<BookingRow>();
   if (!row) throw new HttpError(404, 'not_found');
-  if (row.status === 'confirmed') {
+  if (row.status === 'confirmed' || row.status === 'pending') {
     if (row.starts_at - Date.now() < site.booking.cancelUntilHours * 3_600_000) throw new HttpError(422, 'too_late');
-    await db.prepare("UPDATE bookings SET status = 'cancelled', updated_at = ? WHERE code = ? AND status = 'confirmed'").bind(Date.now(), c).run();
+    await db.prepare("UPDATE bookings SET status = 'cancelled', updated_at = ? WHERE code = ? AND status IN ('pending', 'confirmed')").bind(Date.now(), c).run();
     await bumpVersion(db);
   }
   const updated = await db.prepare('SELECT * FROM bookings WHERE code = ?').bind(c).first<BookingRow>();
@@ -237,7 +244,52 @@ async function adminDay(url: URL, db: D1Database) {
     db.prepare('SELECT * FROM bookings WHERE local_day = ? ORDER BY starts_at').bind(day).all<BookingRow>(),
     db.prepare('SELECT * FROM blocks WHERE local_day = ? ORDER BY starts_at').bind(day).all<BlockRow>(),
   ]);
-  return json({ bookings: bookings.results.map((r) => toBooking(r)), blocks: blocks.results.map(toBlock) });
+  const phones = [...new Set(bookings.results.map((b) => b.customer_phone).filter(Boolean))];
+  return json({ bookings: bookings.results.map((r) => toBooking(r)), blocks: blocks.results.map(toBlock), customers: await customerInfo(db, phones) });
+}
+
+/** Every request still waiting for the team, oldest first, with what the team knows about each client. */
+async function pendingRequests(db: D1Database) {
+  const { results } = await db.prepare("SELECT * FROM bookings WHERE status = 'pending' ORDER BY created_at").all<BookingRow>();
+  const phones = [...new Set(results.map((b) => b.customer_phone).filter(Boolean))];
+  return json({ bookings: results.map((r) => toBooking(r)), customers: await customerInfo(db, phones) });
+}
+
+/** History and team notes for each client phone: visits, no-shows, cancellations, blocked flag. */
+async function customerInfo(db: D1Database, phones: string[]): Promise<Record<string, CustomerInfo>> {
+  const out: Record<string, CustomerInfo> = {};
+  if (!phones.length) return out;
+  const marks = phones.map(() => '?').join(',');
+  const [stats, notes] = await Promise.all([
+    db
+      .prepare(
+        `SELECT customer_phone AS phone,
+           SUM(status = 'completed') AS visits, SUM(status = 'no_show') AS no_shows, SUM(status = 'cancelled') AS cancelled
+         FROM bookings WHERE customer_phone IN (${marks}) GROUP BY customer_phone`,
+      )
+      .bind(...phones)
+      .all<{ phone: string; visits: number; no_shows: number; cancelled: number }>(),
+    db.prepare(`SELECT phone, blocked, note FROM customers WHERE phone IN (${marks})`).bind(...phones).all<{ phone: string; blocked: number; note: string | null }>(),
+  ]);
+  for (const p of phones) out[p] = { visits: 0, noShows: 0, cancelled: 0, blocked: false, note: null };
+  for (const r of stats.results) Object.assign(out[r.phone], { visits: r.visits ?? 0, noShows: r.no_shows ?? 0, cancelled: r.cancelled ?? 0 });
+  for (const r of notes.results) Object.assign(out[r.phone], { blocked: !!r.blocked, note: r.note });
+  return out;
+}
+
+async function saveCustomer(request: Request, db: D1Database, staff: StaffUser) {
+  const b = await readJson<{ phone?: unknown; blocked?: unknown; note?: unknown }>(request);
+  const phone = typeof b.phone === 'string' ? normalizeBrPhone(b.phone) : '';
+  if (!isValidBrPhone(phone)) throw new HttpError(400, 'invalid');
+  const note = typeof b.note === 'string' ? b.note.trim().slice(0, 280) || null : null;
+  await db
+    .prepare(
+      `INSERT INTO customers (phone, blocked, note, updated_at, updated_by) VALUES (?, ?, ?, ?, ?)
+       ON CONFLICT (phone) DO UPDATE SET blocked = excluded.blocked, note = excluded.note, updated_at = excluded.updated_at, updated_by = excluded.updated_by`,
+    )
+    .bind(phone, b.blocked === true ? 1 : 0, note, Date.now(), staff.id)
+    .run();
+  return json((await customerInfo(db, [phone]))[phone]);
 }
 
 async function addBlock(request: Request, db: D1Database) {
@@ -277,7 +329,7 @@ async function addBlock(request: Request, db: D1Database) {
   for (const r of ranges) {
     const { results } = await db
       .prepare(
-        `SELECT * FROM bookings WHERE local_day = ? AND status = 'confirmed' AND starts_at < ? AND ends_at > ? ${proId ? 'AND professional_id = ?' : ''} ORDER BY starts_at`,
+        `SELECT * FROM bookings WHERE local_day = ? AND status IN ('pending', 'confirmed') AND starts_at < ? AND ends_at > ? ${proId ? 'AND professional_id = ?' : ''} ORDER BY starts_at`,
       )
       .bind(...(proId ? [r.day, r.end, r.start, proId] : [r.day, r.end, r.start]))
       .all<BookingRow>();
@@ -295,8 +347,10 @@ async function removeBlock(id: number, db: D1Database) {
 
 async function setStatus(code: string, request: Request, db: D1Database, staff: StaffUser) {
   const { status } = await readJson<{ status?: string }>(request);
-  if (!['cancelled', 'completed', 'no_show'].includes(status ?? '')) throw new HttpError(400, 'invalid');
-  const res = await db.prepare('UPDATE bookings SET status = ?, updated_at = ?, updated_by = ? WHERE code = ?').bind(status, Date.now(), staff.id, code).run();
+  if (!['confirmed', 'declined', 'cancelled', 'completed', 'no_show'].includes(status ?? '')) throw new HttpError(400, 'invalid');
+  // Approving or declining applies only to a request still waiting for an answer.
+  const onlyPending = status === 'confirmed' || status === 'declined' ? " AND status = 'pending'" : '';
+  const res = await db.prepare(`UPDATE bookings SET status = ?, updated_at = ?, updated_by = ? WHERE code = ?${onlyPending}`).bind(status, Date.now(), staff.id, code).run();
   if (res.meta.changes === 0) throw new HttpError(404, 'not_found');
   await bumpVersion(db);
   const row = await db.prepare('SELECT * FROM bookings WHERE code = ?').bind(code).first<BookingRow>();
@@ -306,7 +360,7 @@ async function setStatus(code: string, request: Request, db: D1Database, staff: 
 /* ---------------- router ---------------- */
 
 // Requests that change the schedule; after a successful one, every open screen is told at once.
-const MUTATIONS = [/^POST \/api\/bookings$/, /^POST \/api\/admin\/bookings$/, /^POST \/api\/bookings\/cancel$/, /^POST \/api\/admin\/blocks$/, /^DELETE \/api\/admin\/blocks\/\d+$/, /^POST \/api\/admin\/bookings\/[^/]+\/status$/];
+const MUTATIONS = [/^POST \/api\/bookings$/, /^POST \/api\/admin\/bookings$/, /^POST \/api\/bookings\/cancel$/, /^POST \/api\/admin\/blocks$/, /^DELETE \/api\/admin\/blocks\/\d+$/, /^POST \/api\/admin\/bookings\/[^/]+\/status$/, /^POST \/api\/admin\/customers$/];
 
 async function broadcast(env: Env) {
   if (!env.HUB) return;
@@ -377,12 +431,14 @@ async function route(request: Request, env: Env): Promise<Response> {
     if (path.startsWith('/api/admin/')) {
       const staff = await auth.requireStaff(request, db);
       if (method === 'GET' && path === '/api/admin/day') return adminDay(url, db);
+      if (method === 'GET' && path === '/api/admin/pending') return pendingRequests(db);
       if (method === 'POST' && path === '/api/admin/blocks') return addBlock(request, db);
       if (method === 'POST' && path === '/api/admin/bookings') return createBooking(request, db, { admin: true, staff });
       const blockMatch = path.match(/^\/api\/admin\/blocks\/(\d+)$/);
       if (method === 'DELETE' && blockMatch) return removeBlock(Number(blockMatch[1]), db);
       const statusMatch = path.match(/^\/api\/admin\/bookings\/(BU-[A-Z0-9]{5})\/status$/);
       if (method === 'POST' && statusMatch) return setStatus(statusMatch[1], request, db, staff);
+      if (method === 'POST' && path === '/api/admin/customers') return saveCustomer(request, db, staff);
     }
     throw new HttpError(404, 'not_found');
   }

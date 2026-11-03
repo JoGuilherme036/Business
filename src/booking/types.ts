@@ -1,4 +1,10 @@
-export type BookingStatus = 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+export type BookingStatus = 'pending' | 'confirmed' | 'declined' | 'cancelled' | 'completed' | 'no_show';
+/** Statuses that occupy the professional's time. */
+export const ACTIVE_STATUSES: BookingStatus[] = ['pending', 'confirmed'];
+export const isActive = (s: BookingStatus) => s === 'pending' || s === 'confirmed';
+
+/** What the team knows about a client (by phone). Never shown on the public site. */
+export type CustomerInfo = { visits: number; noShows: number; cancelled: number; blocked: boolean; note: string | null };
 
 export type Booking = {
   code: string;
@@ -46,7 +52,7 @@ export type NewBlock = {
 export type BusyMap = Record<string, { start: number; end: number }[]>;
 export type DayClosures = { closed: string[]; off: Record<string, string[]> };
 
-export type BookingErrorCode = 'slot_taken' | 'invalid' | 'not_found' | 'too_late' | 'network' | 'unauthorized' | 'forbidden' | 'locked' | 'username_taken' | 'weak_password' | 'setup_done';
+export type BookingErrorCode = 'slot_taken' | 'invalid' | 'not_found' | 'too_late' | 'network' | 'unauthorized' | 'forbidden' | 'locked' | 'username_taken' | 'weak_password' | 'setup_done' | 'contact_shop';
 
 export class BookingError extends Error {
   constructor(public code: BookingErrorCode, message?: string) {
@@ -86,10 +92,15 @@ export interface AdminApi {
   users(): Promise<StaffUser[]>;
   createUser(user: NewStaffUser): Promise<StaffUser>;
   updateUser(id: number, patch: StaffPatch): Promise<StaffUser>;
-  day(day: string): Promise<{ bookings: Booking[]; blocks: Block[] }>;
+  day(day: string): Promise<{ bookings: Booking[]; blocks: Block[]; customers: Record<string, CustomerInfo> }>;
+  /** Online requests still waiting for an answer, any day. */
+  pending(): Promise<{ bookings: Booking[]; customers: Record<string, CustomerInfo> }>;
+  /** Private note and "do not book online" flag for a client phone. */
+  saveCustomer(phone: string, data: { blocked: boolean; note: string | null }): Promise<CustomerInfo>;
   addBlock(block: NewBlock): Promise<{ created: number; conflicts: Booking[] }>;
   removeBlock(id: number): Promise<void>;
-  setStatus(code: string, status: Exclude<BookingStatus, 'confirmed'>): Promise<Booking>;
+  /** confirmed/declined answer a pending request; the others close a booking. */
+  setStatus(code: string, status: Exclude<BookingStatus, 'pending'>): Promise<Booking>;
   /** Book on behalf of a client (phone or walk-in): no minimum notice, phone optional. */
   book(req: CreateBookingRequest): Promise<Booking>;
 }

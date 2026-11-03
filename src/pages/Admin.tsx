@@ -9,7 +9,7 @@ import { DEMO_LOGINS } from '@/booking/localApi';
 import { asset } from '@/lib/asset';
 import { TeamPanel, AccountPanel } from '@/components/staff/TeamPanel';
 import { notifyScheduleChanged, useScheduleVersion } from '@/booking/sync';
-import { BookingError, type Block, type Booking, type BookingStatus, type BusyMap, type StaffUser } from '@/booking/types';
+import { BookingError, type Block, type Booking, type BookingStatus, type BusyMap, type CustomerInfo, type StaffUser } from '@/booking/types';
 import { eligiblePros, slotsFor, summarize } from '@/booking/availability';
 import { toggleService } from '@/booking/selection';
 import { maskBrPhone } from '@/lib/phone';
@@ -24,8 +24,10 @@ import { Logo } from '@/components/ui/Logo';
 
 const clock = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: site.timeZone });
 const clockSec = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: site.timeZone });
-const statusLabel: Record<BookingStatus, string> = { confirmed: 'Confirmado', completed: 'Concluído', no_show: 'Faltou', cancelled: 'Cancelado' };
+const statusLabel: Record<BookingStatus, string> = { pending: 'Aguardando', confirmed: 'Confirmado', declined: 'Recusado', completed: 'Concluído', no_show: 'Faltou', cancelled: 'Cancelado' };
 const statusStyle: Record<BookingStatus, string> = {
+  pending: 'bg-amber-300/15 text-amber-200',
+  declined: 'bg-ivory/10 text-muted line-through',
   confirmed: 'bg-emerald-400/15 text-emerald-300',
   completed: 'bg-accent/20 text-accent-light',
   no_show: 'bg-danger/15 text-danger',
@@ -198,14 +200,17 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
   const [tab, setTab] = useState<'agenda' | 'equipe' | 'conta'>('agenda');
   const [day, setDay] = useState(today);
   const [filter, setFilter] = useState<string>(user.proId ?? 'all');
-  const [data, setData] = useState<{ bookings: Booking[]; blocks: Block[] } | null>(null);
+  const [data, setData] = useState<{ bookings: Booking[]; blocks: Block[]; customers: Record<string, CustomerInfo> } | null>(null);
+  const [pending, setPending] = useState<{ bookings: Booking[]; customers: Record<string, CustomerInfo> } | null>(null);
   const [error, setError] = useState(false);
   const [sheet, setSheet] = useState<'block' | 'book' | null>(null);
   const { tick, syncedAt, live } = useScheduleVersion();
 
   const load = useCallback(async () => {
     try {
-      setData(await adminApi.day(day));
+      const [d, p] = await Promise.all([adminApi.day(day), adminApi.pending()]);
+      setData(d);
+      setPending(p);
       setError(false);
     } catch (e) {
       if (e instanceof BookingError && e.code === 'unauthorized') onLogout();
@@ -227,7 +232,7 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
 
   const days = useMemo(() => Array.from({ length: 31 }, (_, i) => addDays(today, i - 3)), [today]);
   const pros = team.filter((p) => filter === 'all' || p.id === filter);
-  const active = data?.bookings.filter((b) => b.status !== 'cancelled') ?? [];
+  const active = data?.bookings.filter((b) => b.status !== 'cancelled' && b.status !== 'declined') ?? [];
   const revenue = active.reduce((t, b) => t + b.totalCents, 0);
   const wholeDay = data?.blocks.filter((b) => !b.startTime) ?? [];
 
@@ -329,6 +334,26 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
           </div>
         </div>
 
+        {pending && pending.bookings.length > 0 && (
+          <section aria-label="Pedidos aguardando resposta" className="mt-6 rounded-xl border border-amber-300/30 bg-amber-300/[0.04] p-4 md:p-5">
+            <header className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="font-display text-xl font-bold">
+                Pedidos do site <span className="ml-1 rounded-full bg-amber-300 px-2 py-0.5 text-[12px] text-ink">{pending.bookings.length}</span>
+              </h2>
+              <p className="text-[12.5px] text-muted">O horário fica reservado até a equipe responder. Confirme e avise o cliente pelo WhatsApp.</p>
+            </header>
+            <ul className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {pending.bookings
+                .filter((b) => filter === 'all' || b.proId === filter)
+                .map((b) => (
+                  <li key={b.code}>
+                    <BookingCard booking={b} customer={pending.customers[b.customer.phone]} onChanged={changed} showDay />
+                  </li>
+                ))}
+            </ul>
+          </section>
+        )}
+
         {wholeDay.length > 0 && (
           <div className="mt-5 space-y-2">
             {wholeDay.map((b) => (
@@ -366,7 +391,7 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
                     <AnimatePresence initial={false}>
                       {items.map((it) => (
                         <motion.li key={it.kind + (it.kind === 'booking' ? it.b.code : it.b.id)} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                          {it.kind === 'booking' ? <BookingCard booking={it.b} onChanged={changed} /> : <BlockRow block={it.b} onRemoved={changed} compact />}
+                          {it.kind === 'booking' ? <BookingCard booking={it.b} customer={data.customers?.[it.b.customer.phone]} onChanged={changed} /> : <BlockRow block={it.b} onRemoved={changed} compact />}
                         </motion.li>
                       ))}
                     </AnimatePresence>
@@ -387,14 +412,23 @@ function Dashboard({ user, onUserChange, onLogout }: { user: StaffUser; onUserCh
   );
 }
 
-function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: () => void }) {
+function BookingCard({ booking: b, customer, onChanged, showDay }: { booking: Booking; customer?: CustomerInfo; onChanged: () => void; showDay?: boolean }) {
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [busy, setBusy] = useState(false);
-  const set = async (status: Exclude<BookingStatus, 'confirmed'>) => {
+  const [clientOpen, setClientOpen] = useState(false);
+  const pro = proById(b.proId)?.name ?? b.proId;
+  const services = b.serviceIds.map((id) => serviceById(id)?.name ?? id).join(' + ');
+  const msg = { name: b.customer.name.split(' ')[0], date: formatDayLong(b.day).toLowerCase(), time: b.time, pro, services };
+  const set = async (status: Exclude<BookingStatus, 'pending'>) => {
+    // Open WhatsApp synchronously (inside the click) so pop-up blockers allow it.
+    const reply = status === 'confirmed' ? waMessages.requestConfirmed(msg) : status === 'declined' ? waMessages.requestDeclined(msg) : null;
+    const win = reply && b.customer.phone ? window.open(clientWhatsapp(b.customer.phone, reply), '_blank', 'noopener') : null;
     setBusy(true);
     try {
       await adminApi.setStatus(b.code, status);
       onChanged();
+    } catch {
+      win?.close();
     } finally {
       setBusy(false);
       setConfirmCancel(false);
@@ -402,10 +436,12 @@ function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: (
   };
   const phone = b.customer.phone;
   const pretty = phone.length === 11 ? `(${phone.slice(0, 2)}) ${phone.slice(2, 7)}-${phone.slice(7)}` : phone;
+  const pill = 'min-h-10 rounded-[3px] px-3.5 text-[11.5px] font-semibold uppercase tracking-[0.1em] disabled:opacity-50';
   return (
-    <article className={`rounded-2xl border hairline bg-ink p-4 ${b.status === 'cancelled' ? 'opacity-60' : ''}`}>
+    <article className={`rounded-xl border bg-ink p-4 ${customer?.blocked ? 'border-danger/50' : 'hairline'} ${b.status === 'cancelled' || b.status === 'declined' ? 'opacity-60' : ''}`}>
       <div className="flex items-start justify-between gap-3">
-        <p className="font-display text-2xl tabular-nums leading-none text-accent-light">
+        <p className="font-display text-2xl tabular-nums leading-none">
+          {showDay && <span className="mr-2 text-[13px] font-semibold uppercase tracking-[0.1em] text-muted">{formatDayShort(b.day)} {dayOfMonth(b.day)}</span>}
           {clock.format(new Date(b.start))}
           <span className="text-base text-muted">–{clock.format(new Date(b.end))}</span>
         </p>
@@ -413,35 +449,56 @@ function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: (
       </div>
       <p className="mt-2 text-[15px] font-semibold">{b.customer.name}</p>
       <p className="text-[13px] text-muted">
-        {b.serviceIds.map((id) => serviceById(id)?.name ?? id).join(' + ')} · {formatPrice(b.totalCents)}
+        {services} · {formatPrice(b.totalCents)}
+        {showDay && ` · ${pro}`}
       </p>
+      {customer && <CustomerBadges info={customer} />}
       {b.customer.notes && <p className="mt-1 text-[13px] italic text-ivory/70">“{b.customer.notes}”</p>}
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <a href={`https://wa.me/55${phone}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1.5 rounded-full border hairline px-3 text-[12px]">
-          <Icon name="whatsapp" className="h-4 w-4 text-accent" /> {pretty}
-        </a>
+        {phone && (
+          <a href={clientWhatsapp(phone, `Olá, ${msg.name}! Aqui é da ${site.name}.`)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1.5 rounded-full border hairline px-3 text-[12px]">
+            <Icon name="whatsapp" className="h-4 w-4" /> {pretty}
+          </a>
+        )}
+        {phone && (
+          <button onClick={() => setClientOpen((v) => !v)} aria-expanded={clientOpen} className="min-h-10 rounded-full border hairline px-3 text-[12px]">
+            {customer?.note || customer?.blocked ? 'Cliente: ver anotação' : 'Anotar sobre o cliente'}
+          </button>
+        )}
         <span className="font-mono text-[11px] text-muted">{b.code}</span>
       </div>
+      {clientOpen && phone && <CustomerEditor phone={phone} info={customer} onSaved={() => (setClientOpen(false), onChanged())} />}
+
+      {b.status === 'pending' && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button disabled={busy} onClick={() => set('confirmed')} className={`${pill} bg-ivory text-ink`}>
+            Confirmar e avisar
+          </button>
+          <button disabled={busy} onClick={() => set('declined')} className={`${pill} border hairline hover:border-danger/60`}>
+            Recusar
+          </button>
+        </div>
+      )}
       {b.status === 'confirmed' && (
         <div className="mt-3 flex flex-wrap gap-2">
           {confirmCancel ? (
             <>
-              <button disabled={busy} onClick={() => set('cancelled')} className="min-h-10 rounded-full bg-danger px-4 text-[12px] font-semibold text-ink">
+              <button disabled={busy} onClick={() => set('cancelled')} className={`${pill} bg-danger text-ink`}>
                 Confirmar cancelamento
               </button>
-              <button onClick={() => setConfirmCancel(false)} className="min-h-10 rounded-full border hairline px-4 text-[12px]">
+              <button onClick={() => setConfirmCancel(false)} className={`${pill} border hairline`}>
                 Manter
               </button>
             </>
           ) : (
             <>
-              <button disabled={busy} onClick={() => set('completed')} className="min-h-10 rounded-full border border-accent/50 px-4 text-[12px] font-semibold text-accent-light">
+              <button disabled={busy} onClick={() => set('completed')} className={`${pill} border border-ivory/40`}>
                 Concluir
               </button>
-              <button disabled={busy} onClick={() => set('no_show')} className="min-h-10 rounded-full border hairline px-4 text-[12px]">
+              <button disabled={busy} onClick={() => set('no_show')} className={`${pill} border hairline`}>
                 Faltou
               </button>
-              <button disabled={busy} onClick={() => setConfirmCancel(true)} className="min-h-10 rounded-full border hairline px-4 text-[12px] hover:border-danger/60">
+              <button disabled={busy} onClick={() => setConfirmCancel(true)} className={`${pill} border hairline hover:border-danger/60`}>
                 Cancelar
               </button>
             </>
@@ -449,6 +506,54 @@ function BookingCard({ booking: b, onChanged }: { booking: Booking; onChanged: (
         </div>
       )}
     </article>
+  );
+}
+
+const clientWhatsapp = (phone: string, text: string) => `https://wa.me/55${phone}?text=${encodeURIComponent(text)}`;
+
+/** What the team should know before saying yes: past no-shows, cancellations and the "do not book online" flag. */
+function CustomerBadges({ info }: { info: CustomerInfo }) {
+  const tag = 'rounded-[3px] px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.08em]';
+  return (
+    <div className="mt-2 flex flex-wrap gap-1.5">
+      {info.blocked && <span className={`${tag} bg-danger text-ink`}>Não agendar online</span>}
+      {info.noShows > 0 && <span className={`${tag} bg-danger/15 text-danger`}>{info.noShows} {info.noShows === 1 ? 'falta' : 'faltas'}</span>}
+      {info.cancelled > 0 && <span className={`${tag} bg-ivory/10 text-ivory/80`}>{info.cancelled} cancel.</span>}
+      {info.visits > 0 ? <span className={`${tag} bg-emerald-400/15 text-emerald-300`}>{info.visits} {info.visits === 1 ? 'visita' : 'visitas'}</span> : <span className={`${tag} bg-ivory/10 text-ivory/70`}>Cliente novo</span>}
+      {info.note && <span className="w-full text-[12.5px] text-ivory/75">Anotação: {info.note}</span>}
+    </div>
+  );
+}
+
+function CustomerEditor({ phone, info, onSaved }: { phone: string; info?: CustomerInfo; onSaved: () => void }) {
+  const [note, setNote] = useState(info?.note ?? '');
+  const [blocked, setBlocked] = useState(info?.blocked ?? false);
+  const [state, setState] = useState<{ saving: boolean; error?: string }>({ saving: false });
+  const save = async (e: FormEvent) => {
+    e.preventDefault();
+    setState({ saving: true });
+    try {
+      await adminApi.saveCustomer(phone, { blocked, note: note.trim() || null });
+      onSaved();
+    } catch {
+      setState({ saving: false, error: 'Não foi possível salvar.' });
+    }
+  };
+  return (
+    <form onSubmit={save} className="mt-3 rounded-lg border hairline bg-ink-2 p-3">
+      <label className="block text-[12px] font-medium">
+        Anotação da equipe (só a equipe vê)
+        <textarea id={`note-${phone}`} value={note} onChange={(e) => setNote(e.target.value)} maxLength={280} rows={2} className="mt-1 block w-full rounded-lg border hairline bg-ink px-3 py-2 text-[13px] text-ivory focus:border-ivory focus:outline-none" placeholder="Ex.: costuma atrasar, prefere o Lucas…" />
+      </label>
+      <label className="mt-2 flex min-h-10 items-center gap-2.5 text-[12.5px]">
+        <input id={`blocked-${phone}`} type="checkbox" checked={blocked} onChange={(e) => setBlocked(e.target.checked)} className="h-4 w-4 accent-white" />
+        Não aceitar pedidos online deste cliente (o site pede para ele chamar no WhatsApp)
+      </label>
+      <div className="mt-2 flex items-center gap-2">
+        <button disabled={state.saving} className="min-h-10 rounded-[3px] bg-ivory px-3.5 text-[11.5px] font-semibold uppercase tracking-[0.1em] text-ink">{state.saving ? 'Salvando…' : 'Salvar'}</button>
+        <span className="text-[12px] text-danger">{state.error}</span>
+      </div>
+    </form>
   );
 }
 

@@ -1,3 +1,4 @@
+import { site } from '@/config/site';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -146,7 +147,7 @@ export function LiveBoard() {
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[13px] text-muted">
           <span>
-            {service.name} · {formatDuration(service.durationMin)} · {formatPrice(service.priceCents)}
+            {service.name} · {formatDuration(service.durationMin)}{site.booking.showServicePrices ? ` · ${formatPrice(service.priceCents)}` : ''}
           </span>
           <Link to={`/agendar?servico=${serviceId}`} className="inline-flex min-h-11 items-center gap-2 font-semibold text-accent-light">
             Ver todos os horários <Icon name="arrowRight" className="h-4 w-4" />

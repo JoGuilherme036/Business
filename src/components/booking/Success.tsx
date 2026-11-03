@@ -49,8 +49,21 @@ export function Success({ booking }: { booking: Booking }) {
       </svg>
 
       <h1 id="step-title" tabIndex={-1} className="display mt-6 text-[clamp(2.4rem,10vw,3.6rem)] outline-none" aria-live="assertive">
-        Agendamento <em className="accent-text">confirmado.</em>
+        {booking.status === 'pending' ? (
+          <>
+            Pedido <em className="accent-text">enviado.</em>
+          </>
+        ) : (
+          <>
+            Agendamento <em className="accent-text">confirmado.</em>
+          </>
+        )}
       </h1>
+      {booking.status === 'pending' && (
+        <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-ivory/80">
+          Seu horário já está reservado. A equipe vai confirmar com você pelo WhatsApp {booking.customer.phone ? 'neste número' : ''} em instantes, no horário de funcionamento.
+        </p>
+      )}
       {bookingApi.mode === 'demo' && (
         <p className="mx-auto mt-3 max-w-sm rounded-xl border border-accent/30 bg-accent/10 px-4 py-2 text-[13px] text-accent-light">
           Modo demonstração: este agendamento ficou salvo só neste aparelho e não chegou à barbearia.
@@ -72,7 +85,7 @@ export function Success({ booking }: { booking: Booking }) {
           <div className="flex justify-between gap-4"><dt className="text-muted">Barbeiro</dt><dd>{pro}</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-muted">Serviços</dt><dd className="text-right">{serviceNames}</dd></div>
           <div className="flex justify-between gap-4"><dt className="text-muted">Duração</dt><dd>{formatDuration(booking.durationMin)}</dd></div>
-          <div className="flex justify-between gap-4"><dt className="text-muted">Total</dt><dd className="font-display text-xl text-accent-light">{formatPrice(booking.totalCents)}</dd></div>
+          {site.booking.showServicePrices && <div className="flex justify-between gap-4"><dt className="text-muted">Total</dt><dd className="font-display text-xl text-accent-light">{formatPrice(booking.totalCents)}</dd></div>}
           <div className="flex justify-between gap-4"><dt className="text-muted">Onde</dt><dd className="text-right text-[13px]">{fullAddress}</dd></div>
         </dl>
       </div>
@@ -80,7 +93,7 @@ export function Success({ booking }: { booking: Booking }) {
       <div className="mx-auto mt-6 grid max-w-md grid-cols-2 gap-2">
         <Action onClick={() => downloadIcs(event)} icon="calendar" label="Salvar na agenda" />
         <Action href={googleCalendarLink(event)} icon="calendar" label="Google Agenda" />
-        <Action href={wa} icon="whatsapp" label="Enviar no WhatsApp" />
+        <Action href={wa} icon="whatsapp" label={booking.status === 'pending' ? 'Falar no WhatsApp' : 'Enviar no WhatsApp'} />
         <Action href={routeLink()} icon="route" label="Como chegar" />
         <Action onClick={share} icon="share" label="Compartilhar" />
         <Action to={`/meu-agendamento?codigo=${booking.code}`} icon="reset" label="Remarcar ou cancelar" />

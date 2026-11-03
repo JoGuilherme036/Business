@@ -32,7 +32,7 @@ export function Comanda({ className = '' }: { className?: string }) {
                 <div className="flex items-baseline gap-2 py-1.5 text-[14.5px]">
                   <span className="min-w-0 truncate">{s.name}</span>
                   <span aria-hidden="true" className="min-w-4 flex-1 -translate-y-1 border-b border-dotted border-ivory/35" />
-                  <span className="tabular-nums">{formatPrice(s.priceCents)}</span>
+                  <span className="tabular-nums">{site.booking.showServicePrices ? formatPrice(s.priceCents) : formatDuration(s.durationMin)}</span>
                   <button onClick={() => remove(s.id)} className="-my-2 grid h-9 w-9 shrink-0 place-items-center rounded-full text-ivory/50 hover:bg-ivory/10 hover:text-ivory" aria-label={`Tirar ${s.name} da comanda`}>
                     <Icon name="close" className="h-3.5 w-3.5" />
                   </button>
@@ -48,8 +48,8 @@ export function Comanda({ className = '' }: { className?: string }) {
         </ul>
 
         <div className="flex items-baseline justify-between border-t border-dashed border-ivory/25 pt-3">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/55">Total{durationMin ? ` · ${formatDuration(durationMin)}` : ''}</span>
-          <span className="font-display text-[2rem] leading-none tabular-nums">{formatPrice(priceCents)}</span>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/55">{site.booking.showServicePrices ? `Total${durationMin ? ` · ${formatDuration(durationMin)}` : ''}` : 'Tempo estimado'}</span>
+          <span className="font-display text-[2rem] leading-none tabular-nums">{site.booking.showServicePrices ? formatPrice(priceCents) : durationMin ? formatDuration(durationMin) : '—'}</span>
         </div>
 
         {items.length > 0 ? (
@@ -59,14 +59,14 @@ export function Comanda({ className = '' }: { className?: string }) {
               onClick={() => track('cta_book_click', { from: 'comanda', services: items.length })}
               className="mt-6 flex min-h-12 items-center justify-center gap-2 rounded-[3px] bg-ivory text-[12px] font-semibold uppercase tracking-[0.14em] text-ink transition-transform active:scale-[0.97]"
             >
-              Escolher horário <Icon name="arrowRight" className="h-4 w-4" />
+              Pedir horário <Icon name="arrowRight" className="h-4 w-4" />
             </Link>
             <button onClick={() => update({ serviceIds: [], time: null })} className="mt-2 min-h-10 w-full text-[12px] text-ivory/55 underline underline-offset-2 hover:text-ivory">
               Limpar comanda
             </button>
           </>
         ) : (
-          <p className="mt-6 text-center text-[12px] text-ivory/50">Pagamento na barbearia, depois do atendimento.</p>
+          <p className="mt-6 text-center text-[12px] text-ivory/50">A equipe confirma seu horário pelo WhatsApp.</p>
         )}
       </div>
     </div>

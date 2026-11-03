@@ -3,7 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { summarize } from '@/booking/availability';
 import { useDraft } from '@/booking/draft';
-import { formatPrice } from '@/lib/format';
 import { routeLink } from '@/lib/maps';
 import { whatsappLink, waMessages } from '@/lib/whatsapp';
 import { track } from '@/lib/analytics';
@@ -61,7 +60,7 @@ export function ActionBar() {
               <Icon name="calendar" className="h-[18px] w-[18px] shrink-0" />
               <span>Agendar</span>
               {order.services.length > 0 && (
-                <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold tabular-nums text-accent-light" aria-label={`${order.services.length} serviços, ${formatPrice(order.priceCents)}`}>
+                <span className="rounded-full bg-ink px-2 py-0.5 text-[11px] font-bold tabular-nums text-accent-light" aria-label={`${order.services.length} serviços escolhidos`}>
                   {order.services.length}
                 </span>
               )}

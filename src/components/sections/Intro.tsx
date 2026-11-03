@@ -13,9 +13,9 @@ import { cachedBusy } from '@/booking/busyCache';
 import { bookableDays, slotsFor } from '@/booking/availability';
 import { useScheduleVersion } from '@/booking/sync';
 import { ScrollFilm } from '../background/ScrollFilm';
-import { LinkButton, Button } from '../ui/Button';
+import { LinkButton, ExternalButton } from '../ui/Button';
+import { whatsappLink, waMessages } from '@/lib/whatsapp';
 import { Icon } from '../ui/Icon';
-import { scrollToSection } from '../layout/nav';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const QUICK_SERVICE = 'corte-assinatura';
@@ -157,10 +157,9 @@ export function Intro() {
               <LinkButton to="/agendar" size="lg" iconRight="arrowRight" className="flex-1 !px-5 sm:flex-none sm:!px-8" onClick={() => track('cta_book_click', { from: 'hero' })}>
                 Agendar horário
               </LinkButton>
-              <Button variant="ghost" size="lg" className="!bg-ink/40 !px-5 sm:!px-8" onClick={() => scrollToSection('servicos', reduced)}>
-                <span className="sm:hidden">Serviços</span>
-                <span className="hidden sm:inline">Serviços e preços</span>
-              </Button>
+              <ExternalButton href={whatsappLink(waMessages.schedule())} variant="ghost" size="lg" icon="whatsapp" className="!bg-ink/40 !px-5 sm:!px-8" onClick={() => track('whatsapp_click', { from: 'hero' })}>
+                WhatsApp
+              </ExternalButton>
             </div>
           </div>
         </motion.div>

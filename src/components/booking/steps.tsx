@@ -10,7 +10,7 @@ import type { Draft } from '@/booking/draft';
 import { formatDuration, formatPrice } from '@/lib/format';
 import { maskBrPhone } from '@/lib/phone';
 import { addDays, dayOfMonth, formatDayLong, formatDayShort, formatMonth, shopNow, toMinutes } from '@/lib/time';
-import { whatsappLink } from '@/lib/whatsapp';
+import { whatsappLink, waMessages } from '@/lib/whatsapp';
 import { Icon } from '../ui/Icon';
 import { Link } from 'react-router-dom';
 
@@ -32,7 +32,22 @@ export function StepTitle({ id, title, hint }: { id: string; title: string; hint
 export function ServicesStep({ draft, update }: StepProps) {
   return (
     <div>
-      <StepTitle id="step-title" title="O que vamos fazer?" hint="Escolha um ou mais serviços. Duração e valor são somados automaticamente." />
+      <StepTitle id="step-title" title="O que vamos fazer?" hint={site.booking.showServicePrices ? 'Escolha um ou mais serviços. Duração e valor são somados automaticamente.' : 'Escolha um ou mais serviços. O valor a equipe combina com você.'} />
+      <a
+        href={whatsappLink(waMessages.schedule())}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mb-8 flex items-center gap-4 rounded-xl border hairline bg-ink-2/70 p-4 transition-colors hover:border-ivory/40"
+      >
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ivory text-ink">
+          <Icon name="whatsapp" className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[15px] font-semibold">Prefere conversar antes?</span>
+          <span className="block text-[13px] text-muted">Chame no WhatsApp: a equipe tira dúvidas, passa valores e marca o horário com você.</span>
+        </span>
+        <Icon name="arrowUpRight" className="h-4 w-4 shrink-0 text-muted" />
+      </a>
       <div className="space-y-8">
         {categories.map((c) => (
           <fieldset key={c.id}>
@@ -58,7 +73,7 @@ export function ServicesStep({ draft, update }: StepProps) {
                       <span className="flex-1">
                         <span className="flex items-baseline justify-between gap-3">
                           <span className="font-display text-xl">{s.name}</span>
-                          <span className="font-display text-lg tabular-nums text-accent-light">{formatPrice(s.priceCents)}</span>
+                          {site.booking.showServicePrices && <span className="font-display text-lg tabular-nums text-accent-light">{formatPrice(s.priceCents)}</span>}
                         </span>
                         <span className="mt-1 block text-[13px] leading-relaxed text-muted">{s.description}</span>
                         <span className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-ivory/70">
@@ -376,24 +391,26 @@ export function ReviewStep({ draft, accepted, setAccepted, acceptError }: StepPr
   );
   return (
     <div>
-      <StepTitle id="step-title" title="Tudo certo?" hint="Confira antes de confirmar. Você pode voltar e mudar qualquer coisa." />
+      <StepTitle id="step-title" title="Tudo certo?" hint={site.booking.requireApproval ? 'Confira e envie o pedido. A equipe responde pelo WhatsApp para confirmar.' : 'Confira antes de confirmar. Você pode voltar e mudar qualquer coisa.'} />
       <div className="rounded-xl border hairline bg-ink-2/70 p-5">
         <p className="font-display text-3xl italic">{draft.day && formatDayLong(draft.day)}</p>
         <p className="mt-1 font-display text-5xl text-accent-light tabular-nums">{draft.time}</p>
         <dl className="mt-4 divide-y divide-accent/10 text-[15px]">
           <Row label="Barbeiro" value={pro ?? ''} />
           {list.map((s) => (
-            <Row key={s.id} label={s.name} value={formatPrice(s.priceCents)} />
+            <Row key={s.id} label={s.name} value={site.booking.showServicePrices ? formatPrice(s.priceCents) : formatDuration(s.durationMin)} />
           ))}
           <Row label="Duração" value={formatDuration(durationMin)} />
-          <div className="flex justify-between gap-4 py-3 text-lg">
-            <dt>Total</dt>
-            <dd className="font-display text-2xl text-accent-light">{formatPrice(priceCents)}</dd>
-          </div>
+          {site.booking.showServicePrices && (
+            <div className="flex justify-between gap-4 py-3 text-lg">
+              <dt>Total</dt>
+              <dd className="font-display text-2xl text-accent-light">{formatPrice(priceCents)}</dd>
+            </div>
+          )}
           <Row label="Nome" value={draft.name} />
           <Row label="WhatsApp" value={draft.phone} />
         </dl>
-        <p className="mt-2 text-[13px] text-muted">Pagamento na barbearia, após o atendimento.</p>
+        <p className="mt-2 text-[13px] text-muted">{site.booking.requireApproval ? 'Este é um pedido: a equipe confirma o horário com você pelo WhatsApp. ' : ''}{site.booking.showServicePrices ? 'Pagamento na barbearia, após o atendimento.' : 'O valor é combinado com a equipe.'}</p>
       </div>
 
       <label className={`mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border p-4 ${acceptError ? 'border-danger' : 'hairline'}`}>

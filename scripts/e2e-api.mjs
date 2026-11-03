@@ -69,8 +69,22 @@ ok(!JSON.stringify(busy.body).includes('Cliente'), 'endpoint público não expõ
 const block = await call('/api/admin/blocks', { method: 'POST', token: admin, body: { proId: 'lucas', from: day, to: day, startTime: '12:00', endTime: '13:00', reason: 'Almoço' } });
 ok(block.status === 201, 'bloqueio de horário criado');
 ok((await call('/api/bookings', { method: 'POST', body: booking('blocked', { time: '12:15' }) })).body.error === 'slot_taken', 'horário bloqueado não aceita reserva');
-const code = results.find((r) => r.status === 201).body.code;
-ok((await call(`/api/admin/bookings/${code}/status`, { method: 'POST', token: barber, body: { status: 'completed' } })).body.status === 'completed', 'barbeiro conclui atendimento');
+console.log('Pedidos do site e clientes');
+const won = results.find((r) => r.status === 201).body;
+ok(won.status === 'pending', 'reserva feita pelo site chega como pedido aguardando a equipe');
+ok(walkin.body.status === 'confirmed', 'reserva feita pela equipe já nasce confirmada');
+const pend = await call('/api/admin/pending', { token: admin });
+ok(pend.body.bookings.some((b) => b.code === won.code) && pend.body.customers['86988887777'], 'painel lista os pedidos pendentes com o histórico do cliente');
+ok((await call(`/api/admin/bookings/${won.code}/status`, { method: 'POST', token: barber, body: { status: 'confirmed' } })).body.status === 'confirmed', 'barbeiro confirma o pedido');
+ok((await call(`/api/admin/bookings/${won.code}/status`, { method: 'POST', token: barber, body: { status: 'declined' } })).status === 404, 'pedido já respondido não pode ser recusado depois');
+const req2 = (await call('/api/bookings', { method: 'POST', body: booking('decl', { time: '18:00' }) })).body;
+ok((await call(`/api/admin/bookings/${req2.code}/status`, { method: 'POST', token: admin, body: { status: 'declined' } })).body.status === 'declined', 'admin recusa um pedido');
+ok((await call('/api/bookings', { method: 'POST', body: booking('after-decl', { time: '18:00' }) })).status === 201, 'horário recusado volta a ficar livre');
+ok((await call(`/api/admin/bookings/${won.code}/status`, { method: 'POST', token: barber, body: { status: 'no_show' } })).body.status === 'no_show', 'barbeiro marca falta');
+ok((await call('/api/admin/customers', { method: 'POST', token: barber, body: { phone: '(86) 98888-7777', blocked: true, note: 'Faltou sem avisar' } })).body.noShows === 1, 'equipe anota e bloqueia o cliente (histórico: 1 falta)');
+ok((await call('/api/bookings', { method: 'POST', body: booking('blocked-client', { time: '19:00' }) })).body.error === 'contact_shop', 'cliente bloqueado é orientado a chamar no WhatsApp');
+ok((await call('/api/admin/bookings', { method: 'POST', token: admin, body: booking('team-books-him', { time: '19:00' }) })).status === 201, 'a equipe ainda consegue agendar esse cliente');
+ok((await call('/api/admin/customers', { method: 'POST', body: { phone: '(86) 98888-7777', blocked: false } })).status === 401, 'anotações de clientes exigem login');
 
 console.log('Acessos');
 ok((await call(`/api/staff/users/${created.body.id}`, { method: 'PATCH', token: admin, body: { active: false } })).status === 200, 'admin desativa o barbeiro');

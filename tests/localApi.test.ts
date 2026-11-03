@@ -129,3 +129,32 @@ describe('shop-side booking (admin panel)', () => {
     expect(b.customer.phone).toBe('');
   });
 });
+
+describe('online requests and client notes', () => {
+  it('online bookings wait for the team, hold the slot, and are confirmed or declined in the panel', async () => {
+    const api = createLocalApi(memoryStorage(), { latencyMs: 0, now });
+    const req = await api.create({ ...base, proId: 'lucas', idempotencyKey: 'p1' });
+    expect(req.status).toBe('pending');
+    await expect(api.create({ ...base, proId: 'lucas', idempotencyKey: 'p2' })).rejects.toMatchObject({ code: 'slot_taken' });
+    expect((await api.admin.pending()).bookings.map((b) => b.code)).toEqual([req.code]);
+    expect((await api.admin.setStatus(req.code, 'confirmed')).status).toBe('confirmed');
+    await expect(api.admin.setStatus(req.code, 'declined')).rejects.toMatchObject({ code: 'not_found' }); // already answered
+    const other = await api.create({ ...base, time: '14:00', proId: 'lucas', idempotencyKey: 'p3' });
+    await api.admin.setStatus(other.code, 'declined');
+    expect((await api.getBusy('2026-11-03')).lucas).toHaveLength(1); // the declined request frees its slot
+    const walkIn = await api.admin.book({ ...base, time: '16:00', proId: 'lucas', idempotencyKey: 'p4' });
+    expect(walkIn.status).toBe('confirmed'); // the team's own bookings need no approval
+  });
+
+  it('a client the team marked is asked to talk on WhatsApp, and the panel shows their history', async () => {
+    const api = createLocalApi(memoryStorage(), { latencyMs: 0, now });
+    const b = await api.create({ ...base, proId: 'lucas', idempotencyKey: 'c1' });
+    await api.admin.setStatus(b.code, 'confirmed');
+    await api.admin.setStatus(b.code, 'no_show');
+    await api.admin.saveCustomer(base.customer.phone, { blocked: true, note: 'Faltou sem avisar' });
+    await expect(api.create({ ...base, time: '15:00', proId: 'lucas', idempotencyKey: 'c2' })).rejects.toMatchObject({ code: 'contact_shop' });
+    const day = await api.admin.day('2026-11-03');
+    expect(day.customers['11987654321']).toMatchObject({ noShows: 1, blocked: true, note: 'Faltou sem avisar' });
+    expect((await api.admin.book({ ...base, time: '15:00', proId: 'lucas', idempotencyKey: 'c3' })).status).toBe('confirmed'); // the team can still book them
+  });
+});

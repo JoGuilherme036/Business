@@ -3,13 +3,13 @@ import { team } from '@/config/catalog';
 import { normalizeBrPhone, isValidBrPhone } from '@/lib/phone';
 import { addDays, shopInstant } from '@/lib/time';
 import { eligiblePros, overlaps, proSlots, summarize, type BusyMap } from './availability';
-import { BookingError, type AdminApi, type Block, type Booking, type BookingApi, type CreateBookingRequest, type StaffUser } from './types';
+import { BookingError, isActive, type AdminApi, type Block, type Booking, type BookingApi, type CreateBookingRequest, type CustomerInfo, type StaffUser } from './types';
 
 // DEMO adapter: simulates the server in the browser so the full flow (and the admin panel)
 // can be tried without a backend. Data lives only on this device. Not a real schedule.
 
 type StoredBlock = Block & { start: number; end: number };
-type Store = { bookings: Booking[]; idempotency: Record<string, string>; blocks: StoredBlock[]; version: number; nextBlockId: number };
+type Store = { bookings: Booking[]; idempotency: Record<string, string>; blocks: StoredBlock[]; version: number; nextBlockId: number; customers: Record<string, { blocked: boolean; note: string | null }> };
 
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
@@ -32,9 +32,9 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
   const read = (): Store => {
     try {
       const s = JSON.parse(storage.getItem(LOCAL_STORE_KEY) ?? '') as Partial<Store>;
-      return { bookings: s.bookings ?? [], idempotency: s.idempotency ?? {}, blocks: s.blocks ?? [], version: s.version ?? 1, nextBlockId: s.nextBlockId ?? 1 };
+      return { bookings: s.bookings ?? [], idempotency: s.idempotency ?? {}, blocks: s.blocks ?? [], version: s.version ?? 1, nextBlockId: s.nextBlockId ?? 1, customers: s.customers ?? {} };
     } catch {
-      return { bookings: [], idempotency: {}, blocks: [], version: 1, nextBlockId: 1 };
+      return { bookings: [], idempotency: {}, blocks: [], version: 1, nextBlockId: 1, customers: {} };
     }
   };
   const write = (s: Store, changed = true) => {
@@ -45,7 +45,7 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
   const busyFor = (store: Store, day: string): BusyMap => {
     const map: BusyMap = {};
     const push = (pro: string, start: number, end: number) => (map[pro] ??= []).push({ start, end });
-    for (const b of store.bookings) if (b.status === 'confirmed' && b.day === day) push(b.proId, Date.parse(b.start), Date.parse(b.end));
+    for (const b of store.bookings) if (isActive(b.status) && b.day === day) push(b.proId, Date.parse(b.start), Date.parse(b.end));
     for (const b of store.blocks) if (b.day === day) for (const p of b.proId ? [b.proId] : team.map((t) => t.id)) push(p, b.start, b.end);
     return map;
   };
@@ -69,6 +69,7 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
     if (name.length < 2 || !phoneOk) throw new BookingError('invalid');
     const { durationMin, priceCents, services } = summarize(req.serviceIds);
     if (!services.length) throw new BookingError('invalid');
+    if (!byShop && store.customers[normalizeBrPhone(req.customer.phone)]?.blocked) throw new BookingError('contact_shop');
 
     // Re-validate at "commit time": the slot must still be free for the chosen professional.
     const busy = busyFor(store, req.day);
@@ -86,7 +87,7 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
 
     const booking: Booking = {
       code: newCode(store),
-      status: 'confirmed',
+      status: byShop || !site.booking.requireApproval ? 'confirmed' : 'pending',
       day: req.day,
       time: req.time,
       start: start.toISOString(),
@@ -103,6 +104,18 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
     write(store);
     return booking;
   }
+
+  const customerInfo = (s: Store, phone: string): CustomerInfo => {
+    const mine = s.bookings.filter((b) => b.customer.phone === phone);
+    const c = s.customers[phone];
+    return {
+      visits: mine.filter((b) => b.status === 'completed').length,
+      noShows: mine.filter((b) => b.status === 'no_show').length,
+      cancelled: mine.filter((b) => b.status === 'cancelled').length,
+      blocked: !!c?.blocked,
+      note: c?.note ?? null,
+    };
+  };
 
   const strip = ({ start: _s, end: _e, ...b }: StoredBlock): Block => b;
 
@@ -193,10 +206,27 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
     async day(day) {
       await wait();
       const s = read();
-      return {
-        bookings: s.bookings.filter((b) => b.day === day).sort((a, b) => a.start.localeCompare(b.start)),
-        blocks: s.blocks.filter((b) => b.day === day).sort((a, b) => a.start - b.start).map(strip),
-      };
+      const bookings = s.bookings.filter((b) => b.day === day).sort((a, b) => a.start.localeCompare(b.start));
+      const customers: Record<string, CustomerInfo> = {};
+      for (const p of new Set(bookings.map((b) => b.customer.phone).filter(Boolean))) customers[p] = customerInfo(s, p);
+      return { bookings, blocks: s.blocks.filter((b) => b.day === day).sort((a, b) => a.start - b.start).map(strip), customers };
+    },
+    async pending() {
+      await wait();
+      const s = read();
+      const bookings = s.bookings.filter((b) => b.status === 'pending').sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      const customers: Record<string, CustomerInfo> = {};
+      for (const p of new Set(bookings.map((b) => b.customer.phone).filter(Boolean))) customers[p] = customerInfo(s, p);
+      return { bookings, customers };
+    },
+    async saveCustomer(phone, data) {
+      await wait();
+      const s = read();
+      const p = normalizeBrPhone(phone);
+      if (!isValidBrPhone(p)) throw new BookingError('invalid');
+      s.customers[p] = { blocked: data.blocked, note: data.note?.trim().slice(0, 280) || null };
+      write(s, false);
+      return customerInfo(s, p);
     },
     async addBlock(nb) {
       await wait();
@@ -218,7 +248,7 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
       s.blocks.push(...created);
       write(s);
       const conflicts = s.bookings.filter(
-        (b) => b.status === 'confirmed' && (!nb.proId || b.proId === nb.proId) && created.some((c) => c.day === b.day && Date.parse(b.start) < c.end && Date.parse(b.end) > c.start),
+        (b) => isActive(b.status) && (!nb.proId || b.proId === nb.proId) && created.some((c) => c.day === b.day && Date.parse(b.start) < c.end && Date.parse(b.end) > c.start),
       );
       return { created: created.length, conflicts };
     },
@@ -234,6 +264,8 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
       const s = read();
       const b = s.bookings.find((x) => x.code === code);
       if (!b) throw new BookingError('not_found');
+      // Approving or declining applies only to a request still waiting for an answer.
+      if ((status === 'confirmed' || status === 'declined') && b.status !== 'pending') throw new BookingError('not_found');
       b.status = status;
       write(s);
       return b;
@@ -276,7 +308,7 @@ export function createLocalApi(storage: StorageLike, opts: { latencyMs?: number;
       const store = read();
       const b = store.bookings.find((x) => x.code === code.trim().toUpperCase() && x.customer.phone === normalizeBrPhone(phone));
       if (!b) throw new BookingError('not_found');
-      if (b.status === 'confirmed') {
+      if (isActive(b.status)) {
         if (Date.parse(b.start) - now().getTime() < site.booking.cancelUntilHours * 3_600_000) throw new BookingError('too_late');
         b.status = 'cancelled';
         write(store);

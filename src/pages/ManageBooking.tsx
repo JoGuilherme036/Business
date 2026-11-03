@@ -55,7 +55,7 @@ export default function ManageBooking() {
   };
 
   const input = 'mt-2 block w-full rounded-2xl border hairline bg-ink-2/70 px-4 py-3.5 placeholder:text-ivory/30 focus:border-accent focus:outline-none';
-  const canCancel = booking?.status === 'confirmed' && Date.parse(booking.start) - Date.now() > site.booking.cancelUntilHours * 3_600_000;
+  const canCancel = (booking?.status === 'confirmed' || booking?.status === 'pending') && Date.parse(booking.start) - Date.now() > site.booking.cancelUntilHours * 3_600_000;
 
   return (
     <main id="conteudo" className="container-x relative z-10 min-h-[100svh] max-w-2xl pb-32 pt-28 md:pt-36">
@@ -86,8 +86,8 @@ export default function ManageBooking() {
         <section aria-label="Detalhes" className="mt-6 rounded-xl border hairline bg-ink-2/70 p-6">
           <div className="flex items-center justify-between">
             <p className="font-mono tracking-widest">{booking.code}</p>
-            <span className={`rounded-full px-3 py-1 text-[12px] font-semibold ${booking.status === 'confirmed' ? 'bg-emerald-400/15 text-emerald-300' : 'bg-danger/15 text-danger'}`}>
-              {booking.status === 'confirmed' ? 'Confirmado' : 'Cancelado'}
+            <span className={`rounded-full px-3 py-1 text-[12px] font-semibold ${booking.status === 'confirmed' || booking.status === 'completed' ? 'bg-emerald-400/15 text-emerald-300' : booking.status === 'pending' ? 'bg-amber-300/15 text-amber-200' : 'bg-danger/15 text-danger'}`}>
+              {{ pending: 'Aguardando confirmação', confirmed: 'Confirmado', completed: 'Concluído', declined: 'Não confirmado', cancelled: 'Cancelado', no_show: 'Não compareceu' }[booking.status]}
             </span>
           </div>
           <p className="mt-4 font-display text-3xl italic">{formatDayLong(booking.day)}</p>
@@ -96,11 +96,11 @@ export default function ManageBooking() {
             {booking.serviceIds.map((id) => serviceById(id)?.name).join(' + ')} com {proById(booking.proId)?.name}
           </p>
           <p className="mt-1 text-sm text-muted">
-            {formatDuration(booking.durationMin)} · {formatPrice(booking.totalCents)}
+            {formatDuration(booking.durationMin)}{site.booking.showServicePrices ? ` · ${formatPrice(booking.totalCents)}` : ''}
           </p>
           {message && <p role="status" className="mt-4 rounded-xl border hairline px-4 py-3 text-[14px]">{message}</p>}
 
-          {booking.status === 'confirmed' && (
+          {(booking.status === 'confirmed' || booking.status === 'pending') && (
             <div className="mt-6 grid gap-2 sm:grid-cols-2">
               <a href={whatsappLink(`Olá! Quero remarcar meu agendamento ${booking.code} (${formatDayLong(booking.day)} às ${booking.time}).`)} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-accent/60 text-[14px] font-semibold text-accent-light">
                 <Icon name="whatsapp" className="h-[18px] w-[18px]" /> Remarcar pelo WhatsApp
@@ -119,7 +119,7 @@ export default function ManageBooking() {
               )}
             </div>
           )}
-          {booking.status === 'cancelled' && (
+          {(booking.status === 'cancelled' || booking.status === 'declined') && (
             <Link to="/agendar" className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-full bg-accent px-6 text-[14px] font-semibold text-ink">
               Agendar novo horário <Icon name="arrowRight" className="h-4 w-4" />
             </Link>

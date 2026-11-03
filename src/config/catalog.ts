@@ -103,6 +103,7 @@ export type Professional = {
   specialties: string[];
   serviceIds: string[];
   photo?: string; // media id; leave empty until a real portrait exists
+  whatsapp?: string; // the barber's own WhatsApp (55 + DDD + number). Empty = the shop's number.
   // Weekday -> working ranges. Must fall within the shop hours.
   schedule: Partial<Record<0 | 1 | 2 | 3 | 4 | 5 | 6, { start: string; end: string }[]>>;
 };

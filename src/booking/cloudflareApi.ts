@@ -1,9 +1,9 @@
 import { normalizeBrPhone } from '@/lib/phone';
-import { BookingError, type AdminApi, type Booking, type BookingApi, type BookingErrorCode, type BusyMap, type DayClosures, type StaffUser } from './types';
+import { BookingError, type AdminApi, type Booking, type BookingApi, type BookingErrorCode, type BusyMap, type CustomerInfo, type DayClosures, type StaffUser } from './types';
 
 // LIVE adapter: talks to the Cloudflare Worker API in server/ (D1 database).
 
-const KNOWN: BookingErrorCode[] = ['slot_taken', 'invalid', 'not_found', 'too_late', 'unauthorized', 'forbidden', 'locked', 'username_taken', 'weak_password', 'setup_done'];
+const KNOWN: BookingErrorCode[] = ['slot_taken', 'invalid', 'not_found', 'too_late', 'unauthorized', 'forbidden', 'locked', 'username_taken', 'weak_password', 'setup_done', 'contact_shop'];
 const SESSION_KEY = 'business.staff.session';
 
 async function request<T>(base: string, path: string, init: RequestInit = {}): Promise<T> {
@@ -76,6 +76,8 @@ export function createCloudflareApi(base = ''): BookingApi & { admin: AdminApi }
       await request(base, `/api/admin/blocks/${id}`, { ...authed(), method: 'DELETE' });
     },
     setStatus: (code, status) => request(base, `/api/admin/bookings/${code}/status`, { ...authed(), method: 'POST', body: JSON.stringify({ status }) }),
+    pending: () => request(base, '/api/admin/pending', authed()),
+    saveCustomer: (phone, data) => request<CustomerInfo>(base, '/api/admin/customers', { ...authed(), method: 'POST', body: JSON.stringify({ phone, ...data }) }),
     book: (req) => request<Booking>(base, '/api/admin/bookings', { ...authed(), method: 'POST', body: JSON.stringify(req) }),
   };
 

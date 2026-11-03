@@ -1,3 +1,4 @@
+import { whatsappLink, waMessages } from '@/lib/whatsapp';
 import { useEffect, useState, type PointerEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { team, type Professional } from '@/config/catalog';
@@ -87,6 +88,15 @@ function ProCard({ pro, next, index }: { pro: Professional; next?: string; index
           >
             Agendar com {pro.name} <Icon name="arrowRight" className="h-4 w-4" />
           </Link>
+          <a
+            href={whatsappLink(waMessages.schedule(pro.name), pro.whatsapp || undefined)}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => track('whatsapp_click', { from: 'team', pro: pro.id })}
+            className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-full text-[13px] font-semibold text-ivory/80 hover:text-ivory"
+          >
+            <Icon name="whatsapp" className="h-4 w-4" /> Falar com {pro.name} no WhatsApp
+          </a>
         </div>
       </article>
     </Reveal>

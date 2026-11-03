@@ -61,6 +61,11 @@ export const site = {
     minLeadMin: 60, // earliest booking from now
     maxDaysAhead: 30,
     cancelUntilHours: 2,
+    // Online bookings arrive as requests: the team confirms (or declines) each one in /equipe and
+    // answers the client on WhatsApp. The requested time is held meanwhile. false = confirm automatically.
+    requireApproval: true,
+    // Service prices are discussed with the client (WhatsApp or at the shop), not published on the site.
+    showServicePrices: false,
     policy:
       'Tolerância de 10 minutos de atraso. Cancelamentos e remarcações gratuitos até 2 horas antes do horário.', // DEMO
   },

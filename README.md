@@ -42,7 +42,7 @@ O banco **D1 `business-barbearia` já foi criado** na conta Cloudflare, com toda
 3. **Configurações → Variáveis e segredos → Adicionar** o segredo `ADMIN_TOKEN` (uma chave longa, só sua) e faça um novo deploy.
 4. Abra `https://business-barbearia.<sua-conta>.workers.dev/equipe`. No **primeiro acesso**, informe a chave `ADMIN_TOKEN` e crie o usuário administrador. Depois, em **Equipe e acessos**, cadastre cada funcionário com usuário e senha próprios.
 
-Cada `git push` publica sozinho. Para domínio próprio: **Configurações → Domínios e rotas**. Se criar novas migrações no futuro: `npm run db:migrate:remote`.
+Cada `git push` publica sozinho. Para domínio próprio: **Configurações → Domínios e rotas**. As migrações 0001–0003 já foram aplicadas no banco remoto. Se criar novas no futuro: `npm run db:migrate:remote`.
 
 ### Área da equipe (`/equipe`)
 
@@ -52,13 +52,22 @@ Cada `git push` publica sozinho. Para domínio próprio: **Configurações → D
 - **Tempo real**: toda mudança é avisada a todos os aparelhos pelo Durable Object (WebSocket), em menos de 1 segundo.
 - **Sem reserva dupla**: a gravação é atômica no D1 (`INSERT … WHERE NOT EXISTS` + índice único por barbeiro e horário). Se duas pessoas tentarem o mesmo horário ao mesmo tempo, só uma consegue.
 
+### Como funciona o agendamento (ajustado com a equipe)
+
+Pedido da equipe: o cliente costuma chegar pelo WhatsApp (da barbearia ou do próprio barbeiro), os valores são conversados e nem tudo deve ser automático. Por isso:
+
+- **Pedido de horário, não reserva automática** (`site.booking.requireApproval`): o pedido feito pelo site chega em **Pedidos do site** na área da equipe e já segura o horário. A equipe toca em **Confirmar e avisar** (abre o WhatsApp do cliente com a mensagem pronta) ou **Recusar** (libera o horário e abre uma mensagem propondo outro). Agendamentos feitos pela própria equipe já nascem confirmados.
+- **Valores não aparecem no site** (`site.booking.showServicePrices: false`): serviços, comanda e agendamento mostram só a duração; o valor é combinado. Os preços continuam visíveis para a equipe. Os produtos da loja continuam com preço.
+- **WhatsApp em primeiro lugar**: botão no topo do site, no início do agendamento ("Prefere conversar antes?") e um "Falar com <barbeiro> no WhatsApp" em cada barbeiro (preencha `whatsapp` em `catalog.ts` para usar o número dele; vazio usa o da barbearia).
+- **Conhecer o cliente antes de aceitar**: cada pedido mostra visitas, faltas e cancelamentos do cliente e uma anotação da equipe. A equipe pode marcar **Não aceitar pedidos online** para um cliente: ele passa a ser orientado a chamar no WhatsApp, e só a equipe consegue agendá-lo.
+
 ### Testar o servidor localmente
 
 ```bash
 npm run build && npm run db:migrate:local
 echo "ADMIN_TOKEN=chave-teste-123" > .dev.vars
 npm run worker:dev            # outro terminal:
-node scripts/e2e-api.mjs      # 32 verificações: login, permissões, tempo real, 25 reservas simultâneas
+node scripts/e2e-api.mjs      # 43 verificações: login, permissões, tempo real, 25 pedidos simultâneos, pedidos e clientes
 ```
 
 ## Antes de publicar (checklist do dono)

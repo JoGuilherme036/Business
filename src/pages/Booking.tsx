@@ -1,3 +1,4 @@
+import { site } from '@/config/site';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -143,11 +144,13 @@ export default function Booking() {
         setRefreshKey((k) => k + 1);
         go(2);
         setNotice('Esse horário acabou de ser reservado por outra pessoa. Escolha outro, por favor.');
+      } else if (code === 'contact_shop') {
+        setNotice('Para este agendamento, fale com a gente pelo WhatsApp. A equipe combina o melhor horário com você.');
       } else if (code === 'invalid') {
         go(3);
         setNotice('Confira seus dados e tente de novo.');
       } else {
-        setNotice('Sem conexão com o servidor. Sua reserva ainda NÃO foi feita. Tente de novo.');
+        setNotice('Sem conexão com o servidor. Seu pedido ainda NÃO foi enviado. Tente de novo.');
       }
     } finally {
       setSubmitting(false);
@@ -219,7 +222,7 @@ export default function Booking() {
             <div className="min-w-0 flex-1" aria-live="polite">
               {sum.services.length ? (
                 <>
-                  <p className="font-display text-xl leading-none text-accent-light">{formatPrice(sum.priceCents)}</p>
+                  <p className="font-display text-xl leading-none text-accent-light">{site.booking.showServicePrices ? formatPrice(sum.priceCents) : formatDuration(sum.durationMin)}</p>
                   <p className="mt-1 truncate text-[12px] text-muted">
                     {sum.services.length} {sum.services.length === 1 ? 'serviço' : 'serviços'} · {formatDuration(sum.durationMin)}
                     {draft.time && step >= 2 ? ` · ${draft.time}` : ''}
@@ -236,10 +239,10 @@ export default function Booking() {
             >
               {submitting ? (
                 <>
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-ink/30 border-t-ink" /> Confirmando…
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-ink/30 border-t-ink" /> Enviando…
                 </>
               ) : step === 4 ? (
-                <>Confirmar agendamento</>
+                <>{site.booking.requireApproval ? 'Enviar pedido' : 'Confirmar agendamento'}</>
               ) : (
                 <>
                   Continuar <Icon name="arrowRight" className="h-[18px] w-[18px]" />

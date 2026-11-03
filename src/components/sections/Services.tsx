@@ -77,7 +77,8 @@ export function Services() {
                       <span className="min-w-0">
                         <span className="block font-display text-[1.4rem] leading-tight transition-transform duration-500 ease-expo group-hover:translate-x-1 md:text-[1.75rem]">{s.name}</span>
                         <span className="mt-1 block text-[13px] text-ivory/75 sm:hidden">
-                          {formatDuration(s.durationMin)} · <span className="text-accent-light">{formatPrice(s.priceCents)}</span>
+                          {formatDuration(s.durationMin)}
+                          {site.booking.showServicePrices && <> · <span className="text-accent-light">{formatPrice(s.priceCents)}</span></>}
                         </span>
                         <span className="mt-1 line-clamp-2 block text-[13px] leading-relaxed text-muted">{s.description}</span>
                         {s.includes && <span className="mt-1 block text-[12px] text-accent/90">Inclui {s.includes.map((id) => serviceById(id)?.name).join(' + ')}</span>}
@@ -85,7 +86,7 @@ export function Services() {
 
                       <span className="flex items-center gap-4">
                         <span className="hidden text-right sm:block">
-                          <span className="block font-display text-2xl tabular-nums text-accent-light">{formatPrice(s.priceCents)}</span>
+                          {site.booking.showServicePrices && <span className="block font-display text-2xl tabular-nums text-accent-light">{formatPrice(s.priceCents)}</span>}
                           <span className="block text-[12px] text-muted">{formatDuration(s.durationMin)}</span>
                         </span>
                         <span
@@ -118,7 +119,7 @@ export function Services() {
             </div>
           </aside>
         </div>
-        {site.demo && <p className="mt-6 text-[12px] text-muted/80">Valores e serviços de demonstração.</p>}
+        {!site.booking.showServicePrices && <p className="mt-6 text-[13px] text-muted">Valores combinados no WhatsApp ou na barbearia, de acordo com o seu cabelo e o que você quer fazer.</p>}
       </div>
     </section>
   );
